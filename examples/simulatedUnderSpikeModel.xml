@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="BEAST.base v2.7.5:BICEPS v1.1.2:bModelTest v1.3.3:OBAMA v1.1.1:ORC v1.1.2:BEASTLabs v2.0.2" version="2.7">
+
+
+    <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
+
+    <map name="Exponential" >beast.base.inference.distribution.Exponential</map>
+
+    <map name="LogNormal" >beast.base.inference.distribution.LogNormalDistributionModel</map>
+
+    <map name="Normal" >beast.base.inference.distribution.Normal</map>
+
+    <map name="Beta" >beast.base.inference.distribution.Beta</map>
+
+    <map name="Gamma" >beast.base.inference.distribution.Gamma</map>
+
+    <map name="LaplaceDistribution" >beast.base.inference.distribution.LaplaceDistribution</map>
+
+    <map name="prior" >beast.base.inference.distribution.Prior</map>
+
+    <map name="InverseGamma" >beast.base.inference.distribution.InverseGamma</map>
+
+    <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
+
+    <map name="Poisson" >beast.base.inference.distribution.Poisson</map>
+
+    <map name="Dirichlet" >beast.base.inference.distribution.Dirichlet</map>
+
+
+
+
+    <data id="data" spec="beast.base.evolution.alignment.Alignment" dataType="nucleotide">
+            <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon1' value='ATGTCCAGGACCTCTTTCAAATTACGGGTGGTCGGAGACCATAGTGAATCCCAAACAGAATACTTCAGGAATCACGACTTCGCGTATAAGCCCCTGACCGTTTCTACCTAATCCGGGCAAATGGGGGTAGTTCTCTCCCATGTGATAAGACCAGCAAAAAAGTGTCCCGATGTGAATCCCCGTTCTCCCCATGCAGGGCG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon2' value='ATGCCCAGGACCTTCTTTAAATGACCGGTGACCGGAGATTATAGTGAATCCCAAGCAAACTACTCTTAGAGTCACGAGTTCGCGTCTGAGCCCCTGACTGTTTCTATCGGATCCGGGCAGACGGGGGTAGTTCTCTCCCATGTGATAAAACCACCAAAAAAGTGTCCCGATGCGAGTCCCCGTTCTGCCCATGCAGGACA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon3' value='ATGTCCAGGACCTTCTTTAAATGACCCGTGAACGGGGATTATAGTGAGTTCCAAACGAAATAAACTCCGAGTCATGAATTAGCGTCCGAACCCCCGACTGTTTCTATCTGATCCGGGCAGAGGGAGGTAGTTCCCTCCCATGTGATGAAGCCACCAAAGGAATGTCCAGATGTGAATCTCCGTTCTGCCCGCGCAGGACG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon4' value='ATGTCCGGGACCCCCTTTAAATGACCGGTGGACGGAGATTATAGTGAGTTCCAAACAAAATAAGCTCCAAGCCATGATTTAGCGTTTGAACCCCCGACTATTTCTATCTAATCCGGGCTAACGGGGGTAGTTCTCTACCATGTGATAAAGCCACCTAAGAAGTATCCCGATGTGAATCCCCGTTCCGCCCACGTAGGGTG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon5' value='ATATCCAGGACCCTCTTTAAATGACCGGTGGACGGAGATTATAGTGAGTTCCAAACAAGATAAGCTCCAAGCCATGATTTAGCGTTTGAACCCCCGACTGTTTCTATCCAATCCGGGCTAACGGGGGTAGTTCTCTACCATGTGATAAAGCCACCTAAGAAGTATCCCGTTGTGAGTCCCCGTTCCGCCCACGTAGGGTG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon6' value='ATGTCCAGGACCTTCTTTAAATGACCGGTGAACAGAGATTATAGTGAGTTCCAAACGAAATAAACTCCCAGTCACGAGTTAGCGTCTGAACCCCCGACTGTTTCTATATGATCCGGGCAAACGGGGGTAGATCTCTCCCACGTGACAAAGCCACCAAAGGAACATCCTGACCTAAGTCCCCGTTCAGCCCTTGTAGGGTG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon7' value='ATATAGAGGGCCTTTTTGAGGTAACGGGTGATCCGAAAATATGGTAAATTCCAAACTAGATGTATCCAGACGCACGATCTCTCTTCTGGATCACTGACTGTTTCTATCAAGTCCGGGTAGCTGAGAGTGGTTCTCTCCCGCGAGATGAAACTAGTAAAAAGATATCATTGCGTAAGTCCGCGTTGTTTTCATACAGCGCG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon8' value='ATAAATGGGGCTCTTTTGAGTTAGCGAGTCGCCGGGGACGACAGCAGATTTCCAACCACGTGGATCCACACACGTGAATTTTCCTCTAGAACCCCGCCTACTTCCATTTAATCCAGGCAGACAGGTGTTACTCTCTCCCCCGAGATGAAATCGGTGGAGGAATATCGTTTGGAGAATCCTCGTTGTTCTCATATAACGCA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon9' value='ACAGATAGGACTCTCTTGAGGTAGCGAGTCGCCAGGGACTACAGTAGATTTCCAACAAGGTCTATCCACACACAGGAATTTTCCTTCGAGGCCCCGCCTACTTCCACTTAATCCAGGCAGACAGGTGTGGCTCTCTACCACGAGACGAAACCGGTGGAGCAATATCACTCGGCGAATCCTTGTTGTTTTCACACAATGCA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon10' value='ACGAAAAGGACTCTTTTAAGCTGACGAGTAGTCGGGGACTACAGTAGTTTTTTAACGAGATCTGCTTATAAACAGGAATTCTCCTACGGGGCCCCTCCTACTTCCACCTAATCCAGGCAGACAGAAAGAAGTATCTACTACGAGAAGAAACCGGTGGAGGAGTGTCCTTCGGCGAGTCCGTATTGCTCTCACTTAAGATA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon11' value='ACGAGTAGGACCTTCTTAAGGTGACAAGTAGCCGGACATTACAGCAGCTTCCCAACTGAGTTTGCCGCTGCACAGCGGTTCACGTGTCGTCCCCGGACCACTTCCACACGGCTCAGTCAGATACGCGAGATTCTCCGCTAAGGAACTGAACCAGTGGAGGGTATTCCTCTCGCTAATCTTCGTTACTCTTATACAGCATA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon12' value='ACGAACCGGATCTCCTTTAGGTGACGAGTTACCGGACATTATGGAGGTTTCCCAACTGCATATGTTAATGGGCAGCGACTTTCATAGAGCCCCCGGACTACTCCCTCAAAGCACAGCCTAATACATGCGGTTTTCCGCTGGGGAACTGAACTAGTGGGGGGGATTCCTCCTGTTAATCACCTTTGTGATCATATAGTGTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon13' value='ACAAATAGGGCCTCCTTCAGCTAGCAAGTGGTCAGACACTACAGTAGTTTCCCAATAACATCTGTCATTATACATCGATTTTCTTTTAGTTCCCGGACTGTCTCTATTCAGCTCGGGCAGATACGCGTAATTTTCTGCTAAGCGTAAGAACCAGTGGAGGGGACTCACCTCGCTAGTCCCCCTTGTTCTAATACAGCGTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon14' value='ACAAATAGGACCTCCTTCAGCTAGCAAGTAATTAGACACTACAGTAGTTTCCCAATAACATTTGTCATTATACATCGATTTTCTTTTAGATCCCGGACCGTCTCTATTCAGCTCAGGCAGATAGGCGTAATCTTCTGCTAAGCGTAAGAACCAGTGGAAGGGACTCACCTAGCTAGTCCCCCTTATTCTAATACAGCGTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon15' value='ACAGATAGGACCTCCTTCAGCTAGCAAGTAGTCAGACACTACAGTAGTTTCCCAACAACATTGATCGCTATACATCGATTTTCTTTTAGTTCCCGGACCGCCTCTATTTAGCTCGGGCGGATACCCGTAATTTTCCGCTAAGCGTAAGAACCAGTGGAAGGGATTCATCTCGCCAGTCCCCCTTATTCTAATACAGCGTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon16' value='ATAGCTAGGACCCCCTTGAAGTAGCGGGTCACCGGGGACTATAGTAGATTCCCAACAAGGTATATCTACACACATGAATTTTCCTTCGGAGCCCCGACTGCTTCTACTTGATCCGGGCAGACAGGCGTGACTCTCTCCCACGAGACGAAACCGGTGGGGGAATATCACTAAGTAAATCTTTGTTATTCTCATACAATACA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon17' value='ACTTCCAGGGCCCCCCTGCGATAGCGGGTGGCCGGGGAATGTTTCAGATTCCCAACTAGGTATGTAGGTTCACATGATTTTTCGTAGGGAACCCCGACCGCTTCTAGTTTATTCAGGTACACAGGTATGGCTGTCTCCTTGGAGAATAAAGCACTGAAAAATCGTCGACAGGCGATTCCGCGTTCCAGTTGTGCAATGTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon18' value='ATCTTTAGGGCCCCCCTGCGATAGCGGGTTATCGGGGAGTGCTGCAGATTCCCAACTAGGTATGTCGGCTCACATGATTTTTCATAGGGAGCCCCGACCGCTTCTATTCGATTCAGGCAGATAGGTATGGCTGTCTTCTTGGAGAAAAAAGCGCTGAAAAAACGTCGACAGGCAATTCTACGTTCCAATTATGTAATATG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon19' value='ATCTTTGGGGTCCCCCTGCGATAGCGGGTTATCGGAGAGTGCTGCAGATTCCCAACTAGGTATGTCGGTTCACATGATTTTTCATAGGGAGCCCCGACCGCTTCTATTCGATTCAGGCAGATAAGTATGGCTGTCTTCTTGGAGAAAAAAGCGCTGAAAAAACGTCGACAGGCAATTCTACGTTCCAATTATGTAATGTG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon20' value='ATTTTCAGGGCCCTCCCACCATACCGGGTTCTCGGGGAGTGTTGCGGGTCCCTAACGAGGTATGTCGGTCCGCATGATTTCTCGTAACGATCCCCGGCCGCCCCTACCCAATTCAGGTAGATTGGCGTGACTCTCTTCCCCGAAATGAAGGCGGTGAAAGAGCGTCGCCGCGTGATTTTCCGTTCTGGTCACGCATTGCG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon21' value='ACTGTTAGGTCCCCTCTGCGATAGCGGGTGGGCAGGTAGCGCTGAAGCTCCCCAATCGAATCCGGCAGCCAACAGGGTATCTCATATCGGCCCCTGGCCGGTTCGGGCTAGTTCGGATTGGTAGGGATGACTTTCTTCTCCGGAGTGAAAGCTATGAAAAATTGTCTACGAGCGATTCTGTGTTATAATCAAGATACGTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon22' value='ATTTCTAGGGCCCTCCTGCGATAGCAGGTTATCGGGGAGTGTTGCAGGTCCCCAACTAAGTGTGTCGGCTCACATGATTTATCATGGCGACCCCCGGCCGCTTCTATCCGATTCAGGCAGATAGGCACGACTGTCTTCTCCGAAATGAAAGCGGTGAAAAAACGTCGCCACGCAATTCTACGTTTCGGTCACGCAATACG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon23' value='ATTTCTAGGACCCCCTTGCGATAGCGAGTCACAAGGGAATATGGTAGATTCCCAACCGGGTCTATCTATCCGCATGACTTGTCGTCCGACGCCCCGACTGCTTCTTTCCGATTCTGGCAGATACACGTGACTCTCCCTCTTGAGATAAAAGCGGTGAAAAGGCTCGCCGGAGCAAGTCTGAATTACTCCTACGTAACACA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon24' value='ATCTCCAGGACCCCTTTGCAATTACAAGTTCGAAGAGAGGGGAGCAGGTCCCCAATCGAGTCCGTTCAAAGACAGGACTTGTCTTTCAACTCCCCGACTAGTTCCTTCCGATTCGGACAGACATGGATCATTCTCCCTCTTGAAATCGAAGCAATGAAAGGGCGTGCAGGAGCTAGTCCAAATTGAACATGTGAAAGGCA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon25' value='ATTTCCAGGACCCCTTTGCAATTGCAAGTTGGAGGAGAAGGGGGCAGATCCCCAATTGAGTCTGTTCAACGACAGGACTTGTCTTTCGACTCCCCGGCTAGTTCTTTCCGATTCGGGCAGACATGGATCATTCTCCCTCTTGGAATCCAAGCAATGAAAGGGCGTGCGGGAGCTAGTCCAAATTGAGCATGTGAAAGGCA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon26' value='ATTTCTAGGACCCTCTCGCGATAACAAGTCAGAAGAGATGAGGGCAGATTCCCAATTTGGTTTGTCCATCGACATGATTTGTCCTTCGAAACCCCGCCCACTTCTTGCCAATTCAGGGAGATATAGGTGATTCTCCCTCTCGAAGTGGAAGCGATGAGACGGCGTGACGAAGCTATTCCAAATTGATCATATCGAAATTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon27' value='ATTCCTAGGACCCTCTTGCAATAGCAAGTCGGAAGAGAAGAGAGCAGATTCCCAATTGGGTTTGTCCATCGACATGACTTATCTTTCGAAGCCCCGACTACTTCTTTCCGATTCGGGCAGATATAGGTCGCTCTCCCTCTCGAGATGAAAGCGATGAAACGGCGTGCCGGGGCTAGTCCGAATTGATCATACGGAAAATA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon28' value='ACGTGCAGGACCTTCTTACGATGGCGAGTTGAAAAGGAATAAGGTAGGTTCCCAACAGGGTTAATCAATGTACATGACCTGTCGTCCGACACACCGACTGCCCCTTTTCACTTCAGGCTGATACAAGTAGCTTTCTTTTCCGAGAAGAAAGCGATAGAACGATATGTCGAAGCAACTCTCTATTAGAAATATAGAATGCG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon29' value='ACGTACAGGATCTTCTCGCAATAGCGAGTTGAAAAGGAGTAGGGCAGGTTCCTAACAAGGTTGATCGATGCACATGATCTGTCGTCCGAGGCACTGACTGCCTCCTTTCACTTCAGGCCGACACAAGTGGCTTTCTCTTCTGAGAAAAAAGCGATAAAACGACGTGTTGAAGCGACTCTATATTAAAGATATAGAATTTG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon30' value='ACGTGCAGGACCTTTTTGCGATGGCGAGTTGAAGAGGAGTACGGAAGGTTCCCAGCAAAGTCTATCGGCATACATGACTTCTCGTTCGATCCACCGGCTCCTTCTTTTTGCTTCCGGCCGACACAGGCGTGTTTCTCTCTCGAGATGAAAGCGATAAAACGCCATGTTGAAGCGAGTCTGTATTGGAAGTATACAACGCG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon31' value='ATGTGCAGGACCTTCTTGCAATGGCGAGTTGGAAAGGAGTAGGGCAGGTTCCCAACAAGGTCTATCTATGCACATGACTTGTCGTTCGATCCACCGGCTGCCCCTTTTCGATTCAGGCAGACACAAGTGGTTTTCTCTTTCGAGATAAAAGCGATAAAGCGGCGTGTCGAGGCGAGTCTATATTGATCATACACAACGTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon32' value='ATGCATAGGACTCTTTTGCAGCGGCTAGTTAGAAAGCTGTAGGATAGGTTCCCAAAGAGGTTTAACCATGCACACGATTTATCGTTCGGGCCCCCGGCTGCTTCTTTCTAATTCAGTCAGATACAAGTGGCTTTCTTTCCTGAGAAAAAAGCAACAATACGTCGTATCGAGGAGAGTCTAGATTAATCATATGCAACGTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon33' value='ATGTGTAGGACCTTCTTGCAATGGCAAGTTGGAAAGGAGTAGGGTAGGTTCCCAACAAGGTCTATCCATGCACGTGACTTGTCGTTCGATCCCCCTACTGCTTCCTTCCGATTCAGGCAGATACAGGTGGCTTTCTCTTTCGAGAAAAAAGCAATAAAACGGTGTGCCGAAGCGAGTCTAAATTGATAATACACAATGGA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon34' value='ATTTCTAGGACCCCCTTACAATAGCGAGCCACGCGAGAATAAAGGAGATTCCCAACTGGGTTTATCAATACACATGACTTATCGTTCGGCACCCCGACCGCTTCTTTCTAATTCGGGCAGATACACGTGGCTATCCGTCTCGAGATAAAAGCGGTGAAATGGCATGCCAGAGCGAATCTCGGTTGGTTGTACGTGATACA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon35' value='ATTTTCAGGGTACCCTTACGGTGGCGAGTCGCAAGGCAGTGCGGGAGGTTCCCAACTAGGTGTAGCTATCAACATGGTTTGTCATCACATTCCCCGACAACTTCCATCCGATTCGGGGAAACAAACGTGACTCTCTCCCTCGAGGTGAAAGTGGTGAAAAAGTCGCATTATGCAAATCTAGGTTACTTTTAAATAAATTG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon36' value='ATTTTTGGGACACCCTTGCGGAGGCGGATCACAAGGTAGGGTGGGAGATTCCTAATTAAGTGCAGCTATCAACAAGGATTGTCGTCCCACACCCCGACAGCTTCCATCAGATTCGGCAAAACAAATGTGATTCTCTCCTTCGAGGTGAAAGCGGTGAGAAGGTTGCGTCGAGGAAATCTGGATTGTTCTTAAGCAAATTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon37' value='ATTTTTAGGACCCTCTTACGGTAGCAAGTCACAAGGTAGCGTGGGAGATCCCCAACTAGCTGTATTTATCGACATGGTTTGTCGTCTGACACCCCGACAGCCTCCATCCGATTCAGGGAAACAGACGCGACTCTCTCCTTCGAGGTAAAAGCGGTGAAAAGGCTTCACTGAGCAAGTCTAGGTTGCTCTTATATAGATTA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon38' value='ATGTAGGGGGCCTTCTTACGGTTGTGAGTTTTATGGTACTGCGGCGGGTTCCCAACTAGTTATAGTAACCGACAAGTTCTGCCATTTGATACCCCGACAGCCCCTATTCGATTCAGAAGAACGGACACGATTTCCCCCTTCGAGGATAAGACAGTGACAAGGCCTCGCAGCGATAGTCCAATTTATTCCTACGGAAATAG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon39' value='ATGTATAGGACCTTCTTACGGTTGTGAGTCCTATGGTAACGCGGCGGGTTCCCAACCAGTTGTATTGACCGACAAGGCTTGCCATCTGATACCCCGACAGCCCCCATTCGATTCAGGAGAACAGACACGATTTCCCCCTTCCGGGTTAAAGCGGTGACAAGGCCTCACTCCGATAGTCTGGTTTACTCTTACGGAGATTG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon40' value='ATTCGTCGGACCCTTTTGCGGTGGCGGGTCACAGGGAATCAGGGACGATTCCCAACAAAGTATGTCAAACGACACGACCTGTCGTTTGACCCCCCGTCTGCTTCTATCTGAGTCGGGCAGACGGGCGTGGGCCTCTACGTTAAGACAAAAGCGGTGAAAGGGAGTCGGTATGCAAGTCTGTATTAATTCTACGAAGCATA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon41' value='ATCCTTAGGACCCCCTTCCGATGGCGTGTTATAGGGGAACACGGGAGATTCCCAACTAGGTATGTCTATCCACATGATCTATCATCTGAGGCCCCGACTGCTTCTATCCGATTCGGGCGGACAGGCGTCGCCCTCTACATCGAGATAAAAGCGGTGAAAAGACGTCACTGGGTAAATCTGTGTTACCGTTACACAATACA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon42' value='ATCCCTAGGACTCTCTTCCGATGGCAGGTTGTAGGGGAACATGGGAGATTCCCAACTAGGTACGTCTATCTACGTGATCTATCATCTGAGACCCCGACTGCTTCTATCCGATTCTGGCGGACAGGCGTGGCCCTCTACGTCGAGATAAAAGCGGTGAAAAGATGTCACTAGGCGAATCTGTGTTAACATTACACAATCCA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon43' value='ATGCCTGGGACCCCCTTGAGGTGGCGGGTTGCCGGGGATTATGGCGGATTCCCAGCTAGGTATACCGGCTCACGTGAGTTCTCCTCGGGTGCCCCGACTGCACCTATCTAATTCGGCCAGATAGGGGTGGCTCTGCCCCGCGAGACGAAAGCAATGAAAGGGGATCATTGGGTAAGTCTCCTTTGCTCTCATACAAAACG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon44' value='ACACTTGGACCCCCCTTGAAGTGGCGGGTTCCCAGAAAATATGGCGGGTCCCCAGCTACTTTTCTCGGCTCCCACGATATGACGCCTGGGCCCCCGACCGCACCTATCCAATTCGGCCAGATAAGCGTGGCTATGCCCCACGAGGCGGAGGCCATCAAAGGCAATCCTCAGGCAAATCCCCTTTGGTAACAAAAAGAGAG'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon45' value='ATGGCCAGGGCTCCGTTTGGGTAGCGGGTTCCCAGGGAATATGGTAAATTCCTAACTTTGTGTGCCGAATTACATGACCTCTCGTGTGAGACCCCGGCTGCCTCTATTGAATTCAGGCGACTAGGGATTGCTTTTTTCCTCGAGAGCAAAGCGATGAAGAGATATCATTACGCGAGTCCGCGTTACCCGCATGAACTGGT'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon46' value='ATGGCTAGGGCTCTGTTGGGCTGGCAGGTCTGCAGGGAGTACGGTGGATTCCTAACCATGTGTACCAATTTACATGACCTTTCCTAAGAAACCCCGGCTGCTTCTATCGAATTCAGGCGAATAAGGATAGCTGTTTTCATCGAGAGAAAAGCGGTGAAAAGGTATCATTACGAGAGTCCACGTTAACGGCAGGAAATGGT'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon47' value='AGGAATGGGGCTCCCTTGGGGTAACGGGTCGTCGGGGACTATGGCGGGTTCCTAACTGCTTATCCCGATTTACATGAGCTCCCATGTGAGGCCTCGGCTGCCTCTATCAGATTCACGCGAATAGAAAAAGCTTTCCGCCCCGAAAGTGAAGCGGTGAAGAGGCCCCGTTCCGCGAGTCCGCGTTATTTGCACGGAGTAAA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon48' value='ACGTCTGGGACCCGGTTAGGTTAGCGGGTTACCAAGGAATAAGAGGGGTTCCAAAGCATATCCACCGAATCACAAGGCTTGTCTTCGGTATCCCCTACGGTCTCAATCCAATTCAGGCGAATTGGAATGATCTTCTTTTTAGGAAGGGAAGCGGTGAAGTGAGTTCACTGGGCAAATCTGCACTGGACGCATCTAGGCAT'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon49' value='ATGGCTAGGGCTCCGTTAGGTTAGCGGGTTACCAGGGAATACAGTGGGTTCCAAACTACGTGTACCGACTCACATGACTTTTCCCGTAAGGCCCCGGCTGTCTCTATCTGATTCAGGCTAATAGGAATGGCTTTCTTTCTCGAAAGAGAAGCGGTGAAAAGATGTCATTAGGCAAGTCCGCGTTGGCCGCATGAAATAGA'/>
+    <sequence spec='beast.base.evolution.alignment.Sequence' taxon='taxon50' value='ATACCCGAGGCCTCCTTACGGTGGCGGGTGGTCGGAGAACAGGCAGGGTTCCCAAGATAATATGTCAGCCCACGTGACACCTCCTCCTGTTCCCTGGCTATCTCCATTAGACTCTGACGTACTGATGCCGTTATGTTCTTCAGGGTGGAAGCGGTAATAGGCTGTCACTTGGCGAGTCTTTGTTCTCTTCAGCTGGTAGA'/>
+    </data>
+
+
+    <!-- <run id="mcmc" spec="coupledMCMC.CoupledMCMC" chains="4" resampleEvery="10000" chainLength="5000000"> -->
+    <run id="mcmc" spec="MCMC" chainLength="10000000">
+        <state id="state" spec="State" storeEvery="100000">
+
+
+           <!--  <tree id="tree" name="stateNode">
+                <taxonset spec="beast.base.evolution.alignment.TaxonSet">
+                    <data idref="data" name="alignment"/>
+                </taxonset>
+            </tree> -->
+
+
+
+            <!-- All parameters including the tree have been initialised at their true values for debugging purposes  -->
+            <stateNode id="tree" spec='beast.base.evolution.tree.TreeParser' newick="((((((((taxon1[&amp;nstubs.branch=0.0,branchRates=1.0306735366979878,spikes=0.2043222741372414]:0.0010600114879088518,taxon2[&amp;nstubs.branch=0.0,branchRates=0.7919548437183958,spikes=0.01173700400359008]:0.0010600114879088518)[&amp;nstubs.branch=0.0,branchRates=1.0604287906965444,spikes=0.07943367308414849]:0.025939988458729024,(taxon3[&amp;nstubs.branch=0.0,branchRates=0.9265418284062562,spikes=0.07035169628834058]:0.02623625294922198,((taxon4[&amp;nstubs.branch=0.0,branchRates=1.1211636213901552,spikes=0.04587840067707465]:0.0020242253872781724,taxon5[&amp;nstubs.branch=0.0,branchRates=1.242325237871406,spikes=0.009234134771644274]:0.0020242253872781724)[&amp;nstubs.branch=0.0,branchRates=1.1636807265149458,spikes=0.050859014945399156]:0.018846936442403275,taxon6[&amp;nstubs.branch=0.0,branchRates=0.8335155060271215,spikes=0.14820500505891487]:0.020871161829681448)[&amp;nstubs.branch=0.0,branchRates=1.0389753037888385,spikes=0.025398222847163584]:0.005365091119540533)[&amp;nstubs.branch=0.0,branchRates=0.7108161697266643,spikes=0.0520674888482547]:7.637469974158956E-4)[&amp;nstubs.branch=0.0,branchRates=1.0529955463666525,spikes=0.4239001800703798]:0.0024651896497644016,taxon7[&amp;nstubs.branch=1.0,branchRates=0.8337865257659071,spikes=0.3190358676049903]:0.029465189596402278)[&amp;nstubs.branch=0.0,branchRates=1.0425523978463664,spikes=0.3756835515361784]:0.02287654100525468,((((taxon8[&amp;nstubs.branch=0.0,branchRates=1.46718775053401,spikes=0.154281242326156]:0.005477669405489008,taxon9[&amp;nstubs.branch=0.0,branchRates=0.693925163862735,spikes=0.13758234628643282]:0.005477669405489008)[&amp;nstubs.branch=0.0,branchRates=0.9470727270098895,spikes=0.022136240226877067]:0.01084135939657875,taxon10[&amp;nstubs.branch=0.0,branchRates=0.9415453010354944,spikes=0.2696562019051681]:0.01631902880206776)[&amp;nstubs.branch=0.0,branchRates=0.7460021407153573,spikes=0.13492047924421374]:0.003786605881464955,((taxon11[&amp;nstubs.branch=0.0,branchRates=1.2538859109112475,spikes=0.17122758891499512]:0.0033566381867858874,taxon12[&amp;nstubs.branch=0.0,branchRates=0.8031986618465846,spikes=0.35058911890384914]:0.0033566381867858874)[&amp;nstubs.branch=0.0,branchRates=1.1434443467938364,spikes=0.07472912934349435]:0.0051591994908064265,(taxon13[&amp;nstubs.branch=0.0,branchRates=1.0447829258441437,spikes=0.021011704978191083]:0.008271338285790589,(taxon14[&amp;nstubs.branch=0.0,branchRates=1.3316556042344607,spikes=0.0437879821989689]:9.832154649338648E-4,taxon15[&amp;nstubs.branch=0.0,branchRates=1.0091525727148765,spikes=0.08457732445280078]:9.832154649338648E-4)[&amp;nstubs.branch=0.0,branchRates=1.5576531960954585,spikes=0.031937796239736284]:0.007288122820856724)[&amp;nstubs.branch=0.0,branchRates=0.9577160599807086,spikes=0.14308867867677655]:2.444993918017252E-4)[&amp;nstubs.branch=0.0,branchRates=0.9061618687430143,spikes=0.42216392082058357]:0.0115897970059404)[&amp;nstubs.branch=0.0,branchRates=1.1022456221400623,spikes=0.015943841280896355]:0.006214834773448433,taxon16[&amp;nstubs.branch=0.0,branchRates=1.076191247163278,spikes=0.004616312679643679]:0.026320469456981146)[&amp;nstubs.branch=0.0,branchRates=0.8496846182328899,spikes=0.18559698251916856]:0.02602126114467581)[&amp;nstubs.branch=1.0,branchRates=1.3847262525595163,spikes=0.03149178420826042]:0.016079951679674777,((((taxon17[&amp;nstubs.branch=0.0,branchRates=1.0961765100082488,spikes=0.23004330004221238]:0.0011160196826763003,taxon18[&amp;nstubs.branch=0.0,branchRates=0.5754198021761873,spikes=0.0028860938321811818]:0.0011160196826763003)[&amp;nstubs.branch=0.0,branchRates=0.7752661278622581,spikes=0.003641957993175758]:0.0065918189770349245,taxon19[&amp;nstubs.branch=0.0,branchRates=1.4486996428271954,spikes=0.017879402996526936]:0.007707838659711225)[&amp;nstubs.branch=0.0,branchRates=1.23539693682998,spikes=0.06505613670675946]:0.019302173941631195,((taxon20[&amp;nstubs.branch=0.0,branchRates=0.9878844021544188,spikes=0.17879968940650132]:0.011814828907769193,taxon21[&amp;nstubs.branch=1.0,branchRates=0.9081423655216344,spikes=0.8234973623244265]:0.011814828907769193)[&amp;nstubs.branch=0.0,branchRates=0.834981442079316,spikes=0.007667970997479849]:0.012493938149785139,taxon22[&amp;nstubs.branch=0.0,branchRates=1.117224941109455,spikes=9.260398551770799E-4]:0.02430876705755433)[&amp;nstubs.branch=0.0,branchRates=0.9771900879520873,spikes=0.13526455302160395]:0.002701245543788089)[&amp;nstubs.branch=0.0,branchRates=1.12534120731368,spikes=0.17660553977935034]:0.022112874340884638,(((taxon23[&amp;nstubs.branch=0.0,branchRates=1.0794373342961274,spikes=0.05804249791567253]:0.024686048379096062,(((((taxon24[&amp;nstubs.branch=0.0,branchRates=1.0841544537285204,spikes=0.10494008803861574]:0.002168714808049768,taxon25[&amp;nstubs.branch=0.0,branchRates=1.0610715948680418,spikes=0.003731417412302333]:0.002168714808049768)[&amp;nstubs.branch=0.0,branchRates=0.9410099607865954,spikes=0.23310990604404994]:0.006196685624601295,taxon26[&amp;nstubs.branch=0.0,branchRates=0.7619195249622989,spikes=0.08409565252548065]:0.008365400432651063)[&amp;nstubs.branch=0.0,branchRates=1.3738318188607437,spikes=0.013956049116831602]:0.005301829579002909,taxon27[&amp;nstubs.branch=1.0,branchRates=0.9231346640585186,spikes=0.02839377044111625]:0.013667230011653972)[&amp;nstubs.branch=0.0,branchRates=0.9173765914044723,spikes=0.12888140561767453]:0.005430902877337523,(((((taxon28[&amp;nstubs.branch=0.0,branchRates=1.34920053398644,spikes=0.10878453804114886]:0.0016919053077237428,taxon29[&amp;nstubs.branch=0.0,branchRates=1.5001175735772863,spikes=0.15408008428455036]:0.0016919053077237428)[&amp;nstubs.branch=0.0,branchRates=1.1805321387263588,spikes=0.1149705060903919]:1.7552129812499484E-4,taxon30[&amp;nstubs.branch=0.0,branchRates=0.7549462353088746,spikes=0.24036935258753173]:0.0018674266058487377)[&amp;nstubs.branch=0.0,branchRates=1.3203875249072938,spikes=0.08924999608265784]:0.009855143637642894,taxon31[&amp;nstubs.branch=0.0,branchRates=0.8182199229551376,spikes=0.01766492617373276]:0.011722570243491631)[&amp;nstubs.branch=0.0,branchRates=0.7925773589298001,spikes=0.06612073888156915]:0.0033900271440479857,taxon32[&amp;nstubs.branch=2.0,branchRates=0.9452992944974123,spikes=0.42223209897719755]:0.015112597387539617)[&amp;nstubs.branch=0.0,branchRates=0.9268876630471178,spikes=0.008268960173156798]:2.807700070732444E-5,taxon33[&amp;nstubs.branch=0.0,branchRates=1.0383164282243575,spikes=0.027500010960022244]:0.015140674388246941)[&amp;nstubs.branch=1.0,branchRates=0.7948300195960679,spikes=0.16056861450094728]:0.003957458500744554)[&amp;nstubs.branch=0.0,branchRates=0.5755265056074081,spikes=0.06146503488538091]:0.0031331361123047713,taxon34[&amp;nstubs.branch=2.0,branchRates=1.1950637068882695,spikes=0.279227269226442]:0.022231269001296267)[&amp;nstubs.branch=0.0,branchRates=0.9074528187782114,spikes=0.07548342457817694]:0.0024547793777997956)[&amp;nstubs.branch=0.0,branchRates=1.1159716643296258,spikes=0.06880413552910686]:0.0030134300929696434,((taxon35[&amp;nstubs.branch=0.0,branchRates=0.8751166435355029,spikes=0.14564657414192667]:8.546842354177075E-4,taxon36[&amp;nstubs.branch=0.0,branchRates=0.5994684513798768,spikes=0.1700183951305418]:8.546842354177075E-4)[&amp;nstubs.branch=0.0,branchRates=0.9017517061334394,spikes=0.1300551904007999]:0.00930540091653917,(taxon37[&amp;nstubs.branch=0.0,branchRates=0.8093067954494296,spikes=0.0660127694439127]:0.006817860908745907,(taxon38[&amp;nstubs.branch=0.0,branchRates=0.7215549775084931,spikes=0.16870158695691015]:0.005036475253320655,taxon39[&amp;nstubs.branch=0.0,branchRates=0.7940198964465168,spikes=0.07352595116901445]:0.005036475253320655)[&amp;nstubs.branch=0.0,branchRates=0.7988920471996847,spikes=0.35691489798471904]:0.0017813856554252522)[&amp;nstubs.branch=0.0,branchRates=1.209634105674541,spikes=0.030113206540370013]:0.00334222424321097)[&amp;nstubs.branch=1.0,branchRates=0.9105020334111164,spikes=0.19718340949471622]:0.01753939332010883)[&amp;nstubs.branch=1.0,branchRates=1.0386191739459698,spikes=0.10779087783724145]:0.011329893942604474,(taxon40[&amp;nstubs.branch=0.0,branchRates=1.195740812301782,spikes=0.4234808085331582]:0.007941842689772369,(taxon41[&amp;nstubs.branch=0.0,branchRates=0.7919206473017973,spikes=0.007339748498037125]:0.004927337335726978,taxon42[&amp;nstubs.branch=0.0,branchRates=1.2473347615349641,spikes=0.09866463017471228]:0.004927337335726978)[&amp;nstubs.branch=0.0,branchRates=1.2899703429420195,spikes=0.07611598478664151]:0.003014505354045391)[&amp;nstubs.branch=1.0,branchRates=0.9241574375504269,spikes=0.020612245963917693]:0.03108752972489781)[&amp;nstubs.branch=1.0,branchRates=1.2011648422958892,spikes=0.05349098558193588]:0.010093514527556878)[&amp;nstubs.branch=1.0,branchRates=1.0540533345243845,spikes=0.11581760006445042]:0.019298795339104675)[&amp;nstubs.branch=0.0,branchRates=0.7106479539848971,spikes=0.003922251580145529]:0.006387066695726723,(taxon43[&amp;nstubs.branch=0.0,branchRates=0.6735136185524685,spikes=0.001752378141502197]:0.01800690236529301,taxon44[&amp;nstubs.branch=1.0,branchRates=1.2892112252789543,spikes=0.54934518557276]:0.01800690236529301)[&amp;nstubs.branch=4.0,branchRates=1.268900006506453,spikes=0.19483283080854946]:0.05680184661176545)[&amp;nstubs.branch=0.0,branchRates=1.211452225358259,spikes=0.22683157754445424]:0.00964677922612013,(((taxon45[&amp;nstubs.branch=0.0,branchRates=0.8441262230394608,spikes=0.07354799690041776]:0.024447887347005287,taxon46[&amp;nstubs.branch=1.0,branchRates=1.3684766284707457,spikes=0.14445125206213108]:0.024447887347005287)[&amp;nstubs.branch=0.0,branchRates=0.7808955450014557,spikes=0.0624709952474054]:0.0026248786788925366,taxon47[&amp;nstubs.branch=0.0,branchRates=1.3528140642747906,spikes=0.30295536144047713]:0.027072766025897824)[&amp;nstubs.branch=0.0,branchRates=2.0664000552771773,spikes=0.05145229318051384]:0.0046614489148506105,(taxon48[&amp;nstubs.branch=3.0,branchRates=0.807359953948798,spikes=0.7101515411180187]:0.029763226811189925,taxon49[&amp;nstubs.branch=1.0,branchRates=0.8767241564666719,spikes=0.03056374386161573]:0.029763226811189925)[&amp;nstubs.branch=0.0,branchRates=1.0550375284258735,spikes=0.03801684383089795]:0.0019709881295585097)[&amp;nstubs.branch=3.0,branchRates=0.7365024643510978,spikes=0.32941010190341635]:0.05272131326243015)[&amp;nstubs.branch=1.0,branchRates=1.0586484028563068,spikes=0.4424390321996355]:0.023814933735704646,taxon50[&amp;nstubs.branch=3.0,branchRates=1.025964029224185,spikes=0.5122506529815473]:0.10827046193888323)[&amp;nstubs.branch=0.0,branchRates=1.2694527024608702,spikes=0.07561008580343924]:0.0;" IsLabelledNewick="true"/>
+
+           
+            <parameter id="origin" spec="parameter.RealParameter" name="stateNode" lower="0">0</parameter>
+            <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="0">53.5339311653997</parameter>
+            <parameter id="r0" spec="parameter.RealParameter" name="stateNode" lower="1">2.42973500746765</parameter>
+            <parameter id="stubBranchNumbers" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
+            <parameter id="stubTimes" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
+            <parameter id="stubVariableSelection" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
+
+
+            <parameter id="gammaShape" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
+            <parameter id="kappa" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
+
+
+            <parameter id="branchRates" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="99">1</parameter> 
+            <parameter id="spikes" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="99">1</parameter> 
+            <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">0.244681739398712</parameter>
+            <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">0.774959851693513</parameter>
+            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.091180612326957</parameter>
+
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
+
+           
+        </state>
+
+
+        <!-- Fix tree -->
+         <!-- <init estimate="false" id="RandomTree" initial="@tree" spec="beast.base.evolution.tree.coalescent.RandomTree" /> -->
+
+        <distribution id="posterior" spec="CompoundDistribution">
+            <distribution id="prior" spec="CompoundDistribution">
+               
+
+
+                <distribution id="ForwardTimeSimulatorResub" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" origin="@origin" lambda="@lambda" ignoreTreePrior="false" tree="@tree"> 
+                    <stubs id="stubs" origin="@origin" spec="gammaspike.tree.Stubs" tree="@tree" branchNr="@stubBranchNumbers" time="@stubTimes"/>
+                 </distribution>
+
+
+                
+                 <prior name="distribution" x="@lambda">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="30" S="1"/>
+                 </prior>
+
+                 <prior name="distribution" x="@kappa">
+                    <Exponential name="distr" mean="5"/>
+                 </prior> 
+
+
+
+                  <prior name="distribution" x="@r0">
+                    <Exponential  name="distr" mean="5" offset="1"/>
+                 </prior> 
+
+
+                 <prior name="distribution" x="@gammaShape">
+                    <Exponential name="distr" mean="1"/>
+                 </prior> 
+
+
+                 <prior name="distribution" x="@clockSD">
+                    <Gamma name="distr" alpha="5" beta="0.05"/>
+                 </prior> 
+
+
+                 <prior name="distribution" x="@branchRates">
+                    <LogNormal meanInRealSpace="true" name="distr" M="1" S="@clockSD"/>
+                 </prior> 
+
+
+                <prior name="distribution" x="@spikeMean">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="0.05" S="1.2"/>
+                 </prior>
+
+
+                 <prior name="distribution" x="@spikeShape">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="2" S="0.5"/>
+                 </prior>
+
+
+                 <prior name="distribution" spec="gammaspike.distribution.BranchSpikePrior" stubs="@stubs" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
+                         
+
+
+
+
+            </distribution>
+
+             <distribution id="likelihood" spec="beast.base.inference.CompoundDistribution">
+
+
+
+
+
+                <distribution data="@data" id="treeLikelihood" spec="TreeLikelihood" tree="@tree">
+                    
+
+                    <siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="@gammaShape" gammaCategoryCount="4">
+                       <substModel id="substModel" spec="HKY" kappa="@kappa">
+                            <frequencies spec="Frequencies" frequencies="0.25 0.25 0.25 0.25" />
+                        </substModel>
+                   </siteModel>
+
+                    <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@useSpikeModel" clock.rate="1.0" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" parseFromTree="false" />
+
+                    
+             
+                    
+                </distribution>
+            </distribution>
+
+        </distribution>
+
+
+        <!-- Tree operators -->
+        <operator id="StumpedTreeRootScaler.t:tree" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="true" scaleFactor="0.7" weight="5.0"/>
+        <operator id="StumpedTreeUniform.t:tree" spec="gammaspike.operator.StumpedTreeUniform" tree="@tree" stubs="@stubs" weight="5.0"/>
+        <operator id="StumpedTreeScaler.t:tree" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="false" scaleFactor="0.7" weight="5.0"/>
+        <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="false" scaleFactor="0.7" weight="5.0">
+            <down idref="lambda"/>
+            <down idref="spikeMean"/>
+        </operator>
+        <operator id="StumpedTreeNarrowExchange.t:tree" spec="gammaspike.operator.StumpedTreeExchange" stubs="@stubs" isNarrow="true" tree="@tree" weight="5.0"/>
+        <operator id="StumpedTreeWideExchange.t:tree" spec="gammaspike.operator.StumpedTreeExchange" stubs="@stubs" isNarrow="false" tree="@tree" weight="5.0"/>
+
+
+        <operator id="SpikeUpRateDown" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates" spikes="@spikes" scaleFactor="0.1" weight="5.0"/>
+
+        
+         <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1.0" />
+
+
+        <!-- Site/clock model operators -->
+        <operator id="gammaShape.scale" spec="kernel.BactrianScaleOperator" parameter="@gammaShape" scaleFactor="0.1" weight="1.0"/>
+        <operator id="kappa.scale" spec="kernel.BactrianScaleOperator" parameter="@kappa" scaleFactor="0.1" weight="1.0"/>
+        <operator id="clockSD.scale" spec="kernel.BactrianScaleOperator" parameter="@clockSD" scaleFactor="0.1" weight="5.0"/>
+        <operator id="spikeShape.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeShape" scaleFactor="0.1" weight="1.0"/>
+        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="5.0"/>
+        <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="5.0"/>
+        <operator id="rates.scale" spec="kernel.BactrianScaleOperator" parameter="@branchRates" scaleFactor="0.1" weight="5.0"/>
+        <operator id="StumpedTreeConstantDistanceOperator" spec="gammaspike.operator.StumpedTreeConstantDistanceOperator" stubs="@stubs" twindowSize="0.005" tree="@tree" rates="@branchRates"  weight="10.0"/>
+
+
+        <!-- Tree prior operators -->
+        <operator id="lambda.scale" spec="kernel.BactrianScaleOperator" parameter="@lambda" scaleFactor="0.1" weight="2"/>
+        <operator id="r0.scale" spec="kernel.BactrianScaleOperator" parameter="@r0" scaleFactor="0.1" weight="0.5"/>
+
+
+        <!-- AVMN -->
+        <operator id="AVMN" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="15.0">
+            <transformations spec="operator.kernel.Transform$LogTransform">
+                 <f idref="lambda"/>
+                 <f idref="gammaShape"/>
+                 <f idref="kappa"/>
+                 <f idref="spikeShape"/>
+                 <f idref="spikeMean"/>
+                 <f idref="r0"/>
+            </transformations>
+        </operator> 
+       
+
+
+
+         
+
+        <!-- Stub operators -->
+        <operator id="stubCreator" spec="gammaspike.operator.StubCreator" stubs="@stubs" tree="@tree" weight="10.0" />
+        <operator id="stub.scale" spec="kernel.BactrianScaleOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0" />
+        <operator id="stubTimesInterval" spec="kernel.BactrianIntervalOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0"/>
+        <operator id="swapBranches" spec="gammaspike.operator.StubSwapOperator" parameter="@stubBranchNumbers" weight="1.0"/>
+
+
+
+       
+        <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
+            <log idref="posterior"/>
+            <log idref="likelihood"/>
+            <log idref="prior"/>
+            <log idref="useSpikeModel"/>
+            <log idref="lambda"/>
+            <log idref="r0"/>
+            <log idref="origin"/>
+            <log idref="gammaShape"/>
+            <log idref="spikeShape"/>
+            <log idref="spikeMean"/>
+            <log idref="ForwardTimeSimulatorResub"/>
+            <log idref="stubs"/>
+            <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
+            <log idref="kappa"/>
+            <log idref="branchRates"/>
+            <log idref="spikes" />
+            <log idref="clockSD"/>
+        </logger>
+        <logger id="screenlog" spec="Logger" logEvery="10000">
+            <log idref="posterior"/>
+            <log idref="treeHeight" />
+            <log idref="spikeShape"/>
+            <log idref="spikeMean"/>
+            <log idref="useSpikeModel"/>
+        </logger>
+
+        <logger id="treelog" spec="Logger" fileName="stumped.trees" logEvery="10000" mode="tree">
+            <log id="TreeWithMetaDataLogger.t:class1" spec="gammaspike.logger.StumpedTreeLogger" stubs="@stubs" tree="@tree">
+                <metadata idref="branchRates" />
+                <metadata idref="spikes" />
+            </log>
+        </logger> 
+        <operatorschedule id="OperatorSchedule" spec="OperatorSchedule" autoOptimizeDelay="5000"/>
+    </run>
+
+</beast>

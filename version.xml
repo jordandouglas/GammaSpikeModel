@@ -1,0 +1,44 @@
+<package name='gammaspike' version='0.0.1'>
+	<depends on='BEAST.base' atleast='2.7.5'/>
+
+
+
+    <service type="beast.base.core.BEASTInterface">
+
+        <provider classname="gammaspike.clockmodel.PunctuatedClockModel"/>
+        <provider classname="gammaspike.clockmodel.PunctuatedRelaxedClockModel"/>
+
+        <provider classname="gammaspike.distribution.StumpedTreePrior"/>
+        <provider classname="gammaspike.distribution.StumpedTreePriorOneLineage"/>
+        <provider classname="gammaspike.distribution.TreeFlabelLikelihood"/>
+        <provider classname="gammaspike.distribution.BranchSpikePrior"/>
+        <provider classname="gammaspike.distribution.BinomialPrior"/>
+
+        <provider classname="gammaspike.flabel.Flabel"/>
+        <provider classname="gammaspike.flabel.FlabelData"/>
+
+        <provider classname="gammaspike.logger.StumpedTreeLogger"/>
+
+        <provider classname="gammaspike.operator.StubCreator"/>
+        <provider classname="gammaspike.operator.StubGibbsOperator"/>
+        <provider classname="gammaspike.operator.StubGibbsOperatorSingleLineage"/>
+        <provider classname="gammaspike.operator.StumpedTreeScaler"/>
+        <provider classname="gammaspike.operator.StubSwapOperator"/>
+        <provider classname="gammaspike.operator.StubBranchOperator"/>
+        <provider classname="gammaspike.operator.StumpedTreeExchange"/>
+        <provider classname="gammaspike.operator.StumpedTreeUniform"/>
+        <provider classname="gammaspike.operator.MultinomialSampler"/>
+        <provider classname="gammaspike.operator.StumpedTreeConstantDistanceOperator"/>
+        <provider classname="gammaspike.operator.SpikeUpRateDown"/>
+
+
+        <provider classname="gammaspike.tree.ForwardTimeSimulatorResub"/>
+        <provider classname="gammaspike.tree.Stubs"/>
+        <provider classname="gammaspike.tree.LabelledTreeInitialiser"/>
+
+
+    </service>
+
+
+
+</package>
