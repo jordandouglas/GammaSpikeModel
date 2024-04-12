@@ -1,11 +1,14 @@
 package gammaspike.clockmodel;
 
+import org.apache.commons.math.MathException;
+
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Log;
 import beast.base.evolution.branchratemodel.BranchRateModel;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
+import beast.base.inference.distribution.ParametricDistribution;
 import beast.base.inference.parameter.BooleanParameter;
 import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
@@ -36,11 +39,13 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.XOR, burstSizeInput); 
 	
 	final public Input<Boolean> parseFromTreeInput = new Input<>("parseFromTree", "Set to true if initial values are to be loaded from tree metadata.", false); 
+	final public Input<ParametricDistribution> rateDistInput = new Input<>("distr", "the distribution governing the rates among branches. "
+			+ "Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.OPTIONAL);
+	final public Input<Double> initialSpikeSizeInput = new Input<>("initialSpike", "initial value of a spike.", 1e-3); 
 	
 	
 	
-	
-	int nnodes;
+	int nRates;
 	double[] ratesArray;
 	
 	@Override
@@ -51,23 +56,43 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		}
 		
 		
-		this.nnodes = treeInput.get().getNodeCount();
-        this.ratesArray = new double[this.nnodes];
+		this.nRates = treeInput.get().getNodeCount() - 1;
+        this.ratesArray = new double[this.nRates];
         
-        if (ratesInput.get().getDimension() != this.nnodes) {
-        	ratesInput.get().setDimension(this.nnodes);
-        	for (int i = 0; i < this.nnodes; i ++) {
+        
+        if (ratesInput.get().getDimension() != this.nRates) {
+        	ratesInput.get().setDimension(this.nRates);
+        	for (int i = 0; i < this.nRates; i ++) {
         		//rateInput.get().setValue(i, 1.0);
         	}
         }
         
         if (spikesInput.get() != null) {
         	
-        	final double initialSpikeSize = 0.1 * treeInput.get().getRoot().getHeight();
-        	spikesInput.get().setDimension(this.nnodes);
-        	for (int i = 0; i < this.nnodes; i++) {
+        	final double initialSpikeSize = initialSpikeSizeInput.get();
+        	spikesInput.get().setDimension(this.nRates);
+        	for (int i = 0; i < this.nRates; i++) {
         		spikesInput.get().setValue(i, initialSpikeSize);
         	}
+        }
+        
+        
+        // Initialise rates
+        ParametricDistribution distribution = rateDistInput.get();
+        if (distribution != null) {
+        	
+	        Double[][] initialRates0 = null;
+			try {
+				initialRates0 = distribution.sample(this.nRates);
+			} catch (MathException e) {
+				e.printStackTrace();
+			}
+	        Double [] initialRates = new Double[this.nRates];
+	        for (int i = 0; i < this.nRates; i++) {
+	        	initialRates[i] = initialRates0[i][0];
+	        }
+	        RealParameter other = new RealParameter(initialRates);
+	        ratesInput.get().assignFromWithoutID(other);
         }
         
         
@@ -76,10 +101,11 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
         // Parse the initial values from the tree metadata
         if (parseFromTreeInput.get()) {
         	
-        	spikesInput.get().setDimension(this.nnodes);
-        	ratesInput.get().setDimension(this.nnodes);
-        	nstubsPerBranchInput.get().setDimension(this.nnodes);
-        	for (int i = 0; i < this.nnodes; i++) {
+        	spikesInput.get().setDimension(this.nRates);
+        	ratesInput.get().setDimension(this.nRates);
+        	nstubsPerBranchInput.get().setDimension(this.nRates);
+        	
+        	for (int i = 0; i < this.nRates; i++) {
         		
         		
         		Node node = treeInput.get().getNode(i);
@@ -165,6 +191,8 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	@Override
 	public double getRateForBranch(Node node) {
 		
+		if (node.getLength() <= 0) return 0;
+		
 		
 		// Root has average rate
 		double baseRate = meanRateInput.get().getArrayValue();
@@ -189,6 +217,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		double effectiveRate = branchDistance / node.getLength();
 		
 		//Log.warning(node.getID() + " has burst rate=" + effectiveRate + " b = " + burstRate + " d= " + branchDistance);
+		//Log.warning("r=" + effectiveRate);
 		
 		return effectiveRate;
 	}
@@ -232,7 +261,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 
 	@Override
 	public double[] getRatesArray() {
-		for (int i = 0; i < nnodes; i ++) {
+		for (int i = 0; i < nRates; i ++) {
 			Node node = this.treeInput.get().getNode(i);
     		ratesArray[i] = this.getRateForBranch(node);
     		//Log.warning("rate " + i + " = " + ratesArray[i]);
