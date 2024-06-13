@@ -10,6 +10,7 @@ import org.apache.commons.math.distribution.GammaDistributionImpl;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Log;
+import beast.base.evolution.tree.Tree;
 import beast.base.inference.Distribution;
 import beast.base.inference.State;
 import beast.base.inference.parameter.IntegerParameter;
@@ -26,6 +27,9 @@ public class BranchSpikePrior extends Distribution {
 	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
 	final public Input<RealParameter> shapeInput = new Input<>("shape", "shape parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED);
 	final public Input<RealParameter> meanInput = new Input<>("mean", "mean (=shape*scale) parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED); 
+	
+	final public Input<Tree> treeInput = new Input<>("tree", "tree required for setting the spike dimension (if direct sampling)", Input.Validate.OPTIONAL); 
+	final public Input<RealParameter> branchRatesInput = new Input<>("branchRates", "branchRates for sampling (if direct sampling)", Input.Validate.OPTIONAL); 
 	
 	
 	org.apache.commons.math.distribution.GammaDistribution gamma = new GammaDistributionImpl(1, 1);
@@ -87,6 +91,7 @@ public class BranchSpikePrior extends Distribution {
 		conds.add(meanInput.get().getID());
 		conds.add(shapeInput.get().getID());
 		if (stubsInput.get() != null) conds.add(stubsInput.get().getID());
+		if (treeInput.get() != null) conds.add(treeInput.get().getID());
 		else conds.add(nstubsInput.get().getID());
 		return conds;
 	}
@@ -95,11 +100,16 @@ public class BranchSpikePrior extends Distribution {
 	public List<String> getArguments() {
 		List<String> args = new ArrayList<>();
 		args.add(spikesInput.get().getID());
+		if (branchRatesInput.get() != null) args.add(branchRatesInput.get().getID());
 		return args;
 	}
 
 	@Override
 	public void sample(State state, Random random) {
+		
+		if (treeInput.get() == null) {
+			throw new IllegalArgumentException("Please specify the tree");
+		}
 		
 		if (sampledFlag) return;
 		sampledFlag = true;
@@ -108,9 +118,16 @@ public class BranchSpikePrior extends Distribution {
 		sampleConditions(state, random);
 		
 		
-		spikesInput.get().setValue(null);
+		Tree tree = (Tree) treeInput.get();
+		int dimension = tree.getNodeCount();
+		spikesInput.get().setDimension(dimension);
+		//spikesInput.get().setValue(null);
 		
-		   // Check shape and scale are positive
+		if (branchRatesInput.get() != null) {
+			branchRatesInput.get().setDimension(dimension);
+		}
+		
+	   // Check shape and scale are positive
         double shape = shapeInput.get().getValue();
         double mean = meanInput.get().getValue();
         if (shape <= 0 || mean <= 0) {
@@ -124,9 +141,11 @@ public class BranchSpikePrior extends Distribution {
         for (int nodeNr = 0; nodeNr < spikesInput.get().getDimension(); nodeNr ++) {
         	
         	
+        	int nstubsOnBranch = 0;
+        	if (nodeNr < nstubsInput.get().getDimension()) {
+        		nstubsOnBranch = stubs == null ? nstubsInput.get().getNativeValue(nodeNr) : stubs.getNStubsOnBranch(nodeNr);
+        	}
         	
-        	
-        	int nstubsOnBranch = stubs == null ? nstubsInput.get().getNativeValue(nodeNr) : stubs.getNStubsOnBranch(nodeNr);
         	double alphaBranch = shape * (nstubsOnBranch + 1); // One spike for the branch, and one per stub
         	gamma = new GammaDistributionImpl(alphaBranch, scale);
         	

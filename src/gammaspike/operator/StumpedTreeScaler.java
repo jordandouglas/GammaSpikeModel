@@ -78,18 +78,18 @@ public class StumpedTreeScaler extends Operator {
             	int nnodes = tree.getInternalNodeCount();
             	int nodeNr = Randomizer.nextInt(nnodes) + nnodes+1;
                 //final Node node = tree.getNode(nodeNr);      
-                final Node node = tree.getRoot();   
-                if (node.isRoot()) {
-                	//return Double.NEGATIVE_INFINITY;
+                final Node root = tree.getRoot();   
+                if (root.isFake()) {
+                	return Double.NEGATIVE_INFINITY; // Sampled ancestors
                 }
-                final double scale = getScaler(node.getNr(), node.getHeight());
-                final double newHeight = node.getHeight() * scale;
-                double parentHeight = node.isRoot() ? Double.POSITIVE_INFINITY : node.getParent().getHeight();
-                if ( newHeight >= parentHeight || newHeight < Math.max(node.getLeft().getHeight(), node.getRight().getHeight())) {
+                final double scale = getScaler(root.getNr(), root.getHeight());
+                final double newHeight = root.getHeight() * scale;
+                double parentHeight = root.isRoot() ? Double.POSITIVE_INFINITY : root.getParent().getHeight();
+                if ( newHeight >= parentHeight || newHeight < Math.max(root.getLeft().getHeight(), root.getRight().getHeight())) {
                     return Double.NEGATIVE_INFINITY;
                 }
                 
-                node.setHeight(newHeight);
+                root.setHeight(newHeight);
                 
                 // Hastings ratio needs to be aware of how many are on the two branches under and one above 
                 //int nstubs = stubs.getNStubsOnBranch(node.getLeft().getNr()) + stubs.getNStubsOnBranch(node.getRight().getNr());

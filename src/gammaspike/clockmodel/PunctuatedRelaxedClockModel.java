@@ -13,6 +13,7 @@ import beast.base.inference.parameter.BooleanParameter;
 import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.inference.util.InputUtil;
+import beast.base.util.Randomizer;
 import gammaspike.flabel.Flabel;
 import gammaspike.tree.ForwardTimeSimulatorResub;
 import gammaspike.tree.Stubs;
@@ -33,7 +34,9 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 of this is false", Input.Validate.OPTIONAL);
 	final public Input<BooleanParameter> relaxedInput = new Input<>("relaxed", "if false then use strict clock", Input.Validate.OPTIONAL);
 	
-	final public Input<RealParameter> ratesInput = new Input<>("rates", "the rates associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED); 
+	final public Input<RealParameter> ratesInput = new Input<>("rates", "the rates associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.OPTIONAL); 
+	
+	
 	
 	final public Input<RealParameter> burstSizeInput = new Input<>("burstSize", "the additive clock rate after a label change.", Input.Validate.OPTIONAL); 
 	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.XOR, burstSizeInput); 
@@ -43,6 +46,8 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 			+ "Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.OPTIONAL);
 	final public Input<Double> initialSpikeSizeInput = new Input<>("initialSpike", "initial value of a spike.", 1e-3); 
 	
+	
+	final public Input<Boolean> noSpikeOnDatedTipsInput = new Input<>("noSpikeOnDatedTips", "Set to true if dated tips should have a spike of 0.", true); 
 	
 	
 	int nRates;
@@ -60,10 +65,11 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
         this.ratesArray = new double[this.nRates];
         
         
-        if (ratesInput.get().getDimension() != this.nRates) {
+        if (ratesInput.get() != null && ratesInput.get().getDimension() != this.nRates) {
         	ratesInput.get().setDimension(this.nRates);
         	for (int i = 0; i < this.nRates; i ++) {
-        		//rateInput.get().setValue(i, 1.0);
+        		double val = Randomizer.nextLogNormal(1, 0.5, true);
+        		ratesInput.get().setValue(i, val);
         	}
         }
         
@@ -99,7 +105,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
         //Log.warning("nnodes = " + nnodes);
         
         // Parse the initial values from the tree metadata
-        if (parseFromTreeInput.get()) {
+        if (ratesInput.get() != null && parseFromTreeInput.get()) {
         	
         	spikesInput.get().setDimension(this.nRates);
         	ratesInput.get().setDimension(this.nRates);
@@ -163,6 +169,10 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 			return 0;
 		}
 		
+		if (noSpikeOnDatedTipsInput.get()) {
+			if (node.isLeaf() && node.getHeight() > 0) return 0;
+		}
+		
 		// One spike for the whole tree
 		if (burstSizeInput.get() != null) {
 			return nbursts * burstSizeInput.get().getValue();
@@ -178,6 +188,8 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	
 	public double getBranchRate(Node node) {
 		
+		if (ratesInput.get() == null) return 1;
+		
 		if (relaxedInput.get() == null || relaxedInput.get().getValue()) {
 			return ratesInput.get().getValue(node.getNr());
 		}
@@ -190,6 +202,8 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 
 	@Override
 	public double getRateForBranch(Node node) {
+		
+		
 		
 		if (node.getLength() <= 0) return 0;
 		
@@ -241,6 +255,9 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 
 	@Override
     protected boolean requiresRecalculation() {
+		
+		
+		
 
         if (InputUtil.isDirty(burstSizeInput) || InputUtil.isDirty(spikesInput) || InputUtil.isDirty(meanRateInput) || 
     		InputUtil.isDirty(ratesInput) || InputUtil.isDirty(nstubsPerBranchInput) || InputUtil.isDirty(flabelsInput) || InputUtil.isDirty(stubsInput)) {
@@ -261,6 +278,8 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 
 	@Override
 	public double[] getRatesArray() {
+		
+		
 		for (int i = 0; i < nRates; i ++) {
 			Node node = this.treeInput.get().getNode(i);
     		ratesArray[i] = this.getRateForBranch(node);

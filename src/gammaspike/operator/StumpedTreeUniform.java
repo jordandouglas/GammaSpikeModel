@@ -28,16 +28,24 @@ public class StumpedTreeUniform extends Uniform {
         final int nodeCount = tree.getNodeCount();
         
         // Abort if no non-root internal nodes
-        if (tree.getInternalNodeCount()==1)
+        if (tree.getInternalNodeCount()==1) {
             return Double.NEGATIVE_INFINITY;
+        }
         
         
-        
+        // Make sure that there is at least one non-fake and non-root internal node
+        int leafNodeCount = tree.getLeafNodeCount();
+        int fakeNodeCount = tree.getDirectAncestorNodeCount();
+        if (fakeNodeCount == leafNodeCount-1 || (fakeNodeCount == leafNodeCount-2 && !tree.getRoot().isFake())) {
+            return Double.NEGATIVE_INFINITY;
+        }
+
+        // Randomly select non-fake internal node
         Node node;
         do {
             final int nodeNr = nodeCount / 2 + 1 + Randomizer.nextInt(nodeCount / 2);
             node = tree.getNode(nodeNr);
-        } while (node.isRoot() || node.isLeaf());
+        } while (node.isRoot() || node.isLeaf() || node.isFake());
         final double upper = node.getParent().getHeight();
         final double lower = Math.max(node.getLeft().getHeight(), node.getRight().getHeight());
         final double newValue = (Randomizer.nextDouble() * (upper - lower)) + lower;

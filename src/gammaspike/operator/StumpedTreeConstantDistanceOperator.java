@@ -80,6 +80,9 @@ public class StumpedTreeConstantDistanceOperator extends TreeOperator {
         if (nodeNr == branchCount) {
             nodeNr = node.getTree().getRoot().getNr();
         }
+        
+       
+
 
        // time for this node
        t_x = node.getHeight();
@@ -101,6 +104,11 @@ public class StumpedTreeConstantDistanceOperator extends TreeOperator {
        if (dauNr == branchCount) {
             dauNr = daughter.getTree().getRoot().getNr();
        }
+       
+       
+       if (node.getLength() <= 0) return Double.NEGATIVE_INFINITY;
+       if (son.getLength() <= 0) return Double.NEGATIVE_INFINITY;
+       if (daughter.getLength() <= 0) return Double.NEGATIVE_INFINITY;
 
        r_x = rates.getValue(nodeNr); // rate of branch above this node
        r_j = rates.getValue(sonNr); // rate of branch above son
@@ -176,9 +184,15 @@ public class StumpedTreeConstantDistanceOperator extends TreeOperator {
     	
     	if (tree.getLeafNodeCount() < 3) return null;
     	
+    	
+    	final int maxNAttempts = 1000;
+    	int attemptNr = 0;
+    	
     	do {
             final int nodeNr = nodeCount / 2 + 1 + Randomizer.nextInt(nodeCount / 2);
             node = tree.getNode(nodeNr);
+            attemptNr++;
+            if (attemptNr >= maxNAttempts) return null;
     	} while (node.isRoot() || node.isLeaf() || node.isFake());
     	
     	

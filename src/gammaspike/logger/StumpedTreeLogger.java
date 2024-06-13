@@ -22,6 +22,7 @@ import beast.base.evolution.tree.Tree;
 public class StumpedTreeLogger extends TreeWithMetaDataLogger {
 	
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs model", Input.Validate.OPTIONAL);
+	final public Input<Boolean> printStubLocationsInput = new Input<>("printStubLocations", "should stub heights be printed too", false);
 
 	private boolean sortTree;
 	Stubs stubs;
@@ -91,24 +92,27 @@ public class StumpedTreeLogger extends TreeWithMetaDataLogger {
 		StringBuffer buf2 = new StringBuffer();
 		buf2.append("[&");
 		
-		// Print concertion events
-		if (stubs != null) {
+		// Print stubs
+		if (stubs != null && !node.isRoot()) {
 			int numEvents = 0;
 			int totalEventCount = 0;
 			List<Stubs.Stub> stubsList = stubs.getSortedStubsOnBranch(node);
 			numEvents += stubsList.size();
 			
-			for (int eventNr = 0; eventNr < stubsList.size(); eventNr++) {
-				Stubs.Stub event = stubsList.get(eventNr); 
-				//System.out.println("\t\t" + event);
-				event.toMetaData(buf2, eventNr+1+totalEventCount);
-				buf2.append(",");
-				
+			if (printStubLocationsInput.get()) {
+				for (int eventNr = 0; eventNr < stubsList.size(); eventNr++) {
+					Stubs.Stub event = stubsList.get(eventNr); 
+					//System.out.println("\t\t" + event);
+					event.toMetaData(buf2, eventNr+1+totalEventCount);
+					buf2.append(",");
+					
+				}
 			}
 			
 			totalEventCount += stubsList.size();
 				
-			buf2.append(Stubs.getStubCountName() + "=");
+			//buf2.append(Stubs.getStubCountName() + "=");
+			buf2.append("nstubs=");
 			buf2.append(numEvents);
 			firstMetadata = false;
 		}

@@ -18,9 +18,10 @@
         <provider classname="gammaspike.flabel.FlabelData"/>
 
         <provider classname="gammaspike.logger.StumpedTreeLogger"/>
+        <provider classname="gammaspike.logger.TaxonCountLogger"/>
+
 
         <provider classname="gammaspike.operator.StubCreator"/>
-        <provider classname="gammaspike.operator.StubGibbsOperator"/>
         <provider classname="gammaspike.operator.StubGibbsOperatorSingleLineage"/>
         <provider classname="gammaspike.operator.StumpedTreeScaler"/>
         <provider classname="gammaspike.operator.StubSwapOperator"/>
@@ -33,6 +34,7 @@
 
 
         <provider classname="gammaspike.tree.ForwardTimeSimulatorResub"/>
+        <provider classname="gammaspike.tree.BirthDeathStubSimulator"/>
         <provider classname="gammaspike.tree.Stubs"/>
         <provider classname="gammaspike.tree.LabelledTreeInitialiser"/>
 

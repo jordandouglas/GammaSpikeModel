@@ -63,9 +63,13 @@ public class StumpedTreeExchange extends Exchange {
         if (internalNodes <= 1) {
             return Double.NEGATIVE_INFINITY;
         }
+        
+        if (internalNodes == 1 && tree.getRoot().isFake()) {
+            return Double.NEGATIVE_INFINITY;
+        }
 
         Node grandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
-        while (grandParent.getLeft().isLeaf() && grandParent.getRight().isLeaf()) {
+        while ((grandParent.getLeft().isLeaf() && grandParent.getRight().isLeaf()) || grandParent.isFake()) {
             grandParent = tree.getNode(internalNodes + 1 + Randomizer.nextInt(internalNodes));
         }
 
@@ -166,17 +170,21 @@ public class StumpedTreeExchange extends Exchange {
         final int nodeCount = tree.getNodeCount();
         Stubs stubs = stubsInput.get();
         
+        if (nodeCount == 3 && tree.getRoot().isFake()) {
+            return Double.NEGATIVE_INFINITY;
+        }
+        
         // Cache branch lengths before making proposal
         double[] cachedBranchLengths = stubs.prepareJacobian();
 
         Node i = tree.getRoot();
 
-        while (i.isRoot()) {
+        while (i.isRoot() || i.isDirectAncestor()) {
             i = tree.getNode(Randomizer.nextInt(nodeCount));
         }
 
         Node j = i;
-        while (j.getNr() == i.getNr() || j.isRoot()) {
+        while (j.getNr() == i.getNr() || j.isRoot() || j.isDirectAncestor()) {
             j = tree.getNode(Randomizer.nextInt(nodeCount));
         }
 

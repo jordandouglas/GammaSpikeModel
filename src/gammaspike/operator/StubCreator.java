@@ -25,7 +25,7 @@ public class StubCreator extends Operator {
 	final public Input<TreeInterface> treeInput = new Input<>("tree", "the tree", Input.Validate.XOR, totalTimeInput);
 	
 	
-	
+	final double DIRECT_ANCESTOR_THRESHOLD = 1e-12;
 	Stubs stubs;
 	int nextNr = 0;
 
@@ -54,6 +54,11 @@ public class StubCreator extends Operator {
 		
 		// Sample a branch first
 		int nodeNr = Randomizer.nextInt(nnodes);
+		Node node = tree.getNode(nodeNr);
+		while (node.isLeaf() && (node.getParent().isDirectAncestor() || node.getLength() <= DIRECT_ANCESTOR_THRESHOLD)) {
+			nodeNr = Randomizer.nextInt(nnodes);
+			node = tree.getNode(nodeNr);
+		}
 		
 		// Sample indicator
 		int indicatorNr = Randomizer.nextInt(3) - 1;
@@ -87,8 +92,6 @@ public class StubCreator extends Operator {
 		// Add or remove a dimension?
 		boolean create = Randomizer.nextBoolean();
 		if (create) {
-			
-			
 			
 			
 			// Make a new stub on this branch
