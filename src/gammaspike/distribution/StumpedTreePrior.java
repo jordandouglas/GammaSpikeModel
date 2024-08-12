@@ -42,8 +42,8 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 	final public Input<Boolean> perBranchSpikeInput = new Input<>("perBranchSpike", "if true, then the indicator will disregard labels", false);
 
     
-	final double EPSILON = 1e-8; // Numerical error 
-	
+	final double HEIGHT_THRESHOLD_OF_LEAF = 1e-10;
+	int nExtantTaxa; // n
 	
 	boolean initialising = true;
 	
@@ -55,10 +55,11 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
         if (tree == null) {
             tree = treeIntervalsInput.get().treeInput.get();
         }
-        if (!TreeUtils.isUltrametric(tree)) {
-            Log.warning.println("WARNING: This model (tree prior) cannot handle dated tips. " +
-                    "Please select a tree prior that can, otherwise results may be invalid.");
-        }
+       
+        
+
+        // THis dist is conditional on ntaxa, so ensure the number does not change
+        nExtantTaxa = -1;
         
         
         
@@ -99,6 +100,9 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 	        
 		}
         
+		
+		
+		
         
     }
 	
@@ -143,6 +147,24 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 			return Double.NEGATIVE_INFINITY;
 		}
 		
+		
+		 // This dist is conditional on ntaxa, so ensure the number does not change
+        int n = 0;
+		for (Node leaf : tree.getNodesAsArray()) {
+			if (leaf.isLeaf() && !leaf.isDirectAncestor() && leaf.getHeight() <= HEIGHT_THRESHOLD_OF_LEAF) {
+				n++;
+			}
+		}
+		
+		if (nExtantTaxa == -1) {
+			nExtantTaxa = n;
+		}else if (n != this.nExtantTaxa) {
+			return Double.NEGATIVE_INFINITY;
+		}
+		
+		
+        
+		
 		double blueLogP = 0;
 		double redLogP = 0;
 		
@@ -173,8 +195,29 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 			if (!ignoreStubPriorInput.get()) {
 				
 				
+				// Do not use the sampling model unless there is at least 1 dated tip
+				boolean thereAreDatedTips = false;
+				for (Node node : tree.getNodesAsArray()) {
+					if (node.isLeaf() && node.getHeight() > 0) {
+						thereAreDatedTips = true;
+						break;
+					}
+				}
+				
+				
+				// Confirm that sampled ancestor tips do not have stubs
+				for (Node node : tree.getNodesAsArray()) {
+					if (node.isDirectAncestor()) {
+						int nstubs = stubs.getNStubsOnBranch(node.getNr());
+						if (nstubs > 0) {
+							return Double.NEGATIVE_INFINITY;
+						}
+					}
+				}
+				
+				
 				// Psi > 0
-				if (samplingProportionInput.get() != null) {
+				if (thereAreDatedTips && samplingProportionInput.get() != null && psi > 0) {
 					for (int branchNr = 0; branchNr < tree.getNodeCount(); branchNr++) {
 						redLogP += getLogPForBranchWithSampling(branchNr, lambda, mu, psi);
 					}
@@ -193,6 +236,9 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 			
 		
 		}catch (Exception e) {
+			
+			//Log.warning("numerical");
+			//e.printStackTrace();
 			
 			// Numerical errors
 			return Double.NEGATIVE_INFINITY;
@@ -241,71 +287,77 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 	}
 	
 	
-	// Theorem 3.8 equation 6 from
+	// Equation 9 from
 	// Stadler, Tanja. "Sampling-through-time in birth–death trees." Journal of theoretical biology 267.3 (2010): 396-404.
 	public double getBlueTreeLogPWithSampling(Tree tree, double lambda, double mu, double psi) throws Exception {
 		
 		
-		final double threshold = 1e-8;
+		
 		double rho=1;
 		
 		double m = 0, n = 0, k = 0;
 		for (Node leaf : tree.getNodesAsArray()) {
+			
 			if (!leaf.isLeaf()) continue;
 			
 			
+			// Sampled ancestor
+			if (leaf.isDirectAncestor()) {
+				k++;
+			}
+			
 			// Extant leaf
-			if (leaf.getHeight() <= threshold) {
+			else if (!leaf.isDirectAncestor() && leaf.getHeight() <= HEIGHT_THRESHOLD_OF_LEAF) {
 				n++;
 			}
 			
 			// Extinct leaf
-			else if (leaf.getLength() > threshold) {
+			else if (!leaf.isDirectAncestor() && leaf.getLength() > HEIGHT_THRESHOLD_OF_LEAF) {
 				m++;
 			}
 			
-			// Sampled ancestor
 			else {
-				k++;
+				//Log.warning("Dev Error 3543: " + leaf.getID() +" is not a valid leaf " + leaf.getLength() + " " + leaf.isDirectAncestor());
 			}
+			
+			
+			
+		}
+		
+		if (m + n + k != tree.getLeafNodeCount()) {
+			//Log.warning("n=" + n + " m=" + m + " k=" + k + " != " + tree.getLeafNodeCount());
+			return Double.NEGATIVE_INFINITY;
 		}
 		
 		
-		//Log.warning("n=" + n + " m=" + m + " k=" + k);
+		double blueLogP = 0;
 		
-		
-		// Equation 6: p(T|root)
+		// Equation 9: p(T|n)
 		double c1 = getC1(lambda, mu, psi, rho); 
 		double c2 = getC2(lambda, mu, psi, rho); 
-		
 		double x1 = tree.getRoot().getHeight();
-		double p1x1Hat = Math.log(getP1Hat(x1, lambda, mu, rho));
-		double p1x1 = Math.log(getP1(x1, lambda, mu, psi, rho, c1, c2));
-		double blueLogP = (n+m-2)*Math.log(lambda) + (m+k)*Math.log(psi);
-		blueLogP -= (Math.log(n-1) + 2*p1x1Hat);
-		
-		double a = lambda*rho + (lambda*(1-rho) - mu)*Math.exp(-(lambda-mu)*x1);
-		double b = rho*lambda * (1-Math.exp(-(lambda-mu)*x1));
-		blueLogP += (n-2) * (Math.log(a) - Math.log(b));
-		blueLogP += p1x1;
+		blueLogP += Math.log(4) + Math.log(n) + Math.log(rho) + Math.log(lambda) + Math.log(psi)*(k+m); // maybe extra lambda is typo?? 
+		blueLogP -= Math.log(c1) + Math.log(c2+1) + Math.log(1 - c2 + (1+c2)*Math.exp(c1*x1)); // x=x1, typo in paper
 		
 		
 		// Loop through internal nodes including root
 		for (Node internal : tree.getNodesAsArray()) {
+			
 			if (internal.isLeaf()) continue;
 			
 			// Confirm that neither child is a sampled ancestor
-			if (internal.isDirectAncestor()) continue;
-			if (internal.getLeft().getLength() <= threshold || internal.getRight().getLength() <= threshold) continue;
+			if (internal.isFake()) continue;
 			
 			
 			double x = internal.getHeight();
-			blueLogP += Math.log(getP1(x, lambda, mu, psi, rho, c1, c2));
+			blueLogP += Math.log(lambda) + Math.log(getP1(x, lambda, mu, psi, rho, c1, c2));
 		}
 		
 		// Loop through extinct leaves
 		for (Node leaf : tree.getNodesAsArray()) {
-			if (!leaf.isLeaf() || leaf.getHeight() <= threshold || leaf.getLength() <= threshold) continue;
+			if (!leaf.isLeaf()) continue;
+			if (leaf.getHeight() <= HEIGHT_THRESHOLD_OF_LEAF) continue;
+			if (leaf.isDirectAncestor()) continue;
 			double y = leaf.getHeight();
 			blueLogP += Math.log(getP0(y, lambda, mu, psi, rho, c1, c2)) - Math.log(getP1(y, lambda, mu, psi, rho, c1, c2));
 		}
@@ -414,7 +466,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 				if (stubHeight < node.getHeight() || stubHeight > node.getParent().getHeight()) {
 					return Double.NEGATIVE_INFINITY;
 				}
-				if (node.isLeaf() && node.getParent().isDirectAncestor()) {
+				if (node.isDirectAncestor()) {
 					return Double.NEGATIVE_INFINITY;
 				}
 				

@@ -29,7 +29,6 @@ public class BranchSpikePrior extends Distribution {
 	final public Input<RealParameter> meanInput = new Input<>("mean", "mean (=shape*scale) parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED); 
 	
 	final public Input<Tree> treeInput = new Input<>("tree", "tree required for setting the spike dimension (if direct sampling)", Input.Validate.OPTIONAL); 
-	final public Input<RealParameter> branchRatesInput = new Input<>("branchRates", "branchRates for sampling (if direct sampling)", Input.Validate.OPTIONAL); 
 	
 	
 	org.apache.commons.math.distribution.GammaDistribution gamma = new GammaDistributionImpl(1, 1);
@@ -56,7 +55,7 @@ public class BranchSpikePrior extends Distribution {
         double scale = mean / shape;
         
         // Calculate density of the total spike size of each branch, assuming that each node or stub has an iid spike drawn from a Gamma(alpha, beta)
-        // This approach integrates across al stub spike sizes, so we don't need to estimate them individually
+        // This approach integrates across all stub spike sizes, so we don't need to estimate them individually
         Stubs stubs = stubsInput.get();
         for (int nodeNr = 0; nodeNr < spikesInput.get().getDimension(); nodeNr ++) {
         	
@@ -67,6 +66,14 @@ public class BranchSpikePrior extends Distribution {
         	}
         	
         	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr);
+        	
+        	// Skip sampled ancestors
+        	//if (stubs.treeInput.get().getNode(nodeNr).isDirectAncestor()) {
+        		//continue;
+        	//}
+        	
+        	//nstubsOnBranch = 0; // TMP
+        	
         	double alphaBranch = shape * (nstubsOnBranch + 1); // One spike for the branch, and one per stub
         	gamma = new GammaDistributionImpl(alphaBranch, scale);
         	
@@ -100,7 +107,6 @@ public class BranchSpikePrior extends Distribution {
 	public List<String> getArguments() {
 		List<String> args = new ArrayList<>();
 		args.add(spikesInput.get().getID());
-		if (branchRatesInput.get() != null) args.add(branchRatesInput.get().getID());
 		return args;
 	}
 
@@ -123,11 +129,9 @@ public class BranchSpikePrior extends Distribution {
 		spikesInput.get().setDimension(dimension);
 		//spikesInput.get().setValue(null);
 		
-		if (branchRatesInput.get() != null) {
-			branchRatesInput.get().setDimension(dimension);
-		}
+	
 		
-	   // Check shape and scale are positive
+	    // Check shape and scale are positive
         double shape = shapeInput.get().getValue();
         double mean = meanInput.get().getValue();
         if (shape <= 0 || mean <= 0) {
@@ -136,7 +140,7 @@ public class BranchSpikePrior extends Distribution {
         double scale = mean / shape;
         
         // Calculate density of the total spike size of each branch, assuming that each node or stub has an iid spike drawn from a Gamma(alpha, beta)
-        // This approach integrates across al stub spike sizes, so we don't need to estimate them individually
+        // This approach integrates across all stub spike sizes, so we don't need to estimate them individually
         Stubs stubs = stubsInput.get();
         for (int nodeNr = 0; nodeNr < spikesInput.get().getDimension(); nodeNr ++) {
         	
@@ -145,6 +149,11 @@ public class BranchSpikePrior extends Distribution {
         	if (nodeNr < nstubsInput.get().getDimension()) {
         		nstubsOnBranch = stubs == null ? nstubsInput.get().getNativeValue(nodeNr) : stubs.getNStubsOnBranch(nodeNr);
         	}
+        	
+        	
+        	
+        	//nstubsOnBranch = 0; // TMP
+        	
         	
         	double alphaBranch = shape * (nstubsOnBranch + 1); // One spike for the branch, and one per stub
         	gamma = new GammaDistributionImpl(alphaBranch, scale);

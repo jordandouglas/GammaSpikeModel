@@ -153,12 +153,31 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		// Reversible jump - variable num stubs
 		else {
 			reversibleJump = true;
+			boolean reset = true;
 			
-			// Initalise all vectors at length 1. This is the dummy position to ensure the lists are not empty
-			branchNrInput.get().setDimension(1);
-			timeInput.get().setDimension(1);
-			if (labelIndicator != null) {
-				labelIndicator.setDimension(1);
+			// Do not initialise if we are resuming
+			if (timeInput.get().getDimension() > 1 & 
+					branchNrInput.get().getDimension() > 1 & 
+					timeInput.get().getDimension() == timeInput.get().getDimension()) {
+				
+				reset = false;
+				
+				Log.warning("Resuming stubs " + getNStubs());
+				
+			}
+			
+			if (reset) {
+				
+				
+				Log.warning("Initialising stubs" + getNStubs() + timeInput.get().getDimension() + " . " + branchNrInput.get().getDimension());
+			
+				// Initalise all vectors at length 1. This is the dummy position to ensure the lists are not empty
+				branchNrInput.get().setDimension(1);
+				timeInput.get().setDimension(1);
+				if (labelIndicator != null) {
+					labelIndicator.setDimension(1);
+				}
+			
 			}
 		}
 
@@ -237,6 +256,9 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 
 
 	public int getNStubsOnBranch(int nodeNr) {
+		
+		//if (treeInput.get().getNode(nodeNr).isDirectAncestor()) return 0;
+		
 		int nstubs = 0;
 		for (int i = 0; i < branchNrInput.get().getDimension(); i ++) {
 			int b = branchNrInput.get().getValue(i);
@@ -314,6 +336,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
     }
 	
 	private void restoreDimensions() {
+		
 		
 		if (storedTimes == null) return;
 		

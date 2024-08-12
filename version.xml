@@ -1,6 +1,6 @@
 <package name='gammaspike' version='0.0.1'>
 	<depends on='BEAST.base' atleast='2.7.5'/>
-
+    <depends on='SA' atleast='2.1.1'/>
 
 
     <service type="beast.base.core.BEASTInterface">
@@ -12,6 +12,7 @@
         <provider classname="gammaspike.distribution.StumpedTreePriorOneLineage"/>
         <provider classname="gammaspike.distribution.TreeFlabelLikelihood"/>
         <provider classname="gammaspike.distribution.BranchSpikePrior"/>
+        <provider classname="gammaspike.distribution.BranchRatePrior"/>
         <provider classname="gammaspike.distribution.BinomialPrior"/>
 
         <provider classname="gammaspike.flabel.Flabel"/>
@@ -31,6 +32,11 @@
         <provider classname="gammaspike.operator.MultinomialSampler"/>
         <provider classname="gammaspike.operator.StumpedTreeConstantDistanceOperator"/>
         <provider classname="gammaspike.operator.SpikeUpRateDown"/>
+        <provider classname="gammaspike.operator.StubbedNodeDateRandomWalker"/>
+        <provider classname="gammaspike.operator.StubbedLeafToSampledAncestorJump"/>
+        <provider classname="gammaspike.operator.StubTreeStretchOperator"/>
+        <provider classname="gammaspike.operator.StubEpochFlexOperator"/>
+        
 
 
         <provider classname="gammaspike.tree.ForwardTimeSimulatorResub"/>

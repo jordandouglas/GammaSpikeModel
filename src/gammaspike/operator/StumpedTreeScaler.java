@@ -103,12 +103,6 @@ public class StumpedTreeScaler extends Operator {
             	final double scale = getScaler(0, Double.NaN);
             	
             	
-            	// Keep track of branch length changes for hastings ratio
-            	double[] oldLengths = new double[tree.getNodeCount()-1];
-            	for (int i = 0; i < oldLengths.length; i ++) {
-            		oldLengths[i] = tree.getNode(i).getLength();
-            	}
-            	
                 // Scale the whole tree and a bunch of other parameters
                 final int scaledNodes = tree.scale(scale);
                 

@@ -227,11 +227,26 @@ public class BirthDeathStubSimulator extends YuleModel {
 
 	        // Remove unsampled lineages
         	Tree prunedTree = this.removeStubs(root.copy());
+        	
+        	
+        	 // Temp: set all sampled ancestors to standard extinct leaves
+//	        for (Node node : prunedTree.getNodesAsArray()) {
+//	        	if (node.isDirectAncestor()) {
+//	        		double h = node.getHeight();
+//	        		node.setHeight(h * 0.95);
+//	        	}
+//	        }
+	        
+        	
+        	
         	//Log.warning("total nleaves after pruning unsampled lineages: " + prunedTree.getRoot().getLeafNodeCount());
         	reducedTree.assignFrom(prunedTree);
         	Tree newTree = new Tree(root);
 	        fullTree.assignFrom(newTree);
 	        
+	        
+	        
+	       
 	        
 	        
 	        
@@ -337,6 +352,7 @@ public class BirthDeathStubSimulator extends YuleModel {
 					Node sampledLeaf = new Node();
 					sampledLeaf.setHeight(time);
 					
+
 					
 					// Make new internal node
 					Node internal = new Node();

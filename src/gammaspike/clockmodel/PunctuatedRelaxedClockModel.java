@@ -47,7 +47,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	final public Input<Double> initialSpikeSizeInput = new Input<>("initialSpike", "initial value of a spike.", 1e-3); 
 	
 	
-	final public Input<Boolean> noSpikeOnDatedTipsInput = new Input<>("noSpikeOnDatedTips", "Set to true if dated tips should have a spike of 0.", true); 
+	final public Input<Boolean> noSpikeOnDatedTipsInput = new Input<>("noSpikeOnDatedTips", "Set to true if dated tips should have a spike of 0.", false); 
 	
 	
 	int nRates;
@@ -205,7 +205,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		
 		
 		
-		if (node.getLength() <= 0) return 0;
+		if (node.getLength() <= 0 || node.isDirectAncestor()) return 0;
 		
 		
 		// Root has average rate
@@ -217,7 +217,6 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		//flabels.update();
 		
 		int numberOfSBursts = getNumStubsOnBranch(node); 
-		//int numberOfDBursts = flabels.getNumberOfDoubleBursts(node); // tmp: Ignore double bursts
 		
 		
 		double burstRate = getBurstSize(node, numberOfSBursts);

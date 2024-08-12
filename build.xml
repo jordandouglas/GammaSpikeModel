@@ -36,6 +36,7 @@
 		<fileset dir="${beast2path}/lib" includes="fest.jar"/>
 		<fileset dir="${beast2path}/lib" includes="colt.jar"/>
 	<pathelement path="../BeastFX/build"/>
+	<pathelement path="../sampled-ancestors/build"/>
 	</path>
 
 
