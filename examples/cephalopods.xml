@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="BEAST.base v2.7.5:BICEPS v1.1.2:bModelTest v1.3.3:OBAMA v1.1.1:ORC v1.1.2:BEASTLabs v2.0.2" version="2.7">
+
+
+    <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
+
+    <map name="Exponential" >beast.base.inference.distribution.Exponential</map>
+
+    <map name="LogNormal" >beast.base.inference.distribution.LogNormalDistributionModel</map>
+
+    <map name="Normal" >beast.base.inference.distribution.Normal</map>
+
+    <map name="Beta" >beast.base.inference.distribution.Beta</map>
+
+    <map name="Gamma" >beast.base.inference.distribution.Gamma</map>
+
+    <map name="LaplaceDistribution" >beast.base.inference.distribution.LaplaceDistribution</map>
+
+    <map name="prior" >beast.base.inference.distribution.Prior</map>
+
+    <map name="InverseGamma" >beast.base.inference.distribution.InverseGamma</map>
+
+    <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
+
+    <map name="Poisson" >beast.base.inference.distribution.Poisson</map>
+
+    <map name="Dirichlet" >beast.base.inference.distribution.Dirichlet</map>
+
+
+
+
+    <data id="data" spec="beast.base.evolution.alignment.Alignment" >
+
+
+     
+        <sequence id="seq_Nautilus_pompilius_fossil" spec="Sequence" taxon="Nautilus_pompilius_fossil" totalcount="6" value="10--0-1111--------2-------------------------------------------------------0-0-0-0--------0000--------------0001-3-01100000-10000---0--0-0010120--020000012345"/>
+        <sequence id="seq_Nautilus_pompilius11" spec="Sequence" taxon="Nautilus_pompilius" totalcount="6" value="10--0-1111--------2-------------------------------------------------------0-0-0-0--------0000--------------0001-3-01100000-10000---0--0-0010120--020000012345"/>
+        <sequence id="seq_Hibolithes_semisulcatus11" spec="Sequence" taxon="Hibolithes_semisulcatus" totalcount="6" value="112111111?1011111100--000-4--00--?0011-??0?-0------0-------0---00---------????111?????????1??0?????????????1???????0???????????????????????????????????012345"/>
+        <sequence id="seq_Phragmoteuthis_bisinuata11" spec="Sequence" taxon="Phragmoteuthis_bisinuata" totalcount="6" value="112111111011111?0100--?0?33?120-000??20110220------0-------0---00---------????????????????1????????????????1???????????????????????????????????????????012345"/>
+        <sequence id="seq_Bathyteuthis_abyssicola11" spec="Sequence" taxon="Bathyteuthis_abyssicola" totalcount="6" value="1120110---11010-00-??00042--5-0-00-2121??00-10--1001110100-101000---------10000-10-10010-10010110011101111111110110010001101100000-0-0101010110000001??012345"/>
+        <sequence id="seq_Chtenopteryx_sicula8" spec="Sequence" taxon="Chtenopteryx_sicula" totalcount="6" value="1120110---1100--00-??01042-03-1110-2121??10-1110110111110100---00---------10010-10-10010-00010110011101101111111110010001101000000-0-0101010110000001??012345"/>
+        <sequence id="seq_Idiosepius_pygmaeus8" spec="Sequence" taxon="Idiosepius_pygmaeus" totalcount="6" value="1110110---1100--00-??0001?--?-10??-2020??0?-111010110--110-0---00---------10000-10-10100-1001011001110110101010--00010001131001000-0-010101111000100???012345"/>
+        <sequence id="seq_Doryteuthis_amerigo_pealeii8" spec="Sequence" taxon="Doryteuthis_amerigo_pealeii" totalcount="6" value="1120110---1100--00-??00043--2-1110-2121??11-10--010110-0-100---00---------10110-10-10000-00010110011101101011111110110001101001000-0-010101101000100100012345"/>
+        <sequence id="seq_Abralia_trigonura8" spec="Sequence" taxon="Abralia_trigonura" totalcount="6" value="1120110---1100--01-10-0034--3-1110-2121??11-10--110111010100---00---------10110-10-100010000111100111011010111102000100111?1000000-0-010101011000100111012345"/>
+        <sequence id="seq_Architeuthis_dux8" spec="Sequence" taxon="Architeuthis_dux" totalcount="6" value="1120110---1100--01-10-1042-?2-1110-2121??11-1110111111010100---00---------10010-10-10001100010110011101101011110100010001101000000-0-010101011000100111012345"/>
+        <sequence id="seq_Cranchia_scabra8" spec="Sequence" taxon="Cranchia_scabra" totalcount="6" value="1120110---1100--01-??00151--3-1000-2121??00-10--01011110-100---00---------10010-10-10000-00010110011101101010111100010002??1000000-0-010101011000100111012345"/>
+        <sequence id="seq_Cycloteuthis_sirventi8" spec="Sequence" taxon="Cycloteuthis_sirventi" totalcount="6" value="1120110---1100--00-??00153--2-1020-2121??11-10--01011100-100---00---------10000-10-10001100010110011101101011111100010001111000000-0-010101011000000111012345"/>
+        <sequence id="seq_Gonatus_antarcticus8" spec="Sequence" taxon="Gonatus_antarcticus" totalcount="6" value="112011101011010001010-1053-03-1000-2120??10-0------0-------111000---------10110-10-10011100011110011111111111111100010001101000000-0-010101011000100111012345"/>
+        <sequence id="seq_Histioteuthis_celetaria8" spec="Sequence" taxon="Histioteuthis_celetaria" totalcount="6" value="1120110---1100--00-??00033--4-1100-2121??00-10--010110-0-10101000---------10011010-1001111001011001????????11110100010101101110000-0-010101011010000111012345"/>
+        <sequence id="seq_Histioteuthis_corona8" spec="Sequence" taxon="Histioteuthis_corona" totalcount="6" value="1120110---1100--00-??00043--3-1110-2121??10-10--010110-0-10101000---------10011110-10011110010110011101101010110100010101101110000-0-010101011010000111012345"/>
+        <sequence id="seq_Lepidoteuthis_grimaldii8" spec="Sequence" taxon="Lepidoteuthis_grimaldii" totalcount="6" value="1120110---1100--00-??00151--2-1000-2121??10-11101000-------0---00---------10010-10-110???00011110011101101010111100010001101000000-0-010101011000000111012345"/>
+        <sequence id="seq_Mastigoteuthis_agassizi8" spec="Sequence" taxon="Mastigoteuthis_agassizi" totalcount="6" value="1120110---1100--00-??00151--3-1110-2121??11-0------0-------101000---------10011010-10010-00010110011101101010111100010001131000000-0-010101011000000111012345"/>
+        <sequence id="seq_Octopoteuthis_sicula8" spec="Sequence" taxon="Octopoteuthis_sicula" totalcount="6" value="1120110---1100--00-??00154--3-1110-2121??10-1110010110-0-100---00---------10011010-110???00011110011101101010111000010001101000000-0-010101011000000111012345"/>
+        <sequence id="seq_Ommastrephes_bartramii8" spec="Sequence" taxon="Ommastrephes_bartramii" totalcount="6" value="112011100-1101000100--0052--0-1000-2121??11-11101000-------101010---------10110-10-10001100010110011101101011110100010001121000000-0-010101011000100111012345"/>
+        <sequence id="seq_Onychoteuthis_banksii8" spec="Sequence" taxon="Onychoteuthis_banksii" totalcount="6" value="11201110??1101000100--1052-01-1100-2121??11-10--110111110100---00---------10110-10-10001100010110011101101011111100010011101000000-0-010101011000000111012345"/>
+        <sequence id="seq_Thysanoteuthis_rhombus8" spec="Sequence" taxon="Thysanoteuthis_rhombus" totalcount="6" value="1120110---1100--00-??00033--5-1100-2121??01-11101100-------101000---------10110-10-100010100101100111011010111111000100011210000?????010101011000100111012345"/>
+        <sequence id="seq_Sepia_officinalis8" spec="Sequence" taxon="Sepia_officinalis" totalcount="6" value="11201011101100--1110--1014-1?-10?0-2020??0?-0------0-------0---00---------10200-10-10110-10010110011101101011111010010001101001000-0-010001101000100?00012345"/>
+        <sequence id="seq_Heteroteuthis_hawaiiensis8" spec="Sequence" taxon="Heteroteuthis_hawaiiensis" totalcount="6" value="0--------------------------?------------------------------------0---------1000??10-10110-10010110011101101010111000010001101001000-0-010001101010000100012345"/>
+        <sequence id="seq_Rossia_pacifica8" spec="Sequence" taxon="Rossia_pacifica" totalcount="6" value="1100110---1100--01-??01051-00-1100-2120??11210--11?0-------111000---------10001010-10110-1001011001110111111011???00100011?1001000-0-010001101010000100012345"/>
+        <sequence id="seq_Spirula_spirula8" spec="Sequence" taxon="Spirula_spirula" totalcount="6" value="11110-1110---1110-1--------------------??---------------------------------1001??10-10110-10010110011111111111111000010001101000000-0-010001101000100100012345"/>
+        <sequence id="seq_Cirrothauma_murrayi8" spec="Sequence" taxon="Cirrothauma_murrayi" totalcount="6" value="1110110---0010--010110000-----?---0----??-----------------------0---------1000111110-----1001000-1210-10-0-0010---00110010-0000121111111010000100011000012345"/>
+        <sequence id="seq_Opisthoteuthis_agassizi8" spec="Sequence" taxon="Opisthoteuthis_agassizi" totalcount="6" value="1110110---0010--010110000---------0----??-----------------------0---------1000111110-----1011000-1210-10-0-0010---00010010-000012111110-010000100011000012345"/>
+        <sequence id="seq_Stauroteuthis_syrtensis8" spec="Sequence" taxon="Stauroteuthis_syrtensis" totalcount="6" value="1110110---0010--010110000---------0----??-----------------------0---------1000111110-----1011000-1210-10-0-0010---00010010-0000121111111010000100011000012345"/>
+        <sequence id="seq_Amphitretus_pelagicus8" spec="Sequence" taxon="Amphitretus_pelagicus" totalcount="6" value="0-------------------------------------------------------------------------0---??1110-----1001000-1210-10-1010?0---0010002??01021??????101100101010?1000012345"/>
+        <sequence id="seq_Argonauta_nodosa8" spec="Sequence" taxon="Argonauta_nodosa" totalcount="6" value="0-------------------------------------------------------------------------0---??1110-----1001000-12110110101010---0010001130002121111110110010101001000012345"/>
+        <sequence id="seq_Haliphron_atlanticus8" spec="Sequence" taxon="Haliphron_atlanticus" totalcount="6" value="1110110---0010--000110000-----?---2----??-----------------------0---------0---111110-----1001000-1210-110101010---1010001100002121111110110010101001000012345"/>
+        <sequence id="seq_Japetella_diaphana8" spec="Sequence" taxon="Japetella_diaphana" totalcount="6" value="0-------------------------------------------------------------------------0---??1110-----1001000-1210-10-0-1010---00100000-01021211111101100101010?1000012345"/>
+        <sequence id="seq_Keuppia_hyperbolaris8" spec="Sequence" taxon="Keuppia_hyperbolaris" totalcount="6" value="1110110---0010--000110000---------0----??-----------------------0---------????111??0-----10??0?????????????10??????????????????????????????????????1000012345"/>
+        <sequence id="seq_Keuppia_levante8" spec="Sequence" taxon="Keuppia_levante" totalcount="6" value="1110110---0010--000110000---------0----??-----------------------0---------0---111110-----00010?????110110101???????????????????????????????????????1000012345"/>
+        <sequence id="seq_Octopus_vulgaris8" spec="Sequence" taxon="Octopus_vulgaris" totalcount="6" value="1110110---0010--000110000---------2----??-----------------------0---------0---111110-----1001000-12110110101010---00100000-0002121111110110010101001000012345"/>
+        <sequence id="seq_Ocythoe_tuberculata8" spec="Sequence" taxon="Ocythoe_tuberculata" totalcount="6" value="0-------------------------------------------------------------------------0---??1110-----0001000-12110110101010---1010001110002121111110110010101001000012345"/>
+        <sequence id="seq_Palaeoctopus_newboldi8" spec="Sequence" taxon="Palaeoctopus_newboldi" totalcount="6" value="1110110---0010--000110000---------0----??-----------------------0---------10?0111110-----?0010?11??????????1??????0????????????????????????????????1000012345"/>
+        <sequence id="seq_Styletoctopus_aff_annae8" spec="Sequence" taxon="Styletoctopus_aff_annae" totalcount="6" value="1110110---0010--000110000---------2----??-----------------------0---------????111??0-----??????????????????1??????0????????????????????????????????1000012345"/>
+        <sequence id="seq_Geopeltis_simplex8" spec="Sequence" taxon="Geopeltis_simplex" totalcount="6" value="1120110---1110--01010-00333-110-?00201-0-023???????110-10100---?0---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Jeletzkyteuthis_coriaceus8" spec="Sequence" taxon="Jeletzkyteuthis_coriaceus" totalcount="6" value="1120110---1110--01010-00244-0111100211-11011???????1110????0---?1???????????????1100-----??????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Leptoteuthis_gigas8" spec="Sequence" taxon="Leptoteuthis_gigas" totalcount="6" value="1120110---1110--01010-00243-1100201212011001???????111010100---00---------11100-11?0-----101100???????????????????00???????????????????????????????????012345"/>
+        <sequence id="seq_Loligosepia_aalensis8" spec="Sequence" taxon="Loligosepia_aalensis" totalcount="6" value="1120110---1110--01010-00244-0111100201-11011???????1110????0---?1?????????????0-11?0-----?0??0?????????????1??????0????????????????????????????????????012345"/>
+        <sequence id="seq_Loligosepia_bucklandi8" spec="Sequence" taxon="Loligosepia_bucklandi" totalcount="6" value="1120110---1110--01010-00144-0011100201-11011???????1110????0---?0---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Parabelopeltis_flexuosa8" spec="Sequence" taxon="Parabelopeltis_flexuosa" totalcount="6" value="1120110---1110--01010-00133-010-?00201-1001211101111???????0---?1??????????????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Proteroctopus_ribeti8" spec="Sequence" taxon="Proteroctopus_ribeti" totalcount="6" value="1120110---1110--01010010143000???0020?????44110-110110-??110---00---------10001111?0-----00110011??110110100??0---00????????00?????????????????000??0??012345"/>
+        <sequence id="seq_Boreopeltis_sagittata8" spec="Sequence" taxon="Boreopeltis_sagittata" totalcount="6" value="1120110---1010--0100--103-31-10--00210----1-???????11101010111100---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Boreopeltis_smithi8" spec="Sequence" taxon="Boreopeltis_smithi" totalcount="6" value="1120110---1010--0100--103-21-00--00210----1-???????11101010111100---------?????????????????????????????????1???????????????????????????????????????????012345"/>
+        <sequence id="seq_Dorateuthis_syriaca8" spec="Sequence" taxon="Dorateuthis_syriaca" totalcount="6" value="1120110---1010--0100--104-20-00--00210----1-10--11?11111010111000---------10000-11?0-----001?0?????????????1??????01???????????????????????????????????012345"/>
+        <sequence id="seq_Plesioteuthis_prisca8" spec="Sequence" taxon="Plesioteuthis_prisca" totalcount="6" value="1120110---1010--0100--104-30-00--00210----0-10--10011111010101010---------100?0-1??0-----101100????10-10-??1???????1???????????????????????????????????012345"/>
+        <sequence id="seq_Plesioteuthis_subovata8" spec="Sequence" taxon="Plesioteuthis_subovata" totalcount="6" value="1120110---10?0--0100--004-?--?0--0???20---0-???????11111111101010---------??????1??0-----??1???????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Senefelderiteuthis_tricarinata8" spec="Sequence" taxon="Senefelderiteuthis_tricarinata" totalcount="6" value="1120110---1010--0100--104-3?-00--00210----1-???????110-1010111000---------10000-11?0-----101?00???????????????????0????????????????????????????????????012345"/>
+        <sequence id="seq_Actinosepia_canadensis8" spec="Sequence" taxon="Actinosepia_canadensis" totalcount="6" value="11?0110---1110--01010-00110-0110010202110044???????1110101011010100?001011?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Glyphidopsis_waagei8" spec="Sequence" taxon="Glyphidopsis_waagei" totalcount="6" value="1120110---1110--01011000111-1111100??2010023???????111110100---0101?000?01????10???????????????????????????1???????????????????????????????????????????012345"/>
+        <sequence id="seq_Glyphiteuthis_abisaadiorum8" spec="Sequence" taxon="Glyphiteuthis_abisaadiorum" totalcount="6" value="1120110---1110--01011000300-011110020210-023???????111110100---01?1??0?101110?0-1????????001?0?????????????1????????????????00?????????????????????????012345"/>
+        <sequence id="seq_Glyphiteuthis_freijii8" spec="Sequence" taxon="Glyphiteuthis_freijii" totalcount="6" value="1120110---1110--01011000200-011111020210-0231110110111110100---01????0111011001011?0-----00??0????????????????????0?????????00?????????????????????????012345"/>
+        <sequence id="seq_Glyphiteuthis_libanotica8" spec="Sequence" taxon="Glyphiteuthis_libanotica" totalcount="6" value="1120110---1110--01011000311-011111020210-02310--110111110100---0111200010110?00-1??0-----00?10?0-??????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Glyphiteuthis_minor8" spec="Sequence" taxon="Glyphiteuthis_minor" totalcount="6" value="11?0110---1110--01011000111-1111100202010034???????111110100---01??2?0?????????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Glyphiteuthis_ornata8" spec="Sequence" taxon="Glyphiteuthis_ornata" totalcount="6" value="1120110---1110--01011000122-0111110202110033???????111110100---01?1??011?0?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Glyphiteuthis_rhinophora8" spec="Sequence" taxon="Glyphiteuthis_rhinophora" totalcount="6" value="1120110---1110--0?0?????2?????100?0??21??03?10--110111110100---01??????????????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Muensterella_scutellaris8" spec="Sequence" taxon="Muensterella_scutellaris" totalcount="6" value="1120110---1110--01011100001-121130020210-044???????1111100-0---00---------112?111??0-----100100????10-???101??????0????????????????????????????????????012345"/>
+        <sequence id="seq_Palaeololigo_oblonga8" spec="Sequence" taxon="Palaeololigo_oblonga" totalcount="6" value="1120110---1110--01011000211-131120?1-2?0-0121111110111110100---00---------1010??1??0-----??????????????????1???????????????????????????????????????????012345"/>
+        <sequence id="seq_Rachiteuthis_donovani8" spec="Sequence" taxon="Rachiteuthis_donovani" totalcount="6" value="1120110---1110--01011000400-111000020211001110--11011111010111000---------10110-11?0-----00??0?????????????1??????01??????0????????????????????????????012345"/>
+        <sequence id="seq_Styloteuthis_convexa8" spec="Sequence" taxon="Styloteuthis_convexa" totalcount="6" value="11?0110---1110--010110004??-0111?000-??10044???????1111??100---00---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Teudopsinia_haasi8" spec="Sequence" taxon="Teudopsinia_haasi" totalcount="6" value="11?0110---1110--01011100211-111120020210-012111111?111110100---00---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Teudopsis_bollensis8" spec="Sequence" taxon="Teudopsis_bollensis" totalcount="6" value="11?0110---1110--01011000211-11111001-2110023???????111110100---00---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Teudopsis_bunelii8" spec="Sequence" taxon="Teudopsis_bunelii" totalcount="6" value="11?0110---1110--01011000321-011130020210-011???????111110100---00---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Teudopsis_jeletzkyi8" spec="Sequence" taxon="Teudopsis_jeletzkyi" totalcount="6" value="11?0110---1110--0?0???00121-?111100212?1102410--110111110100---00---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Teudopsis_subcostata8" spec="Sequence" taxon="Teudopsis_subcostata" totalcount="6" value="11?0110---1110--01011000121-0111100202111034???????111110100---00---------?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Trachyteuthis_bacchiai8" spec="Sequence" taxon="Trachyteuthis_bacchiai" totalcount="6" value="11?0110---1110--0?0???00211-11110002020100230------0-------0---01??2???000?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Trachyteuthis_covacevichi8" spec="Sequence" taxon="Trachyteuthis_covacevichi" totalcount="6" value="11?0110---1110--0?0?????111?01111001-210-034???????0-------0---01001100000?????????????????????????????????1???????????????????????????????????????????012345"/>
+        <sequence id="seq_Trachyteuthis_hastiformis8" spec="Sequence" taxon="Trachyteuthis_hastiformis" totalcount="6" value="1120110---1110--01011000111-01110001-200-0340------0-------0---011020000001100??1??????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Trachyteuthis_nusplingensis8" spec="Sequence" taxon="Trachyteuthis_nusplingensis" totalcount="6" value="11?0110---1110--0?0???00111-11110001-200-034???????0-------0---01002111000?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Trachyteuthis_teudopsiformis8" spec="Sequence" taxon="Trachyteuthis_teudopsiformis" totalcount="6" value="11?0110---1110--0101100?111-01111001-21100341???110111110100---010?1100000?????????????????????????????????????????????????????????????????????????????012345"/>
+        <sequence id="seq_Vampyronassa_rhodanica8" spec="Sequence" taxon="Vampyronassa_rhodanica" totalcount="6" value="1120110---1??0--01010-??1?????0-????????????0------0-------0---00---------10000-1??0-----10110?????10-10-0-0????????????????????????????????????????0??012345"/>
+        <sequence id="seq_Vampyroteuthis_infernalis8" spec="Sequence" taxon="Vampyroteuthis_infernalis" totalcount="6" value="1120110---1110--01010-102320021000121200-1330------10--100-0---00---------1100111100-----10110011?00--0--0-011????00100000-1000111010110100010000000000012345"/>
+        <sequence id="seq_Acanthoteuthis_speciosus8" spec="Sequence" taxon="Acanthoteuthis_speciosus" totalcount="6" value="11211111101??11?1100--?04?????0-????????????0------0-------0---00---------100?0-10-0-----010100????110-10100???????01??????????????????????????????????012345"/>
+        <sequence id="seq_Idahoteuthis_parisiana8" spec="Sequence" taxon="Idahoteuthis_parisiana" totalcount="6" value="1120110---1010--0100--?0?-??-?1-?0???21??-?????????111110??0---00---------1001?????????????????????????????1???????0???????????????????????????????????012345"/>
+        <sequence id="seq_Belemnotheutis_antiquus8" spec="Sequence" taxon="Belemnotheutis_antiquus" totalcount="6" value="112111111011?1111100--?01?????113????20?????0------0-------0---00---------????1010-0-----010100???????10-0-1???????????????????????????????????????????012345"/>
+        <sequence id="seq_Gordoniconus_beargulchensis8" spec="Sequence" taxon="Gordoniconus_beargulchensis" totalcount="6" value="112110111?1001100100--004-----0--0-211----1-0------0-------0---00---------0---0-10-0-----?0??0?????????????0??????00???????????????????????????????????012345"/>
+        <sequence id="seq_Syllipsimopodi_bideni8" spec="Sequence" taxon="Syllipsimopodi_bideni" totalcount="6" value="1120110---1000--0100--002-2--00--00201----1-???????111010110---00---------10010-1?-0-----000100????110110101??????00???????????????????????????????????012345"/>
+
+  
+        <userDataType id="StandardData.0" spec="beast.base.evolution.datatype.StandardData" ambiguities="" nrOfStates="6"/>
+
+
+    </data>
+
+
+
+       <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@useSpikeModel" clock.rate="@clockRate" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" noSpikeOnDatedTips="false" parseFromTree="false" />
+
+
+    <!-- <run id="mcmc" spec="coupledMCMC.CoupledMCMC" chains="4" resampleEvery="10000" chainLength="5000000"> -->
+    <run id="mcmc" spec="MCMC" chainLength="1000000000">
+        <state id="state" spec="State" storeEvery="100000">
+
+
+           <tree id="tree" name="stateNode">
+                <taxonset id="taxonset" spec="beast.base.evolution.alignment.TaxonSet">
+                    <data idref="data" name="alignment"/>
+                </taxonset>
+
+ <trait id="dateTrait.t:data" spec="beast.base.evolution.tree.TraitSet" traitname="date"  taxa="@taxonset">
+Hibolithes_semisulcatus=-237,
+Belemnotheutis_antiquus=-165.3,
+Phragmoteuthis_bisinuata=-254.2,
+Doryteuthis_amerigo_pealeii=-2.58,
+Sepia_officinalis=-72.2,
+Spirula_spirula=-154.8,
+Argonauta_nodosa=-33.9,
+Keuppia_hyperbolaris=-100.5,
+Keuppia_levante=-100.5,
+Palaeoctopus_newboldi=-85.7,
+Styletoctopus_aff_annae=-100.5,
+Geopeltis_simplex=-184.2,
+Jeletzkyteuthis_coriaceus=-184.2,
+Leptoteuthis_gigas=-154.8,
+Loligosepia_aalensis=-184.2,
+Loligosepia_bucklandi=-184.2,
+Parabelopeltis_flexuosa=-184.2,
+Boreopeltis_sagittata=-149.2,
+Boreopeltis_smithi=-100.5,
+Dorateuthis_syriaca=-126.5,
+Plesioteuthis_prisca=-154.8,
+Plesioteuthis_subovata=-149.2,
+Senefelderiteuthis_tricarinata=-149.2,
+Actinosepia_canadensis=-83.7,
+Glyphidopsis_waagei=-100.5,
+Glyphiteuthis_abisaadiorum=-100.5,
+Glyphiteuthis_freijii=-100.5,
+Glyphiteuthis_libanotica=-100.5,
+Glyphiteuthis_minor=-93.9,
+Glyphiteuthis_ornata=-93.9,
+Glyphiteuthis_rhinophora=-100.5,
+Muensterella_scutellaris=-154.8,
+Palaeololigo_oblonga=-149.2,
+Rachiteuthis_donovani=-100.5,
+Styloteuthis_convexa=-93.9,
+Teudopsinia_haasi=-149.2,
+Teudopsis_bollensis=-184.2,
+Teudopsis_bunelii=-184.2,
+Teudopsis_jeletzkyi=-184.2,
+Teudopsis_subcostata=-184.2,
+Trachyteuthis_bacchiai=-100.5,
+Trachyteuthis_covacevichi=-161.5,
+Trachyteuthis_hastiformis=-154.8,
+Trachyteuthis_nusplingensis=-154.8,
+Trachyteuthis_teudopsiformis=-149.2,
+Vampyronassa_rhodanica=-165.3,
+Proteroctopus_ribeti=-165.3,
+Gordoniconus_beargulchensis=-330.3,
+Syllipsimopodi_bideni=-330.3,
+Idahoteuthis_parisiana=-249.9,
+Acanthoteuthis_speciosus=-165.3,
+Nautilus_pompilius_fossil=-469.4,
+Nautilus_pompilius=0,
+Bathyteuthis_abyssicola=0,
+Chtenopteryx_sicula=0,
+Idiosepius_pygmaeus=0,
+Abralia_trigonura=0,
+Architeuthis_dux=0,
+Cranchia_scabra=0,
+Cycloteuthis_sirventi=0,
+Gonatus_antarcticus=0,
+Histioteuthis_celetaria=0,
+Histioteuthis_corona=0,
+Lepidoteuthis_grimaldii=0,
+Mastigoteuthis_agassizi=0,
+Octopoteuthis_sicula=0,
+Ommastrephes_bartramii=0,
+Onychoteuthis_banksii=0,
+Thysanoteuthis_rhombus=0,
+Heteroteuthis_hawaiiensis=0,
+Rossia_pacifica=0,
+Cirrothauma_murrayi=0,
+Opisthoteuthis_agassizi=0,
+Stauroteuthis_syrtensis=0,
+Amphitretus_pelagicus=0,
+Haliphron_atlanticus=0,
+Japetella_diaphana=0,
+Octopus_vulgaris=0,
+Ocythoe_tuberculata=0,
+Vampyroteuthis_infernalis=0
+
+                </trait>
+
+
+            </tree>
+
+
+
+            <parameter id="mutationRate.s:data2" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+            <parameter id="mutationRate.s:data5" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+            <parameter id="mutationRate.s:data3" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+            <parameter id="mutationRate.s:data6" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+            <parameter id="mutationRate.s:data4" spec="parameter.RealParameter" name="stateNode">1.0</parameter>
+
+
+            <parameter id="clockRate" spec="parameter.RealParameter" name="stateNode" lower="0">1e-4</parameter>
+           
+            <parameter id="origin" spec="parameter.RealParameter" name="stateNode" lower="0">0</parameter>
+            <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
+            <parameter id="r0" spec="parameter.RealParameter" name="stateNode" lower="0">1.1</parameter>
+            <parameter id="samplingProportion" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.1</parameter>
+            <parameter id="stubBranchNumbers" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
+            <parameter id="stubTimes" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
+            <parameter id="stubVariableSelection" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
+
+
+            <parameter id="gammaShape" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
+            <parameter id="kappa" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
+
+
+            <parameter id="branchRates" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
+            <parameter id="spikes" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
+            <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
+            <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
+            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
+
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+
+            <parameter id="originFBD.t:data" spec="parameter.RealParameter" lower="0.0" name="stateNode">1000.0</parameter>
+
+           
+        </state>
+
+
+        <!-- Initial tree -->
+       <!--  <init estimate="false" id="RandomTree" initial="@tree" taxa="@data" spec="beast.base.evolution.tree.coalescent.RandomTree">
+            <populationModel spec="beast.base.evolution.tree.coalescent.ConstantPopulation" popSize="200" />
+       </init> -->
+
+
+        <init estimate="false" id="RandomTree" initial="@tree" taxa="@data" clock.rate="1e-3" spec="beast.base.evolution.tree.ClusterTree">
+       </init>
+
+        <distribution id="posterior" spec="CompoundDistribution">
+            <distribution id="prior" spec="CompoundDistribution">
+
+<!-- 
+                <distribution id="ingroup.prior" spec="beast.base.evolution.tree.MRCAPrior" monophyletic="true" tree="@tree">
+                    <taxonset id="root" spec="TaxonSet">
+                        <taxon id="Hibolithes_semisulcatus" spec="Taxon"/>
+                        <taxon id="Belemnotheutis_antiquus" spec="Taxon"/>
+                        <taxon id="Phragmoteuthis_bisinuata" spec="Taxon"/>
+                        <taxon id="Doryteuthis_amerigo_pealeii" spec="Taxon"/>
+                        <taxon id="Sepia_officinalis" spec="Taxon"/>
+                        <taxon id="Spirula_spirula" spec="Taxon"/>
+                        <taxon id="Argonauta_nodosa" spec="Taxon"/>
+                        <taxon id="Keuppia_hyperbolaris" spec="Taxon"/>
+                        <taxon id="Keuppia_levante" spec="Taxon"/>
+                        <taxon id="Palaeoctopus_newboldi" spec="Taxon"/>
+                        <taxon id="Styletoctopus_aff_annae" spec="Taxon"/>
+                        <taxon id="Geopeltis_simplex" spec="Taxon"/>
+                        <taxon id="Jeletzkyteuthis_coriaceus" spec="Taxon"/>
+                        <taxon id="Leptoteuthis_gigas" spec="Taxon"/>
+                        <taxon id="Loligosepia_aalensis" spec="Taxon"/>
+                        <taxon id="Loligosepia_bucklandi" spec="Taxon"/>
+                        <taxon id="Parabelopeltis_flexuosa" spec="Taxon"/>
+                        <taxon id="Boreopeltis_sagittata" spec="Taxon"/>
+                        <taxon id="Boreopeltis_smithi" spec="Taxon"/>
+                        <taxon id="Dorateuthis_syriaca" spec="Taxon"/>
+                        <taxon id="Plesioteuthis_prisca" spec="Taxon"/>
+                        <taxon id="Plesioteuthis_subovata" spec="Taxon"/>
+                        <taxon id="Senefelderiteuthis_tricarinata" spec="Taxon"/>
+                        <taxon id="Actinosepia_canadensis" spec="Taxon"/>
+                        <taxon id="Glyphidopsis_waagei" spec="Taxon"/>
+                        <taxon id="Glyphiteuthis_abisaadiorum" spec="Taxon"/>
+                        <taxon id="Glyphiteuthis_freijii" spec="Taxon"/>
+                        <taxon id="Glyphiteuthis_libanotica" spec="Taxon"/>
+                        <taxon id="Glyphiteuthis_minor" spec="Taxon"/>
+                        <taxon id="Glyphiteuthis_ornata" spec="Taxon"/>
+                        <taxon id="Glyphiteuthis_rhinophora" spec="Taxon"/>
+                        <taxon id="Muensterella_scutellaris" spec="Taxon"/>
+                        <taxon id="Palaeololigo_oblonga" spec="Taxon"/>
+                        <taxon id="Rachiteuthis_donovani" spec="Taxon"/>
+                        <taxon id="Styloteuthis_convexa" spec="Taxon"/>
+                        <taxon id="Teudopsinia_haasi" spec="Taxon"/>
+                        <taxon id="Teudopsis_bollensis" spec="Taxon"/>
+                        <taxon id="Teudopsis_bunelii" spec="Taxon"/>
+                        <taxon id="Teudopsis_jeletzkyi" spec="Taxon"/>
+                        <taxon id="Teudopsis_subcostata" spec="Taxon"/>
+                        <taxon id="Trachyteuthis_bacchiai" spec="Taxon"/>
+                        <taxon id="Trachyteuthis_covacevichi" spec="Taxon"/>
+                        <taxon id="Trachyteuthis_hastiformis" spec="Taxon"/>
+                        <taxon id="Trachyteuthis_nusplingensis" spec="Taxon"/>
+                        <taxon id="Trachyteuthis_teudopsiformis" spec="Taxon"/>
+                        <taxon id="Vampyronassa_rhodanica" spec="Taxon"/>
+                        <taxon id="Proteroctopus_ribeti" spec="Taxon"/>
+                        <taxon id="Gordoniconus_beargulchensis" spec="Taxon"/>
+                        <taxon id="Syllipsimopodi_bideni" spec="Taxon"/>
+                        <taxon id="Idahoteuthis_parisiana" spec="Taxon"/>
+                        <taxon id="Acanthoteuthis_speciosus" spec="Taxon"/>
+                        <taxon id="Bathyteuthis_abyssicola" spec="Taxon"/>
+                        <taxon id="Chtenopteryx_sicula" spec="Taxon"/>
+                        <taxon id="Idiosepius_pygmaeus" spec="Taxon"/>
+                        <taxon id="Abralia_trigonura" spec="Taxon"/>
+                        <taxon id="Architeuthis_dux" spec="Taxon"/>
+                        <taxon id="Cranchia_scabra" spec="Taxon"/>
+                        <taxon id="Cycloteuthis_sirventi" spec="Taxon"/>
+                        <taxon id="Gonatus_antarcticus" spec="Taxon"/>
+                        <taxon id="Histioteuthis_celetaria" spec="Taxon"/>
+                        <taxon id="Histioteuthis_corona" spec="Taxon"/>
+                        <taxon id="Lepidoteuthis_grimaldii" spec="Taxon"/>
+                        <taxon id="Mastigoteuthis_agassizi" spec="Taxon"/>
+                        <taxon id="Octopoteuthis_sicula" spec="Taxon"/>
+                        <taxon id="Ommastrephes_bartramii" spec="Taxon"/>
+                        <taxon id="Onychoteuthis_banksii" spec="Taxon"/>
+                        <taxon id="Thysanoteuthis_rhombus" spec="Taxon"/>
+                        <taxon id="Heteroteuthis_hawaiiensis" spec="Taxon"/>
+                        <taxon id="Rossia_pacifica" spec="Taxon"/>
+                        <taxon id="Cirrothauma_murrayi" spec="Taxon"/>
+                        <taxon id="Opisthoteuthis_agassizi" spec="Taxon"/>
+                        <taxon id="Stauroteuthis_syrtensis" spec="Taxon"/>
+                        <taxon id="Amphitretus_pelagicus" spec="Taxon"/>
+                        <taxon id="Haliphron_atlanticus" spec="Taxon"/>
+                        <taxon id="Japetella_diaphana" spec="Taxon"/>
+                        <taxon id="Octopus_vulgaris" spec="Taxon"/>
+                        <taxon id="Ocythoe_tuberculata" spec="Taxon"/>
+                        <taxon id="Vampyroteuthis_infernalis" spec="Taxon"/>
+                                                
+                    </taxonset>
+                </distribution> -->
+               
+               
+   
+
+                 <distribution id="StumpedTreePrior" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" origin="@origin" lambda="@lambda" samplingProportion="@samplingProportion" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
+                    <stubs id="stubs" origin="@origin" spec="gammaspike.tree.Stubs" tree="@tree" branchNr="@stubBranchNumbers" time="@stubTimes" />
+                 </distribution>
+
+               <!--  <distribution id="FBD.t:data" spec="sa.evolution.speciation.SABirthDeathModel" conditionOnRhoSampling="true" diversificationRate="@lambda" origin="@originFBD.t:data" samplingProportion="@samplingProportionFBD.t:data" tree="@tree" turnover="@turnoverFBD.t:data">
+                    <parameter id="rFBD.t:data" spec="parameter.RealParameter" lower="0.0" name="removalProbability" upper="1.0">0.0</parameter>
+                    <parameter id="rhoFBD.t:data" spec="parameter.RealParameter" estimate="false" lower="0.0" name="rho" upper="1.0">1.0</parameter>
+                </distribution> -->
+
+
+                 <prior name="distribution" x="@clockRate">
+                    <LogNormal name="distr" meanInRealSpace="true" M="1e-4" S="2"  />
+                 </prior>
+
+
+
+                 
+
+                 <prior name="distribution" x="@kappa">
+                    <Exponential name="distr" mean="5"/>
+                 </prior> 
+
+
+
+                 <prior name="distribution" x="@lambda">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="1e-3" S="2"/>
+                 </prior>
+
+                 <prior name="distribution" x="@r0">
+                    <LogNormal name="distr" offset="1.0" meanInRealSpace="true" M="0.2" S="1"/>
+                 </prior> 
+
+
+
+                 <prior name="distribution" x="@samplingProportion">
+                    <Beta name="distr" alpha="1" beta="10"/>
+                 </prior>
+
+
+                 <prior name="distribution" x="@gammaShape">
+                    <Exponential name="distr" mean="1"/>
+                 </prior> 
+
+
+                 <prior name="distribution" x="@clockSD">
+                    <Gamma name="distr" alpha="5" beta="0.05"/>
+                 </prior> 
+
+
+                 <prior name="distribution" x="@branchRates">
+                    <LogNormal meanInRealSpace="true" name="distr" M="1" S="@clockSD"/>
+                 </prior> 
+
+
+                <prior name="distribution" x="@spikeMean">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="0.05" S="1.2"/>
+                 </prior>
+
+
+                 <prior name="distribution" x="@spikeShape">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="2" S="0.5"/>
+                 </prior>
+
+
+                 <prior name="distribution" spec="gammaspike.distribution.BranchSpikePrior" stubs="@stubs" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
+                         
+
+
+
+
+            </distribution>
+
+             <distribution id="likelihood" spec="beast.base.inference.CompoundDistribution">
+
+
+
+
+                    <distribution id="morphTreeLikelihood.data2" spec="TreeLikelihood" branchRateModel="@clockModel" tree="@tree">
+                    <data
+                        id="data2" 
+                        spec="FilteredAlignment" 
+                        data="@data"
+                        ascertained="true" 
+                        excludefrom="129" 
+                        excludeto="131" 
+                        filter="1-2,4-18,20-24,28,31-32,34,37,39-42,45-76,78-98,100-112,114-120,122,124-126,128,130-141,143-146,148-151,152-153">
+                        <userDataType id="morphDataType.data2" spec="beast.base.evolution.datatype.StandardData" ambiguities="" nrOfStates="2"/>
+                    </data>
+                    <siteModel id="SiteModel.s:data2" spec="SiteModel" mutationRate="@mutationRate.s:data2" gammaCategoryCount="4" shape="@gammaShape">
+                        <substModel id="LewisMK.s:data2" spec="morphmodels.evolution.substitutionmodel.LewisMK" datatype="@morphDataType.data2"/>
+                    </siteModel>
+                </distribution>
+
+
+                <distribution id="morphTreeLikelihood.data3" spec="TreeLikelihood" branchRateModel="@clockModel" tree="@tree">
+                    <data
+                        id="data3"
+                        spec="FilteredAlignment"
+                        ascertained="true"
+                        data="@data"
+                        excludefrom="12"
+                        excludeto="15"
+                        filter="3,19,35-36,38,77,99,121,127,129,142,147,152-154">
+                        <userDataType id="morphDataType.data3" spec="beast.base.evolution.datatype.StandardData" ambiguities="" nrOfStates="3"/>
+                    </data>
+                    <siteModel id="SiteModel.s:data3" spec="SiteModel" mutationRate="@mutationRate.s:data3" gammaCategoryCount="4" shape="@gammaShape">
+                        <substModel id="LewisMK.s:data3" spec="morphmodels.evolution.substitutionmodel.LewisMK" datatype="@morphDataType.data3"/>
+                    </siteModel>
+                </distribution>
+
+
+                <distribution id="morphTreeLikelihood.data4" spec="TreeLikelihood" branchRateModel="@clockModel" tree="@tree">
+                    <data
+                        id="data4"
+                        spec="FilteredAlignment"
+                        ascertained="true"
+                        data="@data"
+                        excludefrom="5"
+                        excludeto="9"
+                        filter="30,33,44,113,123,152-155">
+                        <userDataType id="morphDataType.data4" spec="beast.base.evolution.datatype.StandardData" ambiguities="" nrOfStates="4"/>
+                    </data>
+                    <siteModel id="SiteModel.s:data4" spec="SiteModel" mutationRate="@mutationRate.s:data4" gammaCategoryCount="4" shape="@gammaShape">
+                        <substModel id="LewisMK.s:data4" spec="morphmodels.evolution.substitutionmodel.LewisMK" datatype="@morphDataType.data4"/>
+                    </siteModel>
+                </distribution>
+
+
+                <distribution id="morphTreeLikelihood.data5" spec="TreeLikelihood" branchRateModel="@clockModel" tree="@tree">
+                    <data
+                        id="data5"
+                        spec="FilteredAlignment"
+                        ascertained="true"
+                        data="@data"
+                        excludefrom="3"
+                        excludeto="8"
+                        filter="26-27,43,152-156">
+                        <userDataType id="morphDataType.data5" spec="beast.base.evolution.datatype.StandardData" ambiguities="" nrOfStates="5"/>
+                    </data>
+                    <siteModel id="SiteModel.s:data5" spec="SiteModel" mutationRate="@mutationRate.s:data5" gammaCategoryCount="4" shape="@gammaShape">
+                        <substModel id="LewisMK.s:data5" spec="morphmodels.evolution.substitutionmodel.LewisMK" datatype="@morphDataType.data5"/>
+                    </siteModel>
+                </distribution>
+
+                <distribution id="morphTreeLikelihood.data6" spec="TreeLikelihood" branchRateModel="@clockModel" tree="@tree">
+                    <data
+                        id="data6"
+                        spec="FilteredAlignment"
+                        ascertained="true"
+                        data="@data"
+                        excludefrom="2"
+                        excludeto="8"
+                        filter="25,29,152-157">
+                        <userDataType id="morphDataType.data6" spec="beast.base.evolution.datatype.StandardData" ambiguities="" nrOfStates="6"/>
+                    </data>
+                    <siteModel id="SiteModel.s:data6" spec="SiteModel" mutationRate="@mutationRate.s:data6" gammaCategoryCount="4" shape="@gammaShape">
+                        
+                        <substModel id="LewisMK.s:data6" spec="morphmodels.evolution.substitutionmodel.LewisMK" datatype="@morphDataType.data6"/>
+                    </siteModel>
+                </distribution>
+
+
+            </distribution>
+
+        </distribution>
+
+
+        <!-- Tree operators -->
+        <operator id="StumpedTreeRootScaler.t:tree" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="true" scaleFactor="0.7" weight="5.0"/>
+        <operator id="StumpedTreeUniform.t:tree" spec="gammaspike.operator.StumpedTreeUniform" tree="@tree" stubs="@stubs" weight="5.0"/>
+        <operator id="StumpedTreeScaler.t:tree" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="false" scaleFactor="0.7" weight="5.0"/>
+        <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="false" scaleFactor="0.7" weight="2.0">
+            <down idref="lambda"/>
+            <down idref="spikeMean"/>
+            <down idref="clockRate"/>
+        </operator>
+
+
+        <operator id="StubTreeStretchOperator.t:tree" spec="gammaspike.operator.StubTreeStretchOperator" tree="@tree" stubs="@stubs" scaleFactor="0.7" weight="5.0"/>
+        <operator id="StubEpochFlexOperator.t:tree" spec="gammaspike.operator.StubEpochFlexOperator" tree="@tree" stubs="@stubs" scaleFactor="0.7" weight="5.0"/>
+
+        <operator id="StumpedTreeNarrowExchange.t:tree" spec="gammaspike.operator.StumpedTreeExchange" stubs="@stubs" isNarrow="true" tree="@tree" weight="20.0"/>
+        <operator id="StumpedTreeWideExchange.t:tree" spec="gammaspike.operator.StumpedTreeExchange" stubs="@stubs" isNarrow="false" tree="@tree" weight="5.0"/>
+
+
+        <!-- Add or remove a sampled ancestor -->
+        <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="1.0"/>
+
+
+        <operator id="SpikeUpRateDown" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates" spikes="@spikes" scaleFactor="0.1" weight="5.0"/>
+        <operator id="clockRate.scale" spec="kernel.BactrianScaleOperator" parameter="@clockRate" scaleFactor="0.1" weight="0.5"/>
+        
+         <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1" />
+
+
+        <operator id="FixMeanMutationRatesOperator" spec="operator.kernel.BactrianDeltaExchangeOperator" delta="0.75" weight="2.0">
+            <parameter idref="mutationRate.s:data2"/>
+            <parameter idref="mutationRate.s:data3"/>
+            <parameter idref="mutationRate.s:data4"/>
+            <parameter idref="mutationRate.s:data5"/>
+            <parameter idref="mutationRate.s:data6"/>
+            <weightvector id="weightparameter" spec="parameter.IntegerParameter" dimension="5" estimate="false" lower="0" upper="0">129 12 5 3 2</weightvector>
+        </operator>
+
+        <!-- Site/clock model operators -->
+        <operator id="gammaShape.scale" spec="kernel.BactrianScaleOperator" parameter="@gammaShape" scaleFactor="0.1" weight="1.0"/>
+        <operator id="kappa.scale" spec="kernel.BactrianScaleOperator" parameter="@kappa" scaleFactor="0.1" weight="1.0"/>
+        <operator id="clockSD.scale" spec="kernel.BactrianScaleOperator" parameter="@clockSD" scaleFactor="0.1" weight="5.0"/>
+        <operator id="spikeShape.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeShape" scaleFactor="0.1" weight="1.0"/>
+        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="5.0"/>
+        <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="5.0"/>
+        <operator id="rates.scale" spec="kernel.BactrianScaleOperator" parameter="@branchRates" scaleFactor="0.1" weight="5.0"/>
+        <operator id="StumpedTreeConstantDistanceOperator" spec="gammaspike.operator.StumpedTreeConstantDistanceOperator" stubs="@stubs" twindowSize="0.005" tree="@tree" rates="@branchRates"  weight="10.0"/>
+
+
+        <!-- Tree prior operators -->
+        <operator id="lambda.scale" spec="kernel.BactrianScaleOperator" parameter="@lambda" scaleFactor="0.1" weight="0.5"/>
+        <operator id="r0.scale" spec="kernel.BactrianScaleOperator" parameter="@r0" scaleFactor="0.1" weight="0.5"/>
+        <operator id="samplingProportion.scale" spec="kernel.BactrianScaleOperator" parameter="@samplingProportion" scaleFactor="0.1" weight="0.5"/>
+        <operator id="AVMN.tree.prior" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
+            <transformations spec="operator.kernel.Transform$LogTransform">
+                 <f idref="lambda"/>
+                 <f idref="r0"/>
+            </transformations>
+             <transformations spec="operator.kernel.Transform$LogitTransform">
+                 <f idref="samplingProportion"/>
+            </transformations>
+        </operator> 
+       
+
+       <operator id="UpDownTreePrior" spec="UpDownOperator" scaleFactor="0.5" weight="0.5">
+            <up idref="lambda"/>
+            <down idref="samplingProportion"/>
+            <down idref="r0"/>
+       </operator>
+
+
+        <!-- AVMN -->
+        <operator id="AVMN" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="15.0">
+            <transformations spec="operator.kernel.Transform$LogTransform">
+                 <f idref="lambda"/>
+                 <f idref="gammaShape"/>
+                 <f idref="kappa"/>
+                 <f idref="spikeShape"/>
+                 <f idref="spikeMean"/>
+                 <f idref="clockRate"/>
+            </transformations>
+        </operator> 
+       
+
+
+
+         
+
+        <!-- Stub operators -->
+        <operator id="stubCreator" spec="gammaspike.operator.StubCreator" stubs="@stubs" tree="@tree" weight="10.0" />
+        <operator id="stub.scale" spec="kernel.BactrianScaleOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0" />
+        <operator id="stubTimesInterval" spec="kernel.BactrianIntervalOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0"/>
+        <operator id="swapBranches" spec="gammaspike.operator.StubSwapOperator" parameter="@stubBranchNumbers" weight="1.0"/>
+
+
+
+       
+        <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="50000" model="@posterior" sanitiseHeaders="true" sort="smart">
+            <log idref="posterior"/>
+            <log idref="likelihood"/>
+            <log idref="prior"/>
+            <log idref="useSpikeModel"/>
+            <log idref="clockRate"/>
+            <log idref="lambda"/>
+            <log idref="r0"/>
+            <log idref="samplingProportion"/>
+
+
+            <log idref="mutationRate.s:data2"/>
+            <log idref="mutationRate.s:data3"/>
+            <log idref="mutationRate.s:data4"/>
+            <log idref="mutationRate.s:data5"/>
+            <log idref="mutationRate.s:data6"/>
+
+            
+            <log idref="clockSD"/>
+            <log idref="gammaShape"/>
+            <log idref="spikeShape"/>
+            <log idref="spikeMean"/>
+            <log idref="StumpedTreePrior"/>
+            <log idref="stubs"/>
+            <log id="rateState" spec="beast.base.evolution.RateStatistic" tree="@tree" branchratemodel="@clockModel"/>
+            <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
+            <log idref="kappa"/>
+            <log idref="branchRates"/>
+            <log idref="spikes" />
+           
+
+
+
+        </logger>
+        <logger id="screenlog" spec="Logger" logEvery="10000">
+            <log idref="likelihood"/>
+            <log idref="lambda"/>
+            <log idref="r0" />
+            <log idref="samplingProportion"/>
+            <log idref="spikeMean"/>
+            <log idref="useSpikeModel"/>
+            <log idref="stubs"/>
+            <log idref="clockRate"/>
+        </logger>
+
+        <logger id="treelog" spec="Logger" fileName="stumped.trees" logEvery="100000" mode="tree">
+            <log id="TreeWithMetaDataLogger.t:class1" spec="gammaspike.logger.StumpedTreeLogger" tree="@tree">
+                <stubs idref="stubs" />
+                <metadata idref="branchRates" />
+                <metadata idref="spikes" />
+            </log>
+        </logger> 
+        <operatorschedule id="OperatorSchedule" spec="OperatorSchedule" autoOptimizeDelay="5000"/>
+    </run>
+
+</beast>
