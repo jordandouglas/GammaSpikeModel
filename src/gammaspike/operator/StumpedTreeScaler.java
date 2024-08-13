@@ -211,7 +211,7 @@ public class StumpedTreeScaler extends Operator {
     public List<StateNode> listStateNodes() {
 		Stubs stubs = stubsInput.get();
         final List<StateNode> list = super.listStateNodes();
-        list.add(stubs.getStubHeights());
+        //list.add(stubs.getStubHeights());
         //list.add(stubs.getBranches());
         return list;
     }

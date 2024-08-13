@@ -210,6 +210,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 					if (node.isDirectAncestor()) {
 						int nstubs = stubs.getNStubsOnBranch(node.getNr());
 						if (nstubs > 0) {
+							//Log.warning("XXXX " + nstubs);
 							return Double.NEGATIVE_INFINITY;
 						}
 					}
@@ -221,6 +222,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 					for (int branchNr = 0; branchNr < tree.getNodeCount(); branchNr++) {
 						redLogP += getLogPForBranchWithSampling(branchNr, lambda, mu, psi);
 					}
+					
 				}
 				
 				
@@ -456,6 +458,29 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 		double h0 = node.isRoot() ? T : node.getParent().getHeight();
 		double h1 = node.getHeight();
 		
+		
+		// Just count the stubs - don't care about time
+		if (!stubs.getReversibleJump()) {
+			
+			if (node.isRoot() || h0 == h1) return 0;
+			
+			int m = stubs.getNStubsOnBranch(branchNr);
+			double g = getGForInterval(h1, h0, lambda, mu, psi, rho);
+			
+			
+			// Poisson(g) distribution
+			p = 0;
+			p += -g;
+			p += m * Math.log(g);
+			for (int i = 2; i <= m; i ++) p += -Math.log(i);
+			
+			
+			//Log.warning( " m=" + m + " " + g + " " + p + " " + h0 + " " + h1);
+			
+			return p;
+			
+		}
+		
 		// Stubs on this branch
 		int m = 0;
 		for (int stubNr = 0; stubNr < stubs.getStubDimension(); stubNr++) {
@@ -507,6 +532,23 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 		// Reverse times
 		double h0 = node.isRoot() ? T : node.getParent().getHeight();
 		double h1 = node.getHeight();
+		
+		
+		// Just count the stubs - don't care about time
+		if (!stubs.getReversibleJump()) {
+			
+			if (node.isRoot()) return 0;
+			
+			int m = stubs.getNStubsOnBranch(branchNr);
+			double g = getGForInterval(h1, h0, lambda, mu);
+			
+			// Poisson(g) distribution
+			p += -g;
+			p += m * Math.log(g);
+			for (int i = 2; i <= m; i ++) p += -Math.log(i);
+			return p;
+			
+		}
 		
 		// Stubs on this branch
 		int m = 0;

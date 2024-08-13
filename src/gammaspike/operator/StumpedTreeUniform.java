@@ -74,7 +74,7 @@ public class StumpedTreeUniform extends Uniform {
 		Stubs stubs = stubsInput.get();
         final List<StateNode> list = super.listStateNodes();
        //if (stubAbsTimesConstantInput.get()) list.add(stubs.getStubHeights());
-        list.add(stubs.getBranches());
+        //list.add(stubs.getBranches());
         return list;
     }
 	

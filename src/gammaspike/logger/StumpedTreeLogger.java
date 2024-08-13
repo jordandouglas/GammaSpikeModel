@@ -96,20 +96,30 @@ public class StumpedTreeLogger extends TreeWithMetaDataLogger {
 		if (stubs != null && !node.isRoot()) {
 			int numEvents = 0;
 			int totalEventCount = 0;
-			List<Stubs.Stub> stubsList = stubs.getSortedStubsOnBranch(node);
-			numEvents += stubsList.size();
 			
-			if (printStubLocationsInput.get()) {
-				for (int eventNr = 0; eventNr < stubsList.size(); eventNr++) {
-					Stubs.Stub event = stubsList.get(eventNr); 
-					//System.out.println("\t\t" + event);
-					event.toMetaData(buf2, eventNr+1+totalEventCount);
-					buf2.append(",");
-					
+			if (!stubs.getReversibleJump()) {
+				int nstubs = stubs.getNStubsOnBranch(node.getNr());
+				numEvents += nstubs;
+				totalEventCount += nstubs;
+			}else {
+			
+			
+				List<Stubs.Stub> stubsList = stubs.getSortedStubsOnBranch(node);
+				numEvents += stubsList.size();
+				
+				if (printStubLocationsInput.get()) {
+					for (int eventNr = 0; eventNr < stubsList.size(); eventNr++) {
+						Stubs.Stub event = stubsList.get(eventNr); 
+						//System.out.println("\t\t" + event);
+						event.toMetaData(buf2, eventNr+1+totalEventCount);
+						buf2.append(",");
+						
+					}
 				}
-			}
+				
+				totalEventCount += stubsList.size();
 			
-			totalEventCount += stubsList.size();
+			}
 				
 			//buf2.append(Stubs.getStubCountName() + "=");
 			buf2.append("nstubs=");

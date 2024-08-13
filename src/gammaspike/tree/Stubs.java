@@ -26,20 +26,22 @@ import beast.base.util.Randomizer;
 public class Stubs extends CalculationNode implements Loggable, Function {
 
 	final public Input<TreeInterface> treeInput = new Input<>("tree", "tree without stubs", Input.Validate.REQUIRED);
-	final public Input<IntegerParameter> branchNrInput = new Input<>("branchNr", "node index of each stub", Input.Validate.REQUIRED);
-	final public Input<RealParameter> timeInput = new Input<>("time", "relative time of each stub along its branch", Input.Validate.REQUIRED);
+	
+	
+	// Reversible jump MCMC
+	final public Input<IntegerParameter> branchNrInput = new Input<>("branchNr", "node index of each stub", Input.Validate.OPTIONAL);
+	final public Input<RealParameter> timeInput = new Input<>("time", "relative time of each stub along its branch", Input.Validate.OPTIONAL);
 	final public Input<IntegerParameter> labelIndicatorInput = new Input<>("indicator", "label indicator (-1, 0, 1)", Input.Validate.OPTIONAL);
 	
+	
+	// Integrate over stub heights
+	final public Input<IntegerParameter> stubsPerBranchInput = new Input<>("stubsPerBranch", "number of stubs per branch", Input.Validate.XOR, branchNrInput);
 	
 	
 	
 	final public Input<RealParameter> originInput = new Input<>("origin", "length of origin branch", Validate.OPTIONAL);
 	
-	
-	// Stochastic variable selection
-	final public Input<BooleanParameter> selectionInput = new Input<>("selection", "boolean indicating if each stub is being used (stochastic variable selection)", Input.Validate.OPTIONAL);
-	final public Input<Integer> maxNrStubsInput = new Input<>("maxNrStubs", "if set, then will use stochastic variable selection rather than reversible jump", -1);
-	
+
 	
 	
 	// For restoring
@@ -112,13 +114,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		
 		// Lower and uppers
 		int nNodes = treeInput.get().getNodeCount();
-		branchNrInput.get().setLower(0);
-		branchNrInput.get().setUpper(nNodes-2); // Exclude the root
-		branchNrInput.get().setValue(0);
-		timeInput.get().setLower(0.0);
-		timeInput.get().setUpper(1.0);
-		timeInput.get().setValue(0.5);
-		
+
 		
 		IntegerParameter labelIndicator = labelIndicatorInput.get();
 		if (labelIndicator != null) {
@@ -130,22 +126,16 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		
 		
 		// Stochastic variable selection - fixed num stubs, but some are inactive
-		if (maxNrStubsInput.get() > 0) {
+		if (stubsPerBranchInput.get() != null) {
 			reversibleJump = false;
 			
-			//Log.warning(maxNrStubsInput.get() + " | " + selectionInput.get());
-			if (selectionInput.get() == null) throw new IllegalArgumentException("Please provide 'selection' or set maxNrStubs to negative value");
+			IntegerParameter p = stubsPerBranchInput.get();
 			
-			// Index 0 is the dummy
-			int dim = maxNrStubsInput.get();
-			branchNrInput.get().setDimension(dim+1);
-			timeInput.get().setDimension(dim+1);
-			selectionInput.get().setDimension(dim+1);
-			
-			// Initialise all at false 
-			for (int i = 0; i < dim+1; i++) {
-				selectionInput.get().setValue(i, false);
-				//selectionInput.get().setValue(i, true);
+			// Do not initialise if we are resuming
+			p.setLower(0);
+			p.setDimension(nNodes-2);
+			for (int i = 0; i < p.getDimension(); i ++) {
+				p.setValue(i, 0);
 			}
 			
 		}
@@ -154,6 +144,14 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		else {
 			reversibleJump = true;
 			boolean reset = true;
+			
+			branchNrInput.get().setLower(0);
+			branchNrInput.get().setUpper(nNodes-2); // Exclude the root
+			branchNrInput.get().setValue(0);
+			timeInput.get().setLower(0.0);
+			timeInput.get().setUpper(1.0);
+			timeInput.get().setValue(0.5);
+			
 			
 			// Do not initialise if we are resuming
 			if (timeInput.get().getDimension() > 1 & 
@@ -213,25 +211,40 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	 */
 	public boolean includeStub(int stubNr) {
 		if (stubNr == 0) return false;
-		if (this.reversibleJump) {
-			return true;
-		}
-		return selectionInput.get().getValue(stubNr);
+		return true;
+		//if (this.reversibleJump) {
+			//return true;
+		//}
+		//return selectionInput.get().getValue(stubNr);
 	}
 
 	@Override
 	public void init(PrintStream out) {
-		out.print("nstubs\tstub1Height\t");
+		
+		out.print("nstubs\t");
+		if (!this.getReversibleJump()) {
+			for (int branchNr = 0; branchNr < this.stubsPerBranchInput.get().getDimension(); branchNr++) {
+				//out.print("nstubs." + branchNr + "\t");
+			}
+		}
+		
+		
 	}
 
 	@Override
 	public void log(long sample, PrintStream out) {
 		out.print(this.getNStubs() + "\t");
 		
+		if (!this.getReversibleJump()) {
+			for (int branchNr = 0; branchNr < this.stubsPerBranchInput.get().getDimension(); branchNr++) {
+				//out.print(this.stubsPerBranchInput.get().getValue(branchNr) + "\t");
+			}
+		}
+		
 		// Return the first stub time only
-		double time = this.getNStubs() == 0 ? 0 : getAbsoluteTimeOfStub(1);
+		//double time = this.getNStubs() == 0 ? 0 : getAbsoluteTimeOfStub(1);
 		//double time = this.getNStubs() == 0 ? 0 : getRelativeTimeOfStub(1);
-		out.print(time + "\t");
+		//out.print(time + "\t");
 		
 		
 	}
@@ -245,8 +258,8 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	public int getNStubs() {
 		if (this.reversibleJump) return branchNrInput.get().getDimension() - 1; // Remove 1 for dummy index
 		int nstubs = 0;
-		for (int i = 1; i < branchNrInput.get().getDimension(); i ++) {
-			if (this.includeStub(i)) nstubs ++;
+		for (int i = 0; i < this.stubsPerBranchInput.get().getDimension(); i++) {
+			nstubs += stubsPerBranchInput.get().getValue(i);
 		}
 		return nstubs;
 	}
@@ -259,12 +272,24 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		
 		//if (treeInput.get().getNode(nodeNr).isDirectAncestor()) return 0;
 		
-		int nstubs = 0;
-		for (int i = 0; i < branchNrInput.get().getDimension(); i ++) {
-			int b = branchNrInput.get().getValue(i);
-			if (this.includeStub(i) && nodeNr == b) nstubs ++;
+		
+		
+		
+		
+		if (this.reversibleJump) {
+			
+			int nstubs = 0;
+			for (int i = 0; i < branchNrInput.get().getDimension(); i ++) {
+				int b = branchNrInput.get().getValue(i);
+				if (this.includeStub(i) && nodeNr == b) nstubs ++;
+			}
+			return nstubs;
+			
+		}else {
+			if (nodeNr >= this.stubsPerBranchInput.get().getDimension()) return 0;
+			return this.stubsPerBranchInput.get().getValue(nodeNr);
 		}
-		return nstubs;
+		
 	}
 	
 
@@ -374,6 +399,10 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	public List<Stub> getSortedStubsOnBranch(Node node){
 		
 		
+		if (!this.reversibleJump) {
+			throw new IllegalArgumentException("DevError 42574: cannot sort stubs unless RJ is being used");
+		}
+		
 		// Get indices and times. Start at index 1 because 0 is the dummy/placeholder
 		List<Stub> stubs = new ArrayList<>();
 		for (int stubNr = 1; stubNr < this.getStubDimension(); stubNr++) {
@@ -466,7 +495,12 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	
 	
 	public int getStubDimension() {
-		return branchNrInput.get().getDimension();
+		if (!getReversibleJump()) {
+			return stubsPerBranchInput.get().getDimension();
+		}else {
+			return branchNrInput.get().getDimension();
+		}
+		
 	}
 	
 
@@ -555,6 +589,9 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	 * Call this before getLogJacobian()
 	 */
 	public double[] prepareJacobian() {
+		
+		if (!this.reversibleJump) return null;
+		
 		Tree tree = (Tree)treeInput.get();
 		double[] cachedBranchLengths = new double[tree.getNodeCount()];
 		for (int branchNr = 0; branchNr < tree.getNodeCount(); branchNr++) {
@@ -571,6 +608,8 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	 * a branch that a stub is on requires knowledge of the ratio between the before and after to calculate Jacobian
 	 */
 	public double getLogJacobian(double[] cachedBranchLengths) {
+		
+		if (!this.reversibleJump) return 0;
 		if (cachedBranchLengths == null) {
 			throw new IllegalArgumentException("Developer error 111231: please call 'prepareJacobian' before 'getJacobian'");
 		}
