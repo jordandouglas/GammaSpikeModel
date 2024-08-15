@@ -33,6 +33,10 @@ public class BranchSpikePrior extends Distribution {
 	final public Input<Tree> treeInput = new Input<>("tree", "tree required for setting the spike dimension (if direct sampling)", Input.Validate.OPTIONAL); 
 	
 	
+	// If there are too many stubs on a branch (eg. during mixing) then the gamma distribution shape is large, which causes
+	// instbilities
+	final int MAX_GAMMA_SHAPE = 10;
+	
 	org.apache.commons.math.distribution.GammaDistribution gamma = new GammaDistributionImpl(1, 1);
 	
 	@Override
@@ -108,7 +112,7 @@ public class BranchSpikePrior extends Distribution {
         				cumsum += pReal;
         				
         				// Integrate across all possible values in poisson distribution
-        				double alphaBranch = shape * (k + 1); // One spike for the branch, and one per stub
+        				double alphaBranch = Math.min(shape * (k + 1), MAX_GAMMA_SHAPE); // One spike for the branch, and one per stub
         				gamma = new GammaDistributionImpl(alphaBranch, scale);
         				//Log.warning(pReal + " " + gamma.density(spikeOfBranch) + " for " + k);
         				branchLogP += pReal*gamma.density(spikeOfBranch);
