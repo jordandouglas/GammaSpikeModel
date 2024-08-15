@@ -35,7 +35,7 @@ public class BranchSpikePrior extends Distribution {
 	
 	// If there are too many stubs on a branch (eg. during mixing) then the gamma distribution shape is large, which causes
 	// instbilities
-	final int MAX_GAMMA_SHAPE = 10;
+	final int MAX_GAMMA_SHAPE = 20;
 	
 	org.apache.commons.math.distribution.GammaDistribution gamma = new GammaDistributionImpl(1, 1);
 	
