@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+
 import org.apache.commons.math.MathException;
 import org.apache.commons.math.distribution.GammaDistributionImpl;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Log;
+import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.inference.Distribution;
 import beast.base.inference.State;
@@ -65,20 +67,69 @@ public class BranchSpikePrior extends Distribution {
         		return logP;
         	}
         	
-        	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr);
         	
-        	// Skip sampled ancestors
-        	//if (stubs.treeInput.get().getNode(nodeNr).isDirectAncestor()) {
-        		//continue;
-        	//}
-        	
-        	//nstubsOnBranch = 0; // TMP
-        	
-        	double alphaBranch = shape * (nstubsOnBranch + 1); // One spike for the branch, and one per stub
-        	gamma = new GammaDistributionImpl(alphaBranch, scale);
-        	
-        	
-        	logP += gamma.logDensity(spikeOfBranch);
+        	if (stubs.estimateStubs()) {
+        		
+        		// Known value of stubs
+            	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr);
+            	double alphaBranch = shape * (nstubsOnBranch + 1); // One spike for the branch, and one per stub
+            	gamma = new GammaDistributionImpl(alphaBranch, scale);
+            	logP += gamma.logDensity(spikeOfBranch);
+        		
+        	}else {
+        		
+        		// Unknown value - integrate across all possible values
+        		Node node = treeInput.get().getNode(nodeNr);
+        		double h0 = node.getHeight();
+        		double h1 = node.isRoot() ? h0 : node.getParent().getHeight();
+        		double mu = stubs.getMeanNumberOfStubs(h0, h1);
+        		
+        		//Log.warning("no est -> " + mu);
+        		
+        		final double maxCumSum = 0.999;
+        		if (mu > 0) {
+        			
+        			double branchLogP = 0;
+        			int k = 0;
+        			double cumsum = 0;
+        			while (cumsum < maxCumSum) {
+        			//while (k < 1) {
+        				
+        				// P(k observations) under a Poisson(mu)
+        				double p = -mu + k*Math.log(mu);
+        				for (int i = 2; i <= k; i ++) p += -Math.log(i);
+        				double pReal = Math.exp(p);
+        				
+        				
+        				//double pReal = Math.exp(-mu) * Math.pow(mu, k);
+        				//for (int i = 2; i <= k; i ++) pReal = pReal / i;
+        				
+        				
+        				cumsum += pReal;
+        				
+        				// Integrate across all possible values in poisson distribution
+        				double alphaBranch = shape * (k + 1); // One spike for the branch, and one per stub
+        				gamma = new GammaDistributionImpl(alphaBranch, scale);
+        				//Log.warning(pReal + " " + gamma.density(spikeOfBranch) + " for " + k);
+        				branchLogP += pReal*gamma.density(spikeOfBranch);
+        				
+        				
+        				//Log.warning(pReal + " for " + k  + " mu " + mu);
+        				
+        				k++;
+        			}
+        			
+        			//Log.warning("k = " + (k-1));
+        			
+        			
+        			logP += Math.log(branchLogP);
+        			
+        		}
+        		
+        		
+        		
+        	}
+        
         	
         }
         
@@ -116,6 +167,8 @@ public class BranchSpikePrior extends Distribution {
 		if (treeInput.get() == null) {
 			throw new IllegalArgumentException("Please specify the tree");
 		}
+		
+		
 		
 		if (sampledFlag) return;
 		sampledFlag = true;
@@ -178,7 +231,11 @@ public class BranchSpikePrior extends Distribution {
 	}
 	@Override
     protected boolean requiresRecalculation() {
-        return super.requiresRecalculation() || InputUtil.isDirty(stubsInput) || InputUtil.isDirty(spikesInput) | InputUtil.isDirty(shapeInput) | InputUtil.isDirty(meanInput);
+        return super.requiresRecalculation() || 
+        		InputUtil.isDirty(stubsInput) || 
+        		InputUtil.isDirty(spikesInput) || 
+        		InputUtil.isDirty(shapeInput) || 
+        		InputUtil.isDirty(meanInput);
     }
 	
 

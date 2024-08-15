@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import beast.base.core.BEASTInterface;
+import beast.base.core.BEASTObject;
 import beast.base.core.Description;
 import beast.base.core.Function;
 import beast.base.core.Input;
@@ -20,11 +24,20 @@ import beast.base.inference.parameter.BooleanParameter;
 import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.util.Randomizer;
+import gammaspike.distribution.StubExpectation;
+import gammaspike.distribution.StumpedTreePrior;
 
 
 @Description("A branch with length zero on a tree")
 public class Stubs extends CalculationNode implements Loggable, Function {
 
+	
+	public enum StubMode{
+		exact, 
+		branchCounts,
+		nostub
+	}
+	
 	final public Input<TreeInterface> treeInput = new Input<>("tree", "tree without stubs", Input.Validate.REQUIRED);
 	
 	
@@ -35,21 +48,24 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	
 	
 	// Integrate over stub heights
-	final public Input<IntegerParameter> stubsPerBranchInput = new Input<>("stubsPerBranch", "number of stubs per branch", Input.Validate.XOR, branchNrInput);
+	final public Input<IntegerParameter> stubsPerBranchInput = new Input<>("stubsPerBranch", "number of stubs per branch", Input.Validate.OPTIONAL);
 	
 	
+	final public Input<StubExpectation> priorInput = new Input<>("prior", "the prior object for calculating stub expectations", Validate.OPTIONAL);
 	
 	final public Input<RealParameter> originInput = new Input<>("origin", "length of origin branch", Validate.OPTIONAL);
 	
 
-	
+	StubExpectation stubExpectation = null;
+	StubMode stubMode;
+	long[] sampledStubSampleNr = null;
+	int[] sampledStubNr = null;
 	
 	// For restoring
 	double[] storedTimes;
 	Integer[] storedBranches;
 	Integer[] storedLabelIndicators;
 	Boolean[] storedSelections;
-	boolean reversibleJump;
 	//Integer[] storedTos;
 	//Integer[] storedFroms;
 		
@@ -112,6 +128,9 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	public void initAndValidate() {
 		
 		
+		
+		
+		
 		// Lower and uppers
 		int nNodes = treeInput.get().getNodeCount();
 
@@ -124,10 +143,50 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		}
 		
 		
+		if (priorInput.get() == null && stubsPerBranchInput.get() == null && branchNrInput.get() == null) {
+			throw new IllegalArgumentException("Please provide either prior, stubsPerBranch, or branchNr+time");
+		}
 		
-		// Stochastic variable selection - fixed num stubs, but some are inactive
-		if (stubsPerBranchInput.get() != null) {
-			reversibleJump = false;
+		// No stubs - they are integrated over
+		if (priorInput.get() != null && stubsPerBranchInput.get() == null && branchNrInput.get() == null) {
+		
+			this.stubMode = StubMode.nostub;
+			
+			this.sampledStubNr = new int[nNodes];
+			this.sampledStubSampleNr = new long[nNodes];
+			for (int i = 0; i < sampledStubSampleNr.length; i ++) {
+				sampledStubSampleNr[i] = -1;
+			}
+			
+			
+			stubExpectation = priorInput.get();
+			Log.warning("Found distribution " + ((BEASTObject)stubExpectation).getID());
+//			
+//			// Find the object that is used to compute the expected number of stubs
+//			for (BEASTInterface o : this.getOutputs()) {
+//				if (o != null && o instanceof BEASTObject) {
+//					//Log.warning("input :" + o.getClass().getCanonicalName());
+//					
+//					if (o instanceof StubExpectation) {
+//						stubExpectation = (StubExpectation)o;
+//						Log.warning("Found distribution " + ((BEASTObject)stubExpectation).getID());
+//					}
+//				}
+//				
+//				
+//			}
+			
+			if (stubExpectation == null) {
+				throw new IllegalArgumentException("Cannot find an object that implements 'StubExpectation'");
+			}
+			
+		
+		}
+		
+		// The stub count on each branch is estimated
+		else if (stubsPerBranchInput.get() != null) {
+			
+			this.stubMode = StubMode.branchCounts;
 			
 			IntegerParameter p = stubsPerBranchInput.get();
 			
@@ -140,9 +199,10 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 			
 		}
 		
-		// Reversible jump - variable num stubs
+		// The branch and height of each stis estimated
 		else {
-			reversibleJump = true;
+			this.stubMode = StubMode.exact;
+			
 			boolean reset = true;
 			
 			branchNrInput.get().setLower(0);
@@ -189,6 +249,11 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	 * @return
 	 */
 	public List<Stub> getStubs(){
+		
+		if (this.stubMode == StubMode.nostub) {
+			throw new IllegalArgumentException("Dev error: no stubs but getStubs() was called");
+		}
+		
 		List<Stub> stubs = new ArrayList<>();
 		for (int i = 1; i <= this.getStubDimension(); i ++) {
 			int branchNr = this.getBranches().getValue(i);
@@ -220,32 +285,16 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 
 	@Override
 	public void init(PrintStream out) {
-		
 		out.print("nstubs\t");
-		if (!this.getReversibleJump()) {
-			for (int branchNr = 0; branchNr < this.stubsPerBranchInput.get().getDimension(); branchNr++) {
-				//out.print("nstubs." + branchNr + "\t");
-			}
-		}
-		
-		
 	}
 
 	@Override
 	public void log(long sample, PrintStream out) {
-		out.print(this.getNStubs() + "\t");
-		
-		if (!this.getReversibleJump()) {
-			for (int branchNr = 0; branchNr < this.stubsPerBranchInput.get().getDimension(); branchNr++) {
-				//out.print(this.stubsPerBranchInput.get().getValue(branchNr) + "\t");
-			}
+		if (!this.estimateStubs()) {
+			out.print(this.sampleNStubs(sample) + "\t");
+		}else {
+			out.print(this.getNStubs() + "\t");
 		}
-		
-		// Return the first stub time only
-		//double time = this.getNStubs() == 0 ? 0 : getAbsoluteTimeOfStub(1);
-		//double time = this.getNStubs() == 0 ? 0 : getRelativeTimeOfStub(1);
-		//out.print(time + "\t");
-		
 		
 	}
 
@@ -256,27 +305,101 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	}
 	
 	public int getNStubs() {
-		if (this.reversibleJump) return branchNrInput.get().getDimension() - 1; // Remove 1 for dummy index
-		int nstubs = 0;
-		for (int i = 0; i < this.stubsPerBranchInput.get().getDimension(); i++) {
-			nstubs += stubsPerBranchInput.get().getValue(i);
+		
+		
+		switch (this.stubMode) {
+			case nostub:
+				
+				return -1;
+				
+			case branchCounts:
+				
+				int nstubs = 0;
+				for (int i = 0; i < this.stubsPerBranchInput.get().getDimension(); i++) {
+					nstubs += stubsPerBranchInput.get().getValue(i);
+				}
+				return nstubs;
+				
+			case exact:
+				
+				return branchNrInput.get().getDimension() - 1; // Remove 1 for dummy index
+				
 		}
-		return nstubs;
+		
+		return -1;
+
 	}
 	
 	
+	/**
+	 * Sample all nodes on the tree, for logging
+	 * @param sampleNr
+	 * @return
+	 */
+	public int sampleNStubs(long sampleNr) {
+		
+		if (this.estimateStubs()) return -1;
+		
+		int nstubs = 0;
+		for (int i = 0; i < this.treeInput.get().getNodeCount(); i++) {
+			nstubs += sampleNStubsOnBranch(i, sampleNr);
+		}
+		
+		
+		//Log.warning(" sampleNStubs " + sampleNr + " " + nstubs);
+		return nstubs;
+		
+		
+	}
 	
-
+	
+	/**
+	 * Sample the number of nodes on this branch, for logging
+	 * @param nodeNr
+	 * @param sampleNr
+	 * @return
+	 */
+	public int sampleNStubsOnBranch(int nodeNr, long sampleNr) {
+		
+		if (this.estimateStubs()) return -1;
+		
+		// To enssyre harmony across all loggers, don't sample again on this state if it has already been sampled
+		if (sampleNr == this.sampledStubSampleNr[nodeNr]) {
+			return this.sampledStubNr[nodeNr];
+		}
+		
+		
+		Node node = treeInput.get().getNode(nodeNr);
+		double h1 = node.isRoot() ? node.getHeight() : node.getParent().getHeight(); 
+		double poissonMean = stubExpectation.getMeanStubNumber(node.getHeight(), h1);
+		int nstubs = (int) Randomizer.nextPoisson(poissonMean);
+		
+		//Log.warning(" on branch " + h1 + ", " + node.getHeight() + " mean is " + poissonMean + " and n is " + nstubs);
+		
+		
+		this.sampledStubSampleNr[nodeNr] = sampleNr;
+		this.sampledStubNr[nodeNr] = nstubs;
+		return nstubs;
+		
+		
+	}
+	
 
 	public int getNStubsOnBranch(int nodeNr) {
 		
-		//if (treeInput.get().getNode(nodeNr).isDirectAncestor()) return 0;
 		
+		switch (this.stubMode) {
 		
-		
-		
-		
-		if (this.reversibleJump) {
+		// Stochastic function
+		case nostub:
+			return -1;
+			
+		case branchCounts:
+			
+			if (nodeNr >= this.stubsPerBranchInput.get().getDimension()) return 0;
+			return this.stubsPerBranchInput.get().getValue(nodeNr);
+			
+		case exact:
 			
 			int nstubs = 0;
 			for (int i = 0; i < branchNrInput.get().getDimension(); i ++) {
@@ -285,10 +408,10 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 			}
 			return nstubs;
 			
-		}else {
-			if (nodeNr >= this.stubsPerBranchInput.get().getDimension()) return 0;
-			return this.stubsPerBranchInput.get().getValue(nodeNr);
 		}
+	
+		return -1;
+
 		
 	}
 	
@@ -399,7 +522,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	public List<Stub> getSortedStubsOnBranch(Node node){
 		
 		
-		if (!this.reversibleJump) {
+		if (this.stubMode != StubMode.exact) {
 			throw new IllegalArgumentException("DevError 42574: cannot sort stubs unless RJ is being used");
 		}
 		
@@ -490,9 +613,12 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 
 
 	public boolean getReversibleJump() {
-		return this.reversibleJump;
+		return this.stubMode == StubMode.exact;
 	}
 	
+	public boolean estimateStubs() {
+		return this.stubMode != StubMode.nostub;
+	}
 	
 	public int getStubDimension() {
 		if (!getReversibleJump()) {
@@ -590,7 +716,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	 */
 	public double[] prepareJacobian() {
 		
-		if (!this.reversibleJump) return null;
+		if (!this.getReversibleJump()) return null;
 		
 		Tree tree = (Tree)treeInput.get();
 		double[] cachedBranchLengths = new double[tree.getNodeCount()];
@@ -609,7 +735,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	 */
 	public double getLogJacobian(double[] cachedBranchLengths) {
 		
-		if (!this.reversibleJump) return 0;
+		if (!this.getReversibleJump()) return 0;
 		if (cachedBranchLengths == null) {
 			throw new IllegalArgumentException("Developer error 111231: please call 'prepareJacobian' before 'getJacobian'");
 		}
@@ -634,6 +760,13 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		
 		return logJacobian;
 	}
+
+
+	public double getMeanNumberOfStubs(double h0, double h1) {
+		if (this.stubExpectation == null) return -1;
+		return this.stubExpectation.getMeanStubNumber(h0, h1);
+	}
+
 
 
 

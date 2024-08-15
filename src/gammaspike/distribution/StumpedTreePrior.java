@@ -20,7 +20,7 @@ import gammaspike.tree.Stubs;
 
 // TODO: does not give correct posterior when origin is used
 @Description("Prior distribution on a stumped tree")
-public class StumpedTreePrior extends SpeciesTreeDistribution {
+public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExpectation {
 
 	final public Input<RealParameter> lambdaInput = new Input<>("lambda", "birth rate lambda", Validate.REQUIRED);
 	//final public Input<RealParameter> muInput = new Input<>("mu", "death rate mu", Validate.REQUIRED);
@@ -32,7 +32,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 	
 	
 	final public Input<RealParameter> originInput = new Input<>("origin", "length of origin branch", Validate.OPTIONAL);
-	final public Input<Stubs> stubsInput = new Input<>("stubs", "the stubs of this tree", Input.Validate.REQUIRED);
+	final public Input<Stubs> stubsInput = new Input<>("stubs", "the stubs of this tree", Input.Validate.OPTIONAL);
 	final public Input<Integer> maxNrStubsInput = new Input<>("maxNrStubs", "max number of stubs", -1);
 	final public Input<Boolean> ignoreTreePriorInput = new Input<>("ignoreTreePrior", "ignore tree prior (debugging)", false);
 	final public Input<Boolean> ignoreStubPriorInput = new Input<>("ignoreStubPrior", "ignore tree prior (debugging)", false);
@@ -119,7 +119,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 		double mu = this.getMu();
 		double psi = this.getPsi();
 		
-		Double originLength = originInput.get() == null ? null : originInput.get().getValue();
 		Stubs stubs = stubsInput.get();
 		
 		//TreeIntervals intervals = new TreeIntervals(tree);
@@ -128,7 +127,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 		
 		
 		
-		if (maxNrStubsInput.get() > -1 && stubs.getStubDimension() > maxNrStubsInput.get()) {
+		if (stubs != null && maxNrStubsInput.get() > -1 && stubs.getStubDimension() > maxNrStubsInput.get()) {
 			if (initialising) Log.warning("Cannot initialise because there are too many stubs");
 			initialising = false;
 			return Double.NEGATIVE_INFINITY;
@@ -136,11 +135,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 
 		
 		// Condition checker
-		if (originLength != null && originLength < 0) {
-			if (initialising) Log.warning("Cannot initialise because origin length is less than 0");
-			initialising = false;
-			return Double.NEGATIVE_INFINITY;
-		}
 		if (lambda <= mu) {
 			if (initialising) Log.warning("Cannot initialise because lambda is less than mu");
 			initialising = false;
@@ -192,7 +186,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 			
 			
 			// Red tree stub density
-			if (!ignoreStubPriorInput.get()) {
+			if (!ignoreStubPriorInput.get() && stubs != null) {
 				
 				
 				// Do not use the sampling model unless there is at least 1 dated tip
@@ -443,14 +437,17 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 	 */
 	private double getLogPForBranchWithSampling(int branchNr, double lambda, double mu, double psi) {
 		
+		
+		
 		double p = 0;
 		double rho = 1;
 		
 		Tree tree = (Tree) treeInput.get();
-		Double originLength = originInput.get() == null ? null : originInput.get().getValue();
 		Stubs stubs = stubsInput.get();
-		double T = tree.getRoot().getHeight() + originLength;
+		double T = tree.getRoot().getHeight();
 		Node node = tree.getNode(branchNr);
+		
+		if (!stubs.estimateStubs()) return 0;
 
 		
 		
@@ -522,9 +519,10 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 		// Get variables
 		double p = 0;
 		Tree tree = (Tree) treeInput.get();
-		Double originLength = originInput.get() == null ? null : originInput.get().getValue();
 		Stubs stubs = stubsInput.get();
-		double T = tree.getRoot().getHeight() + originLength;
+		double T = tree.getRoot().getHeight();
+		
+		if (!stubs.estimateStubs()) return 0;
 		
 		
 		Node node = tree.getNode(branchNr);
@@ -602,9 +600,8 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 	
 	private double getGForInterval(double h1, double h0, double lambda, double mu) {
 		
-		Double originLength = originInput.get() == null ? null : originInput.get().getValue();
 		Tree tree = (Tree) treeInput.get();
-		double T = tree.getRoot().getHeight() + originLength;
+		double T = tree.getRoot().getHeight();
 		
 		return getRedRateIntegral(h1, lambda, mu, T) - getRedRateIntegral(h0, lambda, mu, T);
 	}
@@ -613,9 +610,8 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 	// https://www.biorxiv.org/content/10.1101/2024.04.15.589468v1.full.pdf
 	private double getGForInterval(double h1, double h0, double lambda, double mu, double psi, double rho) {
 		
-		Double originLength = originInput.get() == null ? null : originInput.get().getValue();
 		Tree tree = (Tree) treeInput.get();
-		double T = tree.getRoot().getHeight() + originLength;
+		double T = tree.getRoot().getHeight();
 		
 		
 		double c1 = getC1(lambda, mu, psi, rho); 
@@ -660,8 +656,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 		Tree tree = (Tree) treeInput.get();
 		double lambda = lambdaInput.get().getValue();
 		double mu = getMu();
-		Double originLength = originInput.get() == null ? null : originInput.get().getValue();
-		double T = tree.getRoot().getHeight() + originLength;
+		double T = tree.getRoot().getHeight();
 		
 		double psi = this.getPsi();
 		double rho = 1;
@@ -673,7 +668,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 			Node node = tree.getNode(branchNr);
 			
 			// Reverse times
-			double h0 = node.isRoot() ? (node.getHeight() + originLength) : node.getParent().getHeight();
+			double h0 = node.isRoot() ? (node.getHeight()) : node.getParent().getHeight();
 			double h1 = node.getHeight();
 			
 			// Integral term across the branch
@@ -703,7 +698,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 		Tree tree = (Tree) treeInput.get();
 		double lambda = lambdaInput.get().getValue();
 		double mu = getMu();
-		Double originLength = originInput.get() == null ? 0 : originInput.get().getValue();
 		double T = tree.getRoot().getHeight();
 		
 		
@@ -712,7 +706,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 			
 			
 			// Reverse times
-			double h0 = node.isRoot() ? (node.getHeight() + originLength) : node.getParent().getHeight();
+			double h0 = node.isRoot() ? (node.getHeight()) : node.getParent().getHeight();
 			double h1 = node.getHeight();
 			double integralBranch = getRedRateIntegral(h1, lambda, mu, T) - getRedRateIntegral(h0, lambda, mu, T);
 			g += integralBranch;
@@ -737,7 +731,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 		Tree tree = (Tree) treeInput.get();
 		double lambda = lambdaInput.get().getValue();
 		double mu = getMu();
-		Double originLength = originInput.get() == null ? 0 : originInput.get().getValue();
 		double T = tree.getRoot().getHeight();
 		
 		
@@ -746,7 +739,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 			
 			
 			// Reverse times
-			double h0 = node.isRoot() ? (node.getHeight() + originLength) : node.getParent().getHeight();
+			double h0 = node.isRoot() ? (node.getHeight()) : node.getParent().getHeight();
 			double h1 = node.getHeight();
 			double integralBranch = getBlueRateIntegral(h1, lambda, mu, T) - getBlueRateIntegral(h0, lambda, mu, T);
 			blueIntegral += integralBranch;
@@ -833,14 +826,9 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
     protected boolean requiresRecalculation() {
 		
 		
-		
-		if (originInput.get() != null && originInput.get().somethingIsDirty()) {
-			return true;
-		}
 		if (pInput.get() != null && pInput.get().somethingIsDirty()) {
 			return true;
 		}
-		
 		
 		
         return super.requiresRecalculation() || 
@@ -877,6 +865,22 @@ public class StumpedTreePrior extends SpeciesTreeDistribution {
 
 	public Tree getTree() {
 		return (Tree) treeInput.get();
+	}
+
+
+	@Override
+	public double getMeanStubNumber(double height, double parentHeight) {
+		
+		if (parentHeight <= height) return 0;
+		
+		double lambda = lambdaInput.get().getValue();
+		double mu = this.getMu();
+		double psi = this.getPsi();
+		if (psi == 0) {
+			return getGForInterval(height, parentHeight, lambda, mu);
+		}else {
+			return getGForInterval(height, parentHeight, lambda, mu, psi, 1);
+		}
 	}
 
 	

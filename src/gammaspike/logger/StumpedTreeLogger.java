@@ -46,7 +46,7 @@ public class StumpedTreeLogger extends TreeWithMetaDataLogger {
 	}
 
 	@Override
-	public void log(long sample, PrintStream out) {
+	public void log(long sampleNr, PrintStream out) {
 		
 		 // make sure we get the current version of the inputs
         Tree tree = (Tree) treeInput.get().getCurrent();
@@ -58,13 +58,13 @@ public class StumpedTreeLogger extends TreeWithMetaDataLogger {
         }
         BranchRateModel.Base branchRateModel = clockModelInput.get();
         // write out the log tree with meta data
-        out.print("tree STATE_" + sample + " = ");
+        out.print("tree STATE_" + sampleNr + " = ");
 
         if (sortTree) {
             tree.getRoot().sort();
         }
 
-        out.print(toNewick(tree.getRoot(), metadata, branchRateModel));
+        out.print(toNewick(tree.getRoot(), metadata, branchRateModel, sampleNr));
         //out.print(tree.getRoot().toShortNewick(false));
         out.print(";");
 		
@@ -74,16 +74,16 @@ public class StumpedTreeLogger extends TreeWithMetaDataLogger {
 
 	
 	
-	protected String toNewick(Node node, List<Function> metadataList, BranchRateModel.Base branchRateModel) {
+	protected String toNewick(Node node, List<Function> metadataList, BranchRateModel.Base branchRateModel, long sampleNr) {
 		
 		boolean firstMetadata = true;
 		StringBuffer buf = new StringBuffer();
 		if (node.getLeft() != null) {
 			buf.append("(");
-			buf.append(toNewick(node.getLeft(), metadataList, branchRateModel));
+			buf.append(toNewick(node.getLeft(), metadataList, branchRateModel, sampleNr));
 			if (node.getRight() != null) {
 				buf.append(',');
-				buf.append(toNewick(node.getRight(), metadataList, branchRateModel));
+				buf.append(toNewick(node.getRight(), metadataList, branchRateModel, sampleNr));
 			}
 			buf.append(")");
 		} else {
@@ -97,7 +97,11 @@ public class StumpedTreeLogger extends TreeWithMetaDataLogger {
 			int numEvents = 0;
 			int totalEventCount = 0;
 			
-			if (!stubs.getReversibleJump()) {
+			if (!stubs.estimateStubs()) {
+				int nstubs = stubs.sampleNStubsOnBranch(node.getNr(), sampleNr);
+				numEvents += nstubs;
+				totalEventCount += nstubs;
+			}else if (!stubs.getReversibleJump()) {
 				int nstubs = stubs.getNStubsOnBranch(node.getNr());
 				numEvents += nstubs;
 				totalEventCount += nstubs;
