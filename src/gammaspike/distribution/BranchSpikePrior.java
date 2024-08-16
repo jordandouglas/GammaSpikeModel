@@ -35,7 +35,7 @@ public class BranchSpikePrior extends Distribution {
 	
 	// If there are too many stubs on a branch (eg. during mixing) then the gamma distribution shape is large, which causes
 	// instbilities
-	final int MAX_GAMMA_SHAPE = 20;
+	final double MAX_CUM_SUM = 0.999;
 	
 	org.apache.commons.math.distribution.GammaDistribution gamma = new GammaDistributionImpl(1, 1);
 	
@@ -90,14 +90,13 @@ public class BranchSpikePrior extends Distribution {
         		
         		//Log.warning("no est -> " + mu);
         		
-        		final double maxCumSum = 0.999;
+        		
         		if (mu > 0) {
         			
-        			double branchLogP = 0;
+        			double branchP = 0;
         			int k = 0;
         			double cumsum = 0;
-        			while (cumsum < maxCumSum) {
-        			//while (k < 1) {
+        			while (cumsum < MAX_CUM_SUM) {
         				
         				// P(k observations) under a Poisson(mu)
         				double p = -mu + k*Math.log(mu);
@@ -112,21 +111,33 @@ public class BranchSpikePrior extends Distribution {
         				cumsum += pReal;
         				
         				// Integrate across all possible values in poisson distribution
-        				double alphaBranch = Math.min(shape * (k + 1), MAX_GAMMA_SHAPE); // One spike for the branch, and one per stub
+        				double alphaBranch = shape * (k + 1); // One spike for the branch, and one per stub
+        				
         				gamma = new GammaDistributionImpl(alphaBranch, scale);
-        				//Log.warning(pReal + " " + gamma.density(spikeOfBranch) + " for " + k);
-        				branchLogP += pReal*gamma.density(spikeOfBranch);
+        				double gammaLogP = gamma.logDensity(spikeOfBranch);
+        				if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
+        					branchP += 0;
+        				}else {
+        					branchP += Math.exp(p + gammaLogP);
+        				}
         				
         				
-        				//Log.warning(pReal + " for " + k  + " mu " + mu);
         				
         				k++;
+        				
         			}
         			
-        			//Log.warning("k = " + (k-1));
+        			//Log.warning(spikeOfBranch + " k = " + (k-1) + " -> " + Math.log(branchP));
         			
+        			logP += Math.log(branchP);
         			
-        			logP += Math.log(branchLogP);
+        		}
+        		
+        		else {
+        			
+        			// If the branch length is 0 (eg sampled ancestor) then we must keep this spike sampled from the Gamma prior
+                	gamma = new GammaDistributionImpl(shape, scale);
+                	logP += gamma.logDensity(spikeOfBranch);
         			
         		}
         		
@@ -140,7 +151,10 @@ public class BranchSpikePrior extends Distribution {
         // Numerical issue
         if (logP == Double.POSITIVE_INFINITY) {
         	logP = Double.NEGATIVE_INFINITY;
-    		return logP;
+        }
+        
+        if (logP == Double.NEGATIVE_INFINITY) {
+        	//Log.warning("Ninf");
         }
         
         
@@ -241,6 +255,67 @@ public class BranchSpikePrior extends Distribution {
         		InputUtil.isDirty(shapeInput) || 
         		InputUtil.isDirty(meanInput);
     }
+
+	
+	
+	/**
+	 * Calculate cumulative probabilities of sampling a stub, conditional on the gamma distribution and tree prior (theta)
+	 * p(nstubs | spike size, theta) = p(spike size | nstubs, theta) x p (nstubs, theta) / p (spike size | theta)
+	 * @param h0
+	 * @param h1
+	 * @return
+	 */
+	public double[] getCumulativeProbs(double mu, int nodeNr) {
+		
+		
+		List<Double> cumprobs = new ArrayList<>();
+		
+		// Spike size
+		double spikeOfBranch = spikesInput.get().getValue(nodeNr);
+		
+		// Shape and scale of gamma 
+		double shape = shapeInput.get().getValue();
+		double mean = meanInput.get().getValue();
+		if (shape <= 0 || mean <= 0) {
+			throw new IllegalArgumentException("Cannot sample spikes because shape or mean are non-positive " + shape + "  " + mean);
+		}
+		double scale = mean / shape;
+
+		
+		double branchP = 0;
+		int k = 0;
+		double cumsum = 0;
+		while (cumsum < MAX_CUM_SUM) {
+			
+			// P(k observations) under a Poisson(mu)
+			double p = -mu + k*Math.log(mu);
+			for (int i = 2; i <= k; i ++) p += -Math.log(i);
+			double pReal = Math.exp(p);
+			
+			cumsum += pReal;
+			
+			// Integrate across all possible values in poisson distribution
+			double alphaBranch = shape * (k + 1); // One spike for the branch, and one per stub
+			
+			
+			gamma = new GammaDistributionImpl(alphaBranch, scale);
+			double gammaLogP = gamma.logDensity(spikeOfBranch);
+			if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
+				branchP += 0;
+			}else {
+				branchP += Math.exp(p + gammaLogP);
+			}
+			
+			cumprobs.add(branchP);
+			
+			k++;
+		}
+		
+		
+		double[] array = new double[cumprobs.size()];
+		for(int i = 0; i < cumprobs.size(); i++) array[i] = cumprobs.get(i);
+		return array;
+	}
 	
 
 }

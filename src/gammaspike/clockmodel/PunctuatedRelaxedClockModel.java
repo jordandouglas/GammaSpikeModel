@@ -165,6 +165,9 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 
 	
 	public double getBurstSize(Node node, int nbursts) {
+		
+		
+		
 		if (indicatorInput.get() != null && !indicatorInput.get().getValue()) {
 			return 0;
 		}
@@ -205,22 +208,15 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		
 		
 		
-		if (node.getLength() <= 0 || node.isDirectAncestor()) return 0;
-		
-		
 		// Root has average rate
 		double baseRate = meanRateInput.get().getArrayValue();
-		if (node.isRoot()) return baseRate;
+		if (node.getLength() <= 0 || node.isDirectAncestor() || node.isRoot()) return baseRate;
 		
-		// Was there a change in function along this branch?
-		
-		//flabels.update();
 		
 		int numberOfSBursts = getNumStubsOnBranch(node); 
 		
 		
 		double burstRate = getBurstSize(node, numberOfSBursts);
-				
 		double branchRate = getBranchRate(node);
 		double branchDistance = node.getLength()*baseRate*branchRate + burstRate;
 		
@@ -231,6 +227,10 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		
 		//Log.warning(node.getID() + " has burst rate=" + effectiveRate + " b = " + burstRate + " d= " + branchDistance);
 		//Log.warning("r=" + effectiveRate);
+		
+		if (effectiveRate <= 0 || Double.isNaN(effectiveRate)) {
+			Log.warning(node.getNr() + " r=" + effectiveRate);
+		}
 		
 		return effectiveRate;
 	}
@@ -254,8 +254,6 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 
 	@Override
     protected boolean requiresRecalculation() {
-		
-		
 		
 
         if (InputUtil.isDirty(burstSizeInput) || InputUtil.isDirty(spikesInput) || InputUtil.isDirty(meanRateInput) || 

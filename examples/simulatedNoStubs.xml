@@ -259,10 +259,7 @@
         <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="5.0"/>
         <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="20.0"/>
         <operator id="SpikeUpRateDown" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates" spikes="@spikes" scaleFactor="0.1" weight="5.0"/>
-        <operator id="UpDown.spikes" spec="UpDownOperator" scaleFactor="0.7" weight="5.0">
-                <up idref="spikes"/>
-                <up idref="spikeMean"/>
-        </operator>
+ 
 
 
 

@@ -33,7 +33,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	
 	final public Input<RealParameter> originInput = new Input<>("origin", "length of origin branch", Validate.OPTIONAL);
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "the stubs of this tree", Input.Validate.OPTIONAL);
-	final public Input<Integer> maxNrStubsInput = new Input<>("maxNrStubs", "max number of stubs", -1);
 	final public Input<Boolean> ignoreTreePriorInput = new Input<>("ignoreTreePrior", "ignore tree prior (debugging)", false);
 	final public Input<Boolean> ignoreStubPriorInput = new Input<>("ignoreStubPrior", "ignore tree prior (debugging)", false);
 	
@@ -121,18 +120,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		
 		Stubs stubs = stubsInput.get();
 		
-		//TreeIntervals intervals = new TreeIntervals(tree);
-		
-	
-		
-		
-		
-		if (stubs != null && maxNrStubsInput.get() > -1 && stubs.getStubDimension() > maxNrStubsInput.get()) {
-			if (initialising) Log.warning("Cannot initialise because there are too many stubs");
-			initialising = false;
-			return Double.NEGATIVE_INFINITY;
-		}
-
 		
 		// Condition checker
 		if (lambda <= mu) {
@@ -459,19 +446,26 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		// Just count the stubs - don't care about time
 		if (!stubs.getReversibleJump()) {
 			
-			if (node.isRoot() || h0 == h1) return 0;
 			
+			
+			if (node.isRoot()) return 0;
+			
+			// A zero length branch must have zero stubs
 			int m = stubs.getNStubsOnBranch(branchNr);
+			if (h0 <= h1) {
+				if (m == 0) return 0;
+				return Double.NEGATIVE_INFINITY;
+			}
+			
+			
 			double g = getGForInterval(h1, h0, lambda, mu, psi, rho);
 			
 			
 			// Poisson(g) distribution
-			p = 0;
-			p += -g;
-			p += m * Math.log(g);
+			p = m*Math.log(g) - g;
 			for (int i = 2; i <= m; i ++) p += -Math.log(i);
 			
-			
+			//Log.warning("g=" + g);
 			//Log.warning( " m=" + m + " " + g + " " + p + " " + h0 + " " + h1);
 			
 			return p;
@@ -535,14 +529,20 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		// Just count the stubs - don't care about time
 		if (!stubs.getReversibleJump()) {
 			
+			
 			if (node.isRoot()) return 0;
 			
+			// A zero length branch must have zero stubs
 			int m = stubs.getNStubsOnBranch(branchNr);
+			if (h0 <= h1) {
+				if (m == 0) return 0;
+				return Double.NEGATIVE_INFINITY;
+			}
+			
 			double g = getGForInterval(h1, h0, lambda, mu);
 			
 			// Poisson(g) distribution
-			p += -g;
-			p += m * Math.log(g);
+			p = m*Math.log(g) - g;
 			for (int i = 2; i <= m; i ++) p += -Math.log(i);
 			return p;
 			

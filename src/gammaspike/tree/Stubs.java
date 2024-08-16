@@ -20,10 +20,12 @@ import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.evolution.tree.TreeInterface;
 import beast.base.inference.CalculationNode;
+import beast.base.inference.Distribution;
 import beast.base.inference.parameter.BooleanParameter;
 import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.util.Randomizer;
+import gammaspike.distribution.BranchSpikePrior;
 import gammaspike.distribution.StubExpectation;
 import gammaspike.distribution.StumpedTreePrior;
 
@@ -57,6 +59,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	
 
 	StubExpectation stubExpectation = null;
+	BranchSpikePrior spikePrior = null;
 	StubMode stubMode;
 	long[] sampledStubSampleNr = null;
 	int[] sampledStubNr = null;
@@ -161,20 +164,33 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 			
 			stubExpectation = priorInput.get();
 			Log.warning("Found distribution " + ((BEASTObject)stubExpectation).getID());
-//			
-//			// Find the object that is used to compute the expected number of stubs
-//			for (BEASTInterface o : this.getOutputs()) {
-//				if (o != null && o instanceof BEASTObject) {
-//					//Log.warning("input :" + o.getClass().getCanonicalName());
-//					
-//					if (o instanceof StubExpectation) {
-//						stubExpectation = (StubExpectation)o;
-//						Log.warning("Found distribution " + ((BEASTObject)stubExpectation).getID());
-//					}
-//				}
-//				
-//				
-//			}
+			
+			// Find the object that is used to compute the spike prior
+			for (BEASTInterface o : this.getOutputs()) {
+				if (o != null && o instanceof BEASTObject) {
+					//Log.warning("input :" + o.getClass().getCanonicalName());
+					
+					if (o instanceof BranchSpikePrior) {
+						
+						if (spikePrior != null) {
+							throw new IllegalArgumentException("Found multiple BranchSpikePrior objects that are pointing to "
+									+ this.getID() + ". Please ensure there is 1 at most (or estimate stubs directly).");
+						}
+						
+						spikePrior = (BranchSpikePrior)o;
+						Log.warning("Found spike prior " + spikePrior.getID());
+					}
+					
+					else if (o instanceof Distribution && o != stubExpectation) {
+						throw new IllegalArgumentException("Found an unknown distribtuion " + o.getID() + " pointing to "
+								+ this.getID() + ". Please ensure the only priors being used are the tree prior and a spike prior (or estimate stubs directly).");
+				
+						
+					}
+				}
+				
+				
+			}
 			
 			if (stubExpectation == null) {
 				throw new IllegalArgumentException("Cannot find an object that implements 'StubExpectation'");
@@ -363,16 +379,45 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		
 		if (this.estimateStubs()) return -1;
 		
+		
+		// No stubs on root
+		if (nodeNr == treeInput.get().getRoot().getNr()) {
+			return 0;
+		}
+		
 		// To enssyre harmony across all loggers, don't sample again on this state if it has already been sampled
 		if (sampleNr == this.sampledStubSampleNr[nodeNr]) {
 			return this.sampledStubNr[nodeNr];
 		}
 		
 		
+		
+		
 		Node node = treeInput.get().getNode(nodeNr);
+		double h0 = node.getHeight();
 		double h1 = node.isRoot() ? node.getHeight() : node.getParent().getHeight(); 
-		double poissonMean = stubExpectation.getMeanStubNumber(node.getHeight(), h1);
-		int nstubs = (int) Randomizer.nextPoisson(poissonMean);
+		double poissonMean = stubExpectation.getMeanStubNumber(h0, h1);
+		
+		int nstubs = 0;
+		
+		if (poissonMean == 0) {
+			nstubs = 0;
+		}
+		
+		else if (this.spikePrior == null) {
+			
+			// Sample from Poisson distribution if there are no spikes
+			nstubs = (int) Randomizer.nextPoisson(poissonMean);
+			
+			
+		}else {
+			
+			// Sample from a Gamma-Poisson distribution
+			double[] cf = this.spikePrior.getCumulativeProbs(poissonMean, nodeNr);
+			nstubs = Randomizer.randomChoice(cf);
+			
+		}
+		
 		
 		//Log.warning(" on branch " + h1 + ", " + node.getHeight() + " mean is " + poissonMean + " and n is " + nstubs);
 		
