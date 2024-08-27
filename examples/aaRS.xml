@@ -213,7 +213,7 @@
             <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
             <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
 
-            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
 
            
         </state>
@@ -469,7 +469,7 @@
 
 
                 <prior name="distribution" x="@spikeMean">
-                    <LogNormal  name="distr" meanInRealSpace="true" M="0.05" S="1.2"/>
+                    <LogNormal  name="distr" meanInRealSpace="true" M="0.01" S="1.2"/>
                  </prior>
 
 
@@ -529,7 +529,7 @@
         <operator id="SpikeUpRateDown" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates" spikes="@spikes" scaleFactor="0.1" weight="5.0"/>
         <!-- <operator id="clockRate.scale" spec="kernel.BactrianScaleOperator" parameter="@clockRate" scaleFactor="0.1" weight="0.5"/> -->
         
-         <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1.0" />
+         <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1" />
 
 
         <!-- Site/clock model operators -->

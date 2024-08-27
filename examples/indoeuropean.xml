@@ -28,6 +28,7 @@
     <map name="Dirichlet" >beast.base.inference.distribution.Dirichlet</map>
 
 
+<stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" prior="@StumpedTreePrior" />
 
 
 <data id="data" spec="Alignment"  >
@@ -273,9 +274,13 @@
             <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="0">0.1</parameter>
             <parameter id="r0" spec="parameter.RealParameter" name="stateNode" lower="1">1.05</parameter>
             <parameter id="samplingProportion" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.02</parameter>
-            <parameter id="stubBranchNumbers" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
-            <parameter id="stubTimes" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
-            <!-- <parameter id="stubIndicators" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter> -->
+
+           <!--  <parameter id="stubBranchNumbers" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
+            <parameter id="stubTimes" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter> -->
+
+            <parameter id="stubsPerBranch" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
+
+
             <parameter id="stubVariableSelection" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
 
 
@@ -299,7 +304,7 @@
             <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
             <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
             <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
-            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
 
             <parameter id="origin" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="20.0">20.0</parameter>
             <parameter id="reproductiveNumber" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="Infinity">1.5</parameter>
@@ -323,22 +328,11 @@
                
 
 
- 
-                
-                
-            <!-- <distribution id="BDlikelihood" spec="beast.base.inference.CompoundDistribution"> -->
-               <!--  <distribution id="birthDeath" spec="bdsky.evolution.speciation.BirthDeathSkylineModel" becomeUninfectiousRate="@becomeUninfectiousRate" origin="@origin" reproductiveNumber="@reproductiveNumber" rho="@rho" samplingProportion="@samplingProportion" samplingRateChangeTimes="@samplingRateChangeTimes.t:tree" tree="@tree">
-                    <reverseTimeArrays id="BooleanParameter.0" spec="parameter.BooleanParameter" dimension="5">false false true false false</reverseTimeArrays>
-                    <parameter id="r" spec="parameter.RealParameter" lower="0.0" name="removalProbability" upper="1.0">0.0</parameter>
-                </distribution>
-            </distribution>
 
-                 <distribution id="ForwardTimeSimulatorResub" spec="gammaspike.distribution.StumpedTreePrior" r0="@reproductiveNumber" origin="@origin" lambda="@lambda" ignoreTreePrior="true" tree="@tree"> 
-                    <stubs idref="stubs" />
-                 </distribution> -->
 
-                  <distribution id="ForwardTimeSimulatorResub" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" origin="@origin" lambda="@lambda" samplingProportion="@samplingProportion" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
-                    <stubs id="stubs" origin="@origin" spec="gammaspike.tree.Stubs" tree="@tree" branchNr="@stubBranchNumbers" time="@stubTimes" />
+                  <distribution id="StumpedTreePrior" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" origin="@origin" lambda="@lambda" samplingProportion="@samplingProportion" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
+                    <!-- <stubs id="stubs" origin="@origin" spec="gammaspike.tree.Stubs" tree="@tree" branchNr="@stubBranchNumbers" time="@stubTimes" /> -->
+                    <!-- <stubs id="stubs" origin="@origin" spec="gammaspike.tree.Stubs" tree="@tree" stubsPerBranch="@stubsPerBranch" /> -->
                  </distribution>
 
 
@@ -872,7 +866,7 @@
 
 
                 <prior name="distribution" x="@spikeMean">
-                    <LogNormal  name="distr" meanInRealSpace="true" M="1e-3" S="1.2"/>
+                    <LogNormal  name="distr" meanInRealSpace="true" M="0.01" S="1"/>
                  </prior>
 
 
@@ -889,7 +883,7 @@
 
 
                  
-                  <prior name="distribution" spec="gammaspike.distribution.BranchSpikePrior" stubs="@stubs" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
+                  <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" indicator="@useSpikeModel" stubs="@stubs" tree="@tree" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
 
 
                   <prior name="distribution" x="@clockRate">
@@ -909,7 +903,7 @@
 
                 <distribution id="treeLikelihood" spec="TreeLikelihood" tree="@tree">
                     
-                    <data id="data.filtered" spec="FilteredAlignment" ascertained="true" data="@data" excludeto="1" filter="1-4990"> 
+                    <data id="data.filtered" spec="FilteredAlignment" ascertained="true" data="@data" excludeto="1" filter="1-4990">  <!-- 4990 -->
                         <userDataType id="TwoStateCovarion.0" spec="beast.base.evolution.datatype.TwoStateCovarion"/>
                     </data>
 
@@ -957,13 +951,15 @@
 
 
 
-        <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1.0" />
+        <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1" />
 
 
 
-        <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="2.5"/>
-        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="0.5"/>
+        <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="10"/>
+        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="3"/>
         <operator id="spikeShape.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeShape" scaleFactor="0.1" weight="0.5"/>
+
+
 
         <!-- <operator id="ORCInternalnodesOperator.c:10" spec="orc.consoperators.InConstantDistanceOperator" twindowSize="0.005"  tree="@tree" clockModel="@clockModel" rates="@branchRates"  weight="1">
                 <kernel spec="beast.base.inference.operator.kernel.KernelDistribution$Bactrian" m="0.95" mode="bactrian_normal"/>
@@ -1010,11 +1006,16 @@
          
 
         <!-- Stub operators -->
-        <operator id="stubCreator" spec="gammaspike.operator.StubCreator" stubs="@stubs" tree="@tree" weight="10.0" />
+       <!--  <operator id="stubCreator" spec="gammaspike.operator.StubCreator" stubs="@stubs" tree="@tree" weight="10.0" />
         <operator id="stub.scale" spec="kernel.BactrianScaleOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0" />
         <operator id="stubTimesInterval" spec="kernel.BactrianIntervalOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0"/>
-        <operator id="swapBranches" spec="gammaspike.operator.StubSwapOperator" parameter="@stubBranchNumbers" weight="1.0"/>
+        <operator id="swapBranches" spec="gammaspike.operator.StubSwapOperator" parameter="@stubBranchNumbers" weight="1.0"/> -->
 
+
+         <!-- Stub operators -->
+     <!--    <operator id="swapStubs" spec="SwapOperator" intparameter="@stubsPerBranch" weight="10.0"/> 
+        <operator id="stubRandomWalk" spec="IntRandomWalkOperator" parameter="@stubsPerBranch" weight="10.0" windowSize="1"/> 
+ -->
 
    <operator id="SampledNodeDateRandomWalker.0" spec="gammaspike.operator.StubbedNodeDateRandomWalker" tree="@tree" stubs="@stubs" weight="10.0" windowSize="0.5">
         <taxonset id="sampledTips" spec="TaxonSet">

@@ -26,7 +26,7 @@
     <map name="Dirichlet" >beast.base.inference.distribution.Dirichlet</map>
 
 
-
+     <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" prior="@StumpedTreePrior" />
 
     <data id="data" spec="beast.base.evolution.alignment.Alignment" >
 
@@ -236,10 +236,11 @@ Vampyroteuthis_infernalis=0
             <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
             <parameter id="r0" spec="parameter.RealParameter" name="stateNode" lower="0">1.1</parameter>
             <parameter id="samplingProportion" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.1</parameter>
-            <parameter id="stubBranchNumbers" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
+           <!--  <parameter id="stubBranchNumbers" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
             <parameter id="stubTimes" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
             <parameter id="stubVariableSelection" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
-
+ -->
+            <parameter id="stubsPerBranch" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
 
             <parameter id="gammaShape" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
             <parameter id="kappa" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
@@ -251,7 +252,7 @@ Vampyroteuthis_infernalis=0
             <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
             <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
 
-            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
 
             <parameter id="originFBD.t:data" spec="parameter.RealParameter" lower="0.0" name="stateNode">1000.0</parameter>
 
@@ -360,7 +361,8 @@ Vampyroteuthis_infernalis=0
    
 
                  <distribution id="StumpedTreePrior" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" origin="@origin" lambda="@lambda" samplingProportion="@samplingProportion" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
-                    <stubs id="stubs" origin="@origin" spec="gammaspike.tree.Stubs" tree="@tree" branchNr="@stubBranchNumbers" time="@stubTimes" />
+                    <!-- <stubs id="stubs" origin="@origin" spec="gammaspike.tree.Stubs" tree="@tree" branchNr="@stubBranchNumbers" time="@stubTimes" /> -->
+                    <!-- <stubs id="stubs" origin="@origin" spec="gammaspike.tree.Stubs" tree="@tree" stubsPerBranch="@stubsPerBranch" /> -->
                  </distribution>
 
                <!--  <distribution id="FBD.t:data" spec="sa.evolution.speciation.SABirthDeathModel" conditionOnRhoSampling="true" diversificationRate="@lambda" origin="@originFBD.t:data" samplingProportion="@samplingProportionFBD.t:data" tree="@tree" turnover="@turnoverFBD.t:data">
@@ -414,7 +416,7 @@ Vampyroteuthis_infernalis=0
 
 
                 <prior name="distribution" x="@spikeMean">
-                    <LogNormal  name="distr" meanInRealSpace="true" M="0.05" S="1.2"/>
+                    <LogNormal  name="distr" meanInRealSpace="true" M="0.01" S="1.0"/>
                  </prior>
 
 
@@ -423,7 +425,7 @@ Vampyroteuthis_infernalis=0
                  </prior>
 
 
-                 <prior name="distribution" spec="gammaspike.distribution.BranchSpikePrior" stubs="@stubs" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
+                 <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" indicator="@useSpikeModel" tree="@tree" stubs="@stubs" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
                          
 
 
@@ -567,11 +569,14 @@ Vampyroteuthis_infernalis=0
         <operator id="gammaShape.scale" spec="kernel.BactrianScaleOperator" parameter="@gammaShape" scaleFactor="0.1" weight="1.0"/>
         <operator id="kappa.scale" spec="kernel.BactrianScaleOperator" parameter="@kappa" scaleFactor="0.1" weight="1.0"/>
         <operator id="clockSD.scale" spec="kernel.BactrianScaleOperator" parameter="@clockSD" scaleFactor="0.1" weight="5.0"/>
-        <operator id="spikeShape.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeShape" scaleFactor="0.1" weight="1.0"/>
-        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="5.0"/>
-        <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="5.0"/>
         <operator id="rates.scale" spec="kernel.BactrianScaleOperator" parameter="@branchRates" scaleFactor="0.1" weight="5.0"/>
         <operator id="StumpedTreeConstantDistanceOperator" spec="gammaspike.operator.StumpedTreeConstantDistanceOperator" stubs="@stubs" twindowSize="0.005" tree="@tree" rates="@branchRates"  weight="10.0"/>
+
+        
+        <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="10"/>
+        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="3"/>
+        <operator id="spikeShape.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeShape" scaleFactor="0.1" weight="0.5"/>
+
 
 
         <!-- Tree prior operators -->
@@ -614,11 +619,16 @@ Vampyroteuthis_infernalis=0
          
 
         <!-- Stub operators -->
-        <operator id="stubCreator" spec="gammaspike.operator.StubCreator" stubs="@stubs" tree="@tree" weight="10.0" />
+       <!--  <operator id="stubCreator" spec="gammaspike.operator.StubCreator" stubs="@stubs" tree="@tree" weight="10.0" />
         <operator id="stub.scale" spec="kernel.BactrianScaleOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0" />
         <operator id="stubTimesInterval" spec="kernel.BactrianIntervalOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0"/>
-        <operator id="swapBranches" spec="gammaspike.operator.StubSwapOperator" parameter="@stubBranchNumbers" weight="1.0"/>
+        <operator id="swapBranches" spec="gammaspike.operator.StubSwapOperator" parameter="@stubBranchNumbers" weight="1.0"/> -->
 
+
+        <!-- Stub operators -->
+       <!--  <operator id="swapStubs" spec="SwapOperator" intparameter="@stubsPerBranch" weight="10.0"/> 
+        <operator id="stubRandomWalk" spec="IntRandomWalkOperator" parameter="@stubsPerBranch" weight="10.0" windowSize="1"/> 
+ -->
 
 
        
@@ -626,6 +636,7 @@ Vampyroteuthis_infernalis=0
             <log idref="posterior"/>
             <log idref="likelihood"/>
             <log idref="prior"/>
+            <log idref="BranchSpikePrior"/>
             <log idref="useSpikeModel"/>
             <log idref="clockRate"/>
             <log idref="lambda"/>
@@ -658,12 +669,11 @@ Vampyroteuthis_infernalis=0
         </logger>
         <logger id="screenlog" spec="Logger" logEvery="10000">
             <log idref="likelihood"/>
-            <log idref="lambda"/>
-            <log idref="r0" />
-            <log idref="samplingProportion"/>
+            <log idref="spikeShape"/>
             <log idref="spikeMean"/>
             <log idref="useSpikeModel"/>
             <log idref="stubs"/>
+            <log idref="BranchSpikePrior"/>
             <log idref="clockRate"/>
         </logger>
 
