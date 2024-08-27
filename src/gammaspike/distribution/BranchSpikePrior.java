@@ -15,6 +15,7 @@ import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.inference.Distribution;
 import beast.base.inference.State;
+import beast.base.inference.parameter.BooleanParameter;
 import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.inference.util.InputUtil;
@@ -31,6 +32,7 @@ public class BranchSpikePrior extends Distribution {
 	final public Input<RealParameter> meanInput = new Input<>("mean", "mean (=shape*scale) parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED); 
 	
 	final public Input<Tree> treeInput = new Input<>("tree", "tree required for setting the spike dimension (if direct sampling)", Input.Validate.OPTIONAL); 
+	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 of this is false", Input.Validate.OPTIONAL);
 	
 	
 	// If there are too many stubs on a branch (eg. during mixing) then the gamma distribution shape is large, which causes
@@ -298,12 +300,17 @@ public class BranchSpikePrior extends Distribution {
 			double alphaBranch = shape * (k + 1); // One spike for the branch, and one per stub
 			
 			
-			gamma = new GammaDistributionImpl(alphaBranch, scale);
-			double gammaLogP = gamma.logDensity(spikeOfBranch);
-			if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
-				branchP += 0;
+			if (indicatorInput.get() != null && indicatorInput.get().getValue()) {
+			
+				gamma = new GammaDistributionImpl(alphaBranch, scale);
+				double gammaLogP = gamma.logDensity(spikeOfBranch);
+				if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
+					branchP += 0;
+				}else {
+					branchP += Math.exp(p + gammaLogP);
+				}
 			}else {
-				branchP += Math.exp(p + gammaLogP);
+				branchP += pReal;
 			}
 			
 			cumprobs.add(branchP);

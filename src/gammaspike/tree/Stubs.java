@@ -385,7 +385,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 			return 0;
 		}
 		
-		// To enssyre harmony across all loggers, don't sample again on this state if it has already been sampled
+		// To ensure harmony across all loggers, don't sample again on this state if it has already been sampled
 		if (sampleNr == this.sampledStubSampleNr[nodeNr]) {
 			return this.sampledStubNr[nodeNr];
 		}
@@ -410,7 +410,9 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 			nstubs = (int) Randomizer.nextPoisson(poissonMean);
 			
 			
-		}else {
+		} 
+		
+		else {
 			
 			// Sample from a Gamma-Poisson distribution
 			double[] cf = this.spikePrior.getCumulativeProbs(poissonMean, nodeNr);
