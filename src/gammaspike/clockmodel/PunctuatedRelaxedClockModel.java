@@ -38,8 +38,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	
 	
 	
-	final public Input<RealParameter> burstSizeInput = new Input<>("burstSize", "the additive clock rate after a label change.", Input.Validate.OPTIONAL); 
-	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.XOR, burstSizeInput); 
+	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
 	
 	final public Input<Boolean> parseFromTreeInput = new Input<>("parseFromTree", "Set to true if initial values are to be loaded from tree metadata.", false); 
 	final public Input<ParametricDistribution> rateDistInput = new Input<>("distr", "the distribution governing the rates among branches. "
@@ -57,7 +56,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	public void initAndValidate() {
 		
 		if (flabelsInput.get() == null && stubsInput.get() == null && nstubsPerBranchInput.get() == null) {
-			throw new IllegalArgumentException("Please specify one of: flabels, stubs, nstubsPerBranch");
+			//throw new IllegalArgumentException("Please specify one of: flabels, stubs, nstubsPerBranch");
 		}
 		
 		
@@ -164,7 +163,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	}
 
 	
-	public double getBurstSize(Node node, int nbursts) {
+	public double getBurstSize(Node node) {
 		
 		
 		
@@ -175,16 +174,9 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		if (noSpikeOnDatedTipsInput.get()) {
 			if (node.isLeaf() && node.getHeight() > 0) return 0;
 		}
-		
-		// One spike for the whole tree
-		if (burstSizeInput.get() != null) {
-			return nbursts * burstSizeInput.get().getValue();
-		}
-		
+
 		// One spike per branch
-		else {
-			return spikesInput.get().getValue(node.getNr());
-		}
+		return spikesInput.get().getValue(node.getNr());
 
 		
 	}
@@ -213,10 +205,9 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		if (node.getLength() <= 0 || node.isDirectAncestor() || node.isRoot()) return baseRate;
 		
 		
-		int numberOfSBursts = getNumStubsOnBranch(node); 
 		
 		
-		double burstRate = getBurstSize(node, numberOfSBursts);
+		double burstRate = getBurstSize(node);
 		double branchRate = getBranchRate(node);
 		double branchDistance = node.getLength()*baseRate*branchRate + burstRate;
 		
@@ -235,28 +226,14 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		return effectiveRate;
 	}
 
-	
-	private int getNumStubsOnBranch(Node node) {
-		
-		Flabel flabels = flabelsInput.get();
-		if (flabels != null) {
-			return flabels.getNumberOfSingleBursts(node); 
-		}
-		
-		Stubs stubs = stubsInput.get();
-		if (stubs != null) {
-			return stubs.getNStubsOnBranch(node.getNr());
-		}
-		
-		return nstubsPerBranchInput.get().getNativeValue(node.getNr());
-	}
+
 
 
 	@Override
     protected boolean requiresRecalculation() {
 		
 
-        if (InputUtil.isDirty(burstSizeInput) || InputUtil.isDirty(spikesInput) || InputUtil.isDirty(meanRateInput) || 
+        if (InputUtil.isDirty(spikesInput) || InputUtil.isDirty(meanRateInput) || 
     		InputUtil.isDirty(ratesInput) || InputUtil.isDirty(nstubsPerBranchInput) || InputUtil.isDirty(flabelsInput) || InputUtil.isDirty(stubsInput)) {
        	 	return true;
         }
