@@ -25,7 +25,6 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	
 	final public Input<Tree> treeInput = new Input<>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
 	
-	final public Input<Flabel> flabelsInput = new Input<>("flabel", "leaf and internal labels", Input.Validate.OPTIONAL);
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs of the tree", Input.Validate.OPTIONAL);
 	final public Input<IntegerParameter> nstubsPerBranchInput = new Input<>("nstubsPerBranch", "num stubs per brancg.", Input.Validate.OPTIONAL); 
 	
@@ -55,10 +54,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	@Override
 	public void initAndValidate() {
 		
-		if (flabelsInput.get() == null && stubsInput.get() == null && nstubsPerBranchInput.get() == null) {
-			//throw new IllegalArgumentException("Please specify one of: flabels, stubs, nstubsPerBranch");
-		}
-		
+
 		
 		this.nRates = treeInput.get().getNodeCount() - 1;
         this.ratesArray = new double[this.nRates];
@@ -234,7 +230,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		
 
         if (InputUtil.isDirty(spikesInput) || InputUtil.isDirty(meanRateInput) || 
-    		InputUtil.isDirty(ratesInput) || InputUtil.isDirty(nstubsPerBranchInput) || InputUtil.isDirty(flabelsInput) || InputUtil.isDirty(stubsInput)) {
+    		InputUtil.isDirty(ratesInput) || InputUtil.isDirty(nstubsPerBranchInput) || InputUtil.isDirty(stubsInput)) {
        	 	return true;
         }
         

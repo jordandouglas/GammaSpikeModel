@@ -26,7 +26,7 @@ import gammaspike.tree.Stubs;
 public class BranchSpikePrior extends Distribution {
 	
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs of the tree", Input.Validate.OPTIONAL);
-	final public Input<IntegerParameter> nstubsInput = new Input<>("nstubs", "num stubs per branch", Input.Validate.XOR, stubsInput);
+	final public Input<IntegerParameter> nstubsInput = new Input<>("nstubs", "num stubs per branch", Input.Validate.OPTIONAL);
 	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
 	final public Input<RealParameter> shapeInput = new Input<>("shape", "shape parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED);
 	final public Input<RealParameter> meanInput = new Input<>("mean", "mean (=shape*scale) parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED); 
@@ -73,8 +73,9 @@ public class BranchSpikePrior extends Distribution {
         		return logP;
         	}
         	
+
         	
-        	if (stubs.estimateStubs()) {
+        	if (stubs == null || stubs.estimateStubs()) {
         		
         		// Known value of stubs
             	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr);
