@@ -15,7 +15,7 @@ import gammaspike.tree.Stubs;
 @Description("InConstantDistanceOperator from the ORC package but with stub awareness")
 public class StumpedTreeConstantDistanceOperator extends TreeOperator {
 
-	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs for the tree", Input.Validate.REQUIRED);
+	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs for the tree", Input.Validate.OPTIONAL);
 	final public Input<Double> twindowSizeInput = new Input<>("twindowSize", "the size of the window when proposing new node time", Input.Validate.REQUIRED);
 	final public Input<RealParameter> rateInput = new Input<>("rates", "the rates associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.REQUIRED);
 	final public Input<KernelDistribution> proposalKernelInput = new Input<>("kernel", "Proposal kernel for a random walk on the internal node height.", KernelDistribution.newDefaultKernelDistribution());
@@ -40,12 +40,18 @@ public class StumpedTreeConstantDistanceOperator extends TreeOperator {
 		
 		// Cache branch lengths before making proposal
 		Stubs stubs = stubsInput.get();
-        double[] cachedBranchLengths = stubs.prepareJacobian();
+		double[] cachedBranchLengths = null;
+		if (stubs != null) {
+			cachedBranchLengths = stubs.prepareJacobian();
+		}
 		
 		double HR = proposalInner();
 		
 		// Jacobian. Relative stub heights stay the same but absolute heights change
-        double logJacobian = stubs.getLogJacobian(cachedBranchLengths);
+        double logJacobian = 0;
+        if (stubs != null) {
+        	logJacobian = stubs.getLogJacobian(cachedBranchLengths);
+		}
         
         return HR + logJacobian;
 		

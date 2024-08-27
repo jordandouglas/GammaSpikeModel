@@ -42,9 +42,6 @@
                 	rates="@GSMbranchRates.c:$(n)" 
                 	parseFromTree="false"
                 	relaxed="true">
-				<stubs id="GSMstubs.c:$(n)" spec="gammaspike.tree.Stubs" tree="@Tree.t:$(n)">
-					<stubsPerBranch id="GSMstubsPerBranch.c:$(n)" spec="parameter.IntegerParameter" value="4"/>
-				</stubs> 
 			</branchRateModel>
 
                  <prior id="GSMclockRatePrior.c:$(n)" name="distribution" x="@GSMclockRate.c:$(n)">
@@ -69,7 +66,6 @@
 
                 <prior id="GSMbranchSpikePrior.c:$(n)" name="distribution" 
                 	spec="gammaspike.distribution.BranchSpikePrior" 
-                	stubs="@GSMstubs.c:$(n)" 
                 	spikes="@GSMspikes.c:$(n)" 
                 	shape="@GSMspikeShape.c:$(n)" 
                 	mean="@GSMspikeMean.c:$(n)" 
@@ -91,7 +87,7 @@
         <operator id="GSMAdaptableOperatorSamplerRatesInternal.c:$(n)" spec="AdaptableOperatorSampler" weight="20.0">
             <parameter idref="GSMbranchRates.c:$(n)"/>
             <tree idref="Tree.t:$(n)"/>
-            <operator id="GSMStumpedTreeConstantDistanceOperator.c:$(n)" spec="gammaspike.operator.StumpedTreeConstantDistanceOperator" stubs="@GSMstubs.c:$(n)" twindowSize="0.005" tree="@Tree.t:$(n)" rates="@GSMbranchRates.c:$(n)"  weight="10.0"/>
+            <operator id="GSMStumpedTreeConstantDistanceOperator.c:$(n)" spec="gammaspike.operator.StumpedTreeConstantDistanceOperator" twindowSize="0.005" tree="@Tree.t:$(n)" rates="@GSMbranchRates.c:$(n)"  weight="10.0"/>
             <operator id="GSMORCRatesRandomWalk.c:tree.c:$(n)" spec="operator.kernel.BactrianRandomWalkOperator" parameter="@GSMbranchRates.c:$(n)" scaleFactor="0.1" weight="1.0">
                 <kernelDistribution spec="operator.kernel.KernelDistribution$Bactrian"/>
             </operator>
@@ -149,7 +145,6 @@
             <connect srcID='GSMspikeShape.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(GSMspikeShape.c:$(n))'/>
             <connect srcID='GSMspikeMean.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(GSMspikeMean.c:$(n))'/>
             <connect srcID='GSMStumpedTreePrior.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(GSMStumpedTreePrior.c:$(n))'/>
-            <connect srcID='GSMstubs.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(GSMstubs.c:$(n))'/>
             <connect srcID='GSMrateStat.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
             
             <connect srcID='GammaSpikeRelaxedClock.t:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='branchratemodel'
