@@ -1,0 +1,141 @@
+<beast version='2.0'
+       namespace='beast.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.math.distributions:orc.operators:orc.ner'>
+
+
+    <!-- Clock models -->
+    <mergewith point='treePriorTemplates'>
+
+          <!-- Stumped tree prior -->
+        <subtemplate id='StumpedTreePrior' class='gammaspike.distribution.StumpedTreePrior'
+                     mainid='StumpedTreePrior.t:$(n)'
+                     suppressInputs='
+					 gammaspike.distribution.StumpedTreePrior.tree,
+					 gammaspike.distribution.StumpedTreePrior.treeIntervals,
+					 gammaspike.distribution.StumpedTreePrior.turnover,
+					 gammaspike.distribution.StumpedTreePrior.stubs,
+					 gammaspike.distribution.StumpedTreePrior.p,
+					 gammaspike.distribution.StumpedTreePrior.perBranchSpike,
+					 gammaspike.distribution.StumpedTreePrior.ignoreTreePrior,
+					 gammaspike.distribution.StumpedTreePrior.ignoreStubPrior
+					 '
+            hmc='StumpedTreePrior/origin/=StrictClock/clock.rate,
+                 StumpedTreePrior/lambda/=Priors/ClockPrior/,
+                 StumpedTreePrior/r0/=Priors/ClockPrior/,
+                 StumpedTreePrior/samplingProportion/=Priors/ClockPrior/,
+				 StumpedTreePriorUniformOperator/index/=Operators/BactrianNodeOperator/index,
+				 StumpedTreePriorSubtreeSlide/index/=Operators/SubtreeSlide/,
+				 StumpedTreePriorNarrow/index/=Operators/Exchange/,
+				 StumpedTreePriorWide/index/=Operators/Exchange/,
+				 StumpedTreePriorWilsonBalding/index/=Operators/WilsonBalding/,
+				 StumpedTreePriorBICEPSEpochTop/index/=Operators/EpochFlexer/,
+				 StumpedTreePriorBICEPSEpochAll/index/=Operators/EpochFlexer/,
+				 StumpedTreePriorBICEPSTreeFlex/index/=Operators/TreeStretcher/,
+				 StumpedTreePriorTreeRootScaler/index/=Operators/BactrianTreeScaler/,
+				 STPBirthRateScaler/index/=Operators/BactrianRateScaler/,
+				 STPr0Scaler/index/=Operators/BactrianRateScaler/,
+				 STPBirthRatePrior/index/=Priors/BirthRatePrior/,
+				 DeathRatePrior/index/=Priors/DeathRatePrior/                 
+                 '>
+            <![CDATA[
+            
+            	<parameter id="STPorigin.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" estimate="false">0</parameter>
+            	<parameter id="STPBirthRate.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
+            	<parameter id="STPr0.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
+	            <parameter id="STPsamplingProportion.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.02</parameter>
+
+                 <distribution id="StumpedTreePrior.t:$(n)" spec="gammaspike.distribution.StumpedTreePrior" 
+                 	r0="@STPr0.t:$(n)" 
+                 	origin="@STPorigin.t:$(n)" 
+                 	lambda="@STPBirthRate.t:$(n)" 
+                 	ignoreTreePrior="false" 
+                 	samplingProportion="@STPsamplingProportion.t:$(n)"
+                 	tree="@Tree.t:$(n)"> 
+                 </distribution>
+                
+                 <prior id="STPBirthRatePrior.t:$(n)" name="distribution" x="@STPBirthRate.t:$(n)">
+                    <LogNormal name="distr" meanInRealSpace="true" M="30" S="1"/>
+                 </prior>
+
+                 <prior id="STPR0Prior.t:$(n)" name="distribution" x="@STPr0.t:$(n)">
+                    <Exponential name="distr" mean="5" offset="1"/>
+                 </prior> 
+
+                 <prior id="STPOrigninPrior.t:$(n)" name="distribution" x="@STPorigin.t:$(n)">
+                    <Exponential name="distr" mean="5" offset="1"/>
+                 </prior> 
+
+                 <prior id="STPSamplingProportionPrior.t:$(n)" name="distribution" x="@STPsamplingProportion.t:$(n)">
+                    <Beta name="distr" alpha="2" beta="100"/>
+                 </prior>
+                 
+		        <!-- Tree prior operators -->
+        		<operator id="STPbirthRateScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@STPBirthRate.t:$(n)" scaleFactor="0.1" weight="1"/>
+		        <operator id="STPr0Scaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@STPr0.t:$(n)" scaleFactor="0.1" weight="1"/>
+		        <operator id="STPsamplingProportionScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@STPsamplingProportion.t:$(n)" scaleFactor="0.1" weight="0.5"/>
+		        <operator id="STPoriginScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@STPorigin.t:$(n)" scaleFactor="0.1" weight="0.1"/>
+
+		<operator id="STPAVMNTreePrior.t:$(n)" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
+            <transformations id="STPAVMNTreePriorLog.t:$(n)" spec="operator.kernel.Transform$LogTransform">
+                 <f idref="STPBirthRate.t:$(n)"/>
+                 <f idref="STPr0.t:$(n)"/>
+            </transformations>
+             <transformations  id="STPAVMNTreePriorLogit.t:$(n)" spec="operator.kernel.Transform$LogitTransform">
+                 <f idref="STPsamplingProportion.t:$(n)"/>
+            </transformations>
+        </operator> 
+
+			]]>
+
+			<plate fragment="TreeOperators" var="m" range="StumpedTreePrior"/>
+			
+            <connect srcID='STPorigin.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPorigin.t:$(n)/estimate=true'/>
+            <connect srcID='STPBirthRate.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPBirthRate.t:$(n)/estimate=true'/>
+            <connect srcID='STPr0.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPr0.t:$(n)/estimate=true'/>
+            <connect srcID='STPsamplingProportion.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPsamplingProportion.t:$(n)/estimate=true'/>
+
+            <connect srcID='STPBirthRatePrior.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPBirthRate.t:$(n)/estimate=true'>Stumped tree prior birth rate of partition t:$(n)
+            </connect>
+            <connect srcID='STPR0Prior.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPr0.t:$(n)/estimate=true'>Stumped tree prior R0 of partition t:$(n)
+            </connect>
+            <connect srcID='STPOrigninPrior.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPorigin.t:$(n)/estimate=true'>Stumped tree prior origin of partition t:$(n)
+            </connect>
+            <connect srcID='STPSamplingProportionPrior.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPsamplingProportion.t:$(n)/estimate=true'>Stumped tree prior samplping proportion of partition t:$(n)
+            </connect>
+            
+			<connect srcID='StumpedTreePrior.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(StumpedTreePrior.t:$(n))'/>
+            <connect srcID='STPorigin.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(StumpedTreePrior.t:$(n)) and STPorigin.t:$(n)/estimate=true'/>
+            <connect srcID='STPBirthRate.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(StumpedTreePrior.t:$(n)) and STPBirthRate.t:$(n)/estimate=true'/>
+            <connect srcID='STPr0.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(StumpedTreePrior.t:$(n)) and STPr0.t:$(n)/estimate=true'/>
+            <connect srcID='STPsamplingProportion.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(StumpedTreePrior.t:$(n)) and STPsamplingProportion.t:$(n)/estimate=true'/>
+
+            <connect srcID='STPbirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPBirthRate.t:$(n)/estimate=true'>
+                     Scale birth rate of stumped tree prior of partition t:$(n)
+            </connect>
+            <connect srcID='STPr0Scaler.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPr0.t:$(n)/estimate=true'>
+                     Scale R0 of stumped tree prior of partition t:$(n)
+            </connect>
+            <connect srcID='STPsamplingProportionScaler.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(StumpedTreePrior.t:$(n)) and STPsamplingProportion.t:$(n)/estimate=true'>
+                     Scale sampling proportion of stumped tree prior of partition t:$(n)
+            </connect>
+            <connect srcID='STPoriginScaler.t:$(n)' targetID='mcmc' inputName='operator' 
+            		if='inposterior(StumpedTreePrior.t:$(n)) and STPorigin.t:$(n)/estimate=true'>
+                     Scale origin of stumped tree prior of partition t:$(n)
+            </connect>
+            <connect srcID='STPAVMNTreePrior.t:$(n)' targetID='mcmc' inputName='operator' 
+            		if='inposterior(StumpedTreePrior.t:$(n))'>
+                     Scale origin of stumped tree prior of partition t:$(n)
+            </connect>
+        </subtemplate>
+	</mergewith>
+</beast>
