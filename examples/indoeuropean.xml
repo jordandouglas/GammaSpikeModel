@@ -922,22 +922,19 @@
 
 
         <!-- Tree operators -->
-        <operator id="StumpedTreeRootScaler.t:tree" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="true" scaleFactor="0.7" weight="5.0"/>
-        <operator id="StumpedTreeUniform.t:tree" spec="gammaspike.operator.StumpedTreeUniform" tree="@tree" stubs="@stubs" weight="5.0"/>
-        <operator id="StumpedTreeScaler.t:tree" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="false" scaleFactor="0.7" weight="5.0"/>
-        <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="false" scaleFactor="0.7" weight="20.0">
-                <down idref="lambda"/>
+        <operator id="YuleSkylineEpochTop.t:tree" spec="EpochFlexOperator" scaleFactor="0.1" tree="@tree" weight="5.0"/>
+        <operator id="YuleSkylineEpochAll.t:tree" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@tree" weight="5.0"/>
+        <operator id="YuleSkylineTreeFlex.t:tree" spec="TreeStretchOperator" scaleFactor="0.01" tree="@tree" weight="5.0"/>
+        <operator id="SAWideFBD.tree" spec="sa.evolution.operators.SAExchange" isNarrow="false"  tree="@tree" weight="3.0"/>
+        <operator id="SANarrowFBD.tree" spec="sa.evolution.operators.SAExchange"  tree="@tree" weight="20.0"/>
+        <operator id="SAUniformOperatorFBD.tree" spec="sa.evolution.operators.SAUniform" tree="@tree" weight="30.0" />
+        <operator id="SATreeRootScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95" tree="@tree" rootOnly="true" weight="3.0" />
+        <operator id="SATreeScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95"  tree="@tree" weight="3.0"/>
+        <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="5.0"/>
+        <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.7" weight="10.0">
+                <tree idref="tree"/>
+                <down idref="clockRate"/>
         </operator>
-        <operator id="StumpedTreeNarrowExchange.t:tree" spec="gammaspike.operator.StumpedTreeExchange" stubs="@stubs" isNarrow="true" tree="@tree" weight="20.0"/>
-        <operator id="StumpedTreeWideExchange.t:tree" spec="gammaspike.operator.StumpedTreeExchange" stubs="@stubs" isNarrow="false" tree="@tree" weight="5.0"/>
-
-
-        <operator id="StubTreeStretchOperator.t:tree" spec="gammaspike.operator.StubTreeStretchOperator" tree="@tree" stubs="@stubs" scaleFactor="0.7" weight="5.0"/>
-        <operator id="StubEpochFlexOperator.t:tree" spec="gammaspike.operator.StubEpochFlexOperator" tree="@tree" stubs="@stubs" scaleFactor="0.7" weight="5.0"/>
-
-         <!-- Add or remove a sampled ancestor -->
-         <operator id="LeafToSampledAncestorJump.t:tree" spec="gammaspike.operator.StubbedLeafToSampledAncestorJump" stubs="@stubs" tree="@tree" weight="1.0"/>
-
 
         <!-- Site/clock model operators -->
         
