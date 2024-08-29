@@ -2,7 +2,8 @@
 
 The gamma spike model is a phylogenetic clock model for BEAST 2. This method tests for punctuated equilibrium, by assigning each branch a gradual clock-rate and an instaneaneous spike of abrupt evolution. The magnitudes of each branch rate and branch spike are independent and identically distributed.  
 
-The genetic distance of a branch is calculated as:
+The genetic distance of a branch takes the form:
+
 ```
 distance = rate x length + spike
 ```
@@ -47,15 +48,17 @@ This package requires BEAST 2.7.7. or newer.
 		- The mean spike size `spikeMean` (under a Gamma distribution). High mean = larger expected spike sizes. 
 		- The shape of spike sizes `spikeShape` (Gamma distribution). High shape = smaller variance of spike sizes.
 		- One `spike` for every branch in the tree, whose sizes are Gamma distributed under the prior.
+		- The standard deviation `sigma` of branch rates under a gradual relaxed clock (for a LogNormal distribution). High standard deviation = higher variance of branch rates. Same meaning as relaxed clock / ORC model.
+		- One `rate` for every branch in the tree, whose sizes are LogNormally distributed under the prior.
+		- The `clockRate` in units of 'gradual changes per site per unit of time'. If there is no temporal information (e.g., tip dates, node calibrations) then leave this term fixed at 1.0. 
 		- A boolean model indicator `useSpikeModel` that determines whether the spikes are being used or not.  
 
 4. Open the `Priors` tab and select the `Stumped Tree Prior`. 
-	- This uses the fossilised birth-death tree prior with the following parameters
+	- This uses the [fossilised birth-death](https://www.beast2.org/divergence-dating-with-sampled-ancestors-fbd-model/) tree prior with the following parameters
 		- Birth rate `lambdaXX` .
 		- Reproduction number `R0`, which is assumed to be greater than 1. 
-		- Sampling proportion `XXXX`. If all taxa are extant, then set this to 0 and the model is just a birth-death process.
+		- Sampling proportion `XXXX`. If all taxa are extant, then set this to 0 and the model is just a birth-death process. If not, then sampled ancestors are estimated. 
 	- By using this prior, the number of stubs on each branch will be logged and inform the clock model spike sizes.
-	- Sampled ancestors are estimated. 
 	- If a stumped tree prior is not selected, the clock model will assume there are no stubs on any branch.
 	- Currently, stubs are only available for the fossilised-birth-death model (and not coalescent or skyline models).
 
@@ -73,7 +76,7 @@ Si ~ Gamma(shape=spikeShape*(ni + 1), scale=spikeMean/spikeShape)
 
 where `ni` is the number of stubs on branch `i`. Longer branches and older branches usually have more stubs. The reported `spike` on each branch is the total sum of all `ni + 1` spikes along that branch.
 
-Then `spikeMean` is the average rate that sites change at each speciation event (observed or unobserved). For example an average spike size of 0.01 means that 1% of all sites are expected to change (possibly back into the original state) at each bifurcation. We examined 9 empirical datasets with support for punctuated equilibrium, and found that `spikeMean` estimates ranged from 0.001 to 0.07. The default prior for `spikeMean` is centered around this interval. This is an important parameter, and testing for sensitivity is recommended.
+Then `spikeMean` is the average number of changes per site per bifurcation (which may be observed or unobserved). For example an average spike size of 0.01 means that 1% of all sites are expected to change (possibly back into the original state) at each bifurcation - one per internal node and one per stub. We examined 9 empirical datasets with support for punctuated equilibrium, and found that `spikeMean` estimates ranged from 0.001 to 0.07. The default prior for `spikeMean` is centered around this interval. This is an important parameter, and testing for sensitivity is recommended.
 
 
 
@@ -86,13 +89,18 @@ Then `spikeMean` is the average rate that sites change at each speciation event 
 The `useSpikeModel` parameter can be used for hypothesis testing. When this parameter is 1, the spike model is being used, and when 0 the relaxed clock. Every dataset is different, with some strongly favouring one model over the other, and others being uncertain. If the average value of `useSpikeModel` is over 0.9, there is strong support in favour of punctuated equilibrium. 
 
 
+By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. This can be adjusted using BEAUti.
+
+
 ## Convergence during MCMC
 
-In most instances, we found this model converges quite well despite its large parameter space  However, the `useSpikeModel` parameter can lead to a bimodal distribution that causes mixing issues.  If this model is too slow to converge, we recommend the following options:
+In most instances, we found this model converged reasonably well despite its large parameter space  However, in some cases the `useSpikeModel` parameter lead to a bimodal distribution that caused mixing issues.  If this model is taking too long to converge, we recommend the following options:
 
 1. Try using [Coupled MCMC](https://www.beast2.org/2020/01/14/metropolis-coupled-mcmcmc3-works.html).
 
 2. Try running separate analyses with `useSpikeModel` respectivley fixed at either 0 or 1. Unfortunately, this configuration does not enable hypothesis testing (Bayesian model averaging). 
+
+3. In general, it is good practice to run multiple MCMC chains in parallel and confirm they have converged to the same distribution. If they did, then the chains can be combined, thereby expediting the process.
 
 
 ## Support
