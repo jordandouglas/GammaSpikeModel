@@ -84,6 +84,8 @@ Then `spikeMean` is the average number of changes per site per bifurcation (whic
 
 
 
+
+
 ## Hypothesis testing
 
 The `useSpikeModel` parameter can be used for hypothesis testing. When this parameter is 1, the spike model is being used, and when 0 the relaxed clock. Every dataset is different, with some strongly favouring one model over the other, and others being uncertain. If the average value of `useSpikeModel` is over 0.9, there is strong support in favour of punctuated equilibrium. 
@@ -92,15 +94,21 @@ The `useSpikeModel` parameter can be used for hypothesis testing. When this para
 By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. This can be adjusted using BEAUti.
 
 
-## Convergence during MCMC
 
-In most instances, we found this model converged reasonably well despite its large parameter space  However, in some cases the `useSpikeModel` parameter lead to a bimodal distribution that caused mixing issues.  If this model is taking too long to converge, we recommend the following options:
+
+## Speeding up MCMC convergence
+
+In most instances, we found this model converged reasonably well despite its large parameter space.  However, in some cases the `useSpikeModel` parameter lead to a bimodal distribution that caused mixing issues.  If this model is taking too long to converge, we recommend the following remedies:
 
 1. Try using [Coupled MCMC](https://www.beast2.org/2020/01/14/metropolis-coupled-mcmcmc3-works.html).
 
 2. Try running separate analyses with `useSpikeModel` respectivley fixed at either 0 or 1. Unfortunately, this configuration does not enable hypothesis testing (Bayesian model averaging). 
 
 3. In general, it is good practice to run multiple MCMC chains in parallel and confirm they have converged to the same distribution. If they did, then the chains can be combined, thereby expediting the process.
+
+4. If the spike-related parameters have low effective sample sizes, it might come from the `spikeShape` jumping between two modes. In this case, consider fixing `spikeShape` (e.g., to 2). 
+
+
 
 
 ## Support
