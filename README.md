@@ -55,8 +55,9 @@ This package requires BEAST 2.7.7. or newer.
 		- Reproduction number `R0`, which is assumed to be greater than 1. 
 		- Sampling proportion `XXXX`. If all taxa are extant, then set this to 0 and the model is just a birth-death process.
 	- By using this prior, the number of stubs on each branch will be logged and inform the clock model spike sizes.
+	- Sampled ancestors are estimated. 
 	- If a stumped tree prior is not selected, the clock model will assume there are no stubs on any branch.
-	- Currently, stubs are only available for the fossilised-birth-death model (and not coalescent or skyline models). 
+	- Currently, stubs are only available for the fossilised-birth-death model (and not coalescent or skyline models).
 
 5. Configure priors and save the XML file as per usual.
 
@@ -94,7 +95,7 @@ This model comes with a large parameter space. Notably, the `useSpikeModel` para
 2. Try running separate analyses with `useSpikeModel` respectivley fixed at either 0 or 1. Unfortunately, this configuration does not enable hypothesis testing (Bayesian model averaging). 
 
 
-## Contact
+## Support
 
 BEAST user forums [https://groups.google.com/g/beast-users](https://groups.google.com/g/beast-users)
 
