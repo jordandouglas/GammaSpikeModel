@@ -88,9 +88,9 @@ The `useSpikeModel` parameter can be used for hypothesis testing. When this para
 
 ## Convergence during MCMC
 
-This model comes with a large parameter space. Notably, the `useSpikeModel` parameter sometimes leads to a bimodal distribution and therefore causes mixing issues.  We recommend the following options to help with convergence during MCMC
+In most instances, we found this model converges quite well despite its large parameter space  However, the `useSpikeModel` parameter can lead to a bimodal distribution that causes mixing issues.  If this model is too slow to converge, we recommend the following options:
 
-1. Use [Coupled MCMC](https://www.beast2.org/2020/01/14/metropolis-coupled-mcmcmc3-works.html).
+1. Try using [Coupled MCMC](https://www.beast2.org/2020/01/14/metropolis-coupled-mcmcmc3-works.html).
 
 2. Try running separate analyses with `useSpikeModel` respectivley fixed at either 0 or 1. Unfortunately, this configuration does not enable hypothesis testing (Bayesian model averaging). 
 
