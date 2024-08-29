@@ -317,11 +317,8 @@
 
             <parameter id="clockRate" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
            
-            <parameter id="origin" spec="parameter.RealParameter" name="stateNode" lower="0">0</parameter>
             <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
             <parameter id="r0" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
-			<parameter id="stubsPerBranch" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
-            <parameter id="stubVariableSelection" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
 
 
             <parameter id="branchRates" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
@@ -356,7 +353,7 @@
 -->               
 
 				 
-			     <distribution id="StumpedTreePrior" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" origin="@origin" lambda="@lambda" ignoreTreePrior="false" tree="@tree"> 
+			     <distribution id="StumpedTreePrior" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" lambda="@lambda" ignoreTreePrior="false" tree="@tree"> 
                  </distribution>
 
 

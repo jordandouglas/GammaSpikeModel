@@ -247,7 +247,7 @@ Vampyroteuthis_infernalis=0
             <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
             <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
 
-            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">$(initialSpikeIndicator)</parameter>
 
 
            
@@ -507,13 +507,8 @@ Vampyroteuthis_infernalis=0
 
         </distribution>
 
-        <operator id="UpDown" spec="UpDownOperator" scaleFactor="0.7" weight="10.0">
-                <down idref="tree"/>
-                <down idref="clockRate"/>
-        </operator>
 
-        <!-- Add or remove a sampled ancestor -->
-        <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="1.0"/>
+
 
 
 
@@ -532,20 +527,25 @@ Vampyroteuthis_infernalis=0
 
 
         <!-- Tree operators -->
-        <operator id="YuleSkylineEpochTop.t:tree" spec="EpochFlexOperator" scaleFactor="0.1" tree="@tree" weight="2.0"/>
-        <operator id="YuleSkylineEpochAll.t:tree" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@tree" weight="2.0"/>
-        <operator id="YuleSkylineTreeFlex.t:tree" spec="TreeStretchOperator" scaleFactor="0.01" tree="@tree" weight="2.0"/>
-        <operator id="YuleSkylineTreeRootScaler.t:tree" spec="kernel.BactrianScaleOperator" rootOnly="true" scaleFactor="0.1" tree="@tree" upper="10.0" weight="3.0"/>
-        <operator id="YuleSkylineUniformOperator.t:tree" spec="kernel.BactrianNodeOperator" tree="@tree" weight="30.0"/>
-        <operator id="YuleSkylineSubtreeSlide.t:tree" spec="kernel.BactrianSubtreeSlide" tree="@tree" weight="15.0"/>
-        <operator id="YuleSkylineNarrow.t:tree" spec="Exchange" tree="@tree" weight="15.0"/>
-        <operator id="YuleSkylineWide.t:tree" spec="Exchange" isNarrow="false" tree="@tree" weight="3.0"/>
-        <operator id="YuleSkylineWilsonBalding.t:tree" spec="WilsonBalding" tree="@tree" weight="3.0"/>
+        <operator id="YuleSkylineEpochTop.t:tree" spec="EpochFlexOperator" scaleFactor="0.1" tree="@tree" weight="5.0"/>
+        <operator id="YuleSkylineEpochAll.t:tree" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@tree" weight="5.0"/>
+        <operator id="YuleSkylineTreeFlex.t:tree" spec="TreeStretchOperator" scaleFactor="0.01" tree="@tree" weight="5.0"/>
+        <operator id="SAWideFBD.tree" spec="sa.evolution.operators.SAExchange" isNarrow="false"  tree="@tree" weight="3.0"/>
+        <operator id="SANarrowFBD.tree" spec="sa.evolution.operators.SAExchange"  tree="@tree" weight="20.0"/>
+        <operator id="SAUniformOperatorFBD.tree" spec="sa.evolution.operators.SAUniform" tree="@tree" weight="30.0" />
+        <operator id="SATreeRootScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95" tree="@tree" rootOnly="true" weight="3.0" />
+        <operator id="SATreeScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95"  tree="@tree" weight="3.0"/>
+        <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="5.0"/>
+        <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.7" weight="10.0">
+                <tree idref="tree"/>
+                <down idref="clockRate"/>
+        </operator>
+
 
         <operator id="SpikeUpRateDown" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates" spikes="@spikes" scaleFactor="0.1" weight="5.0"/>
         <operator id="clockRate.scale" spec="kernel.BactrianScaleOperator" parameter="@clockRate" scaleFactor="0.1" weight="0.5"/>
         
-         <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1.0" />
+         <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="$(isModelAveraging)" />
 
 
         <!-- Site/clock model operators -->

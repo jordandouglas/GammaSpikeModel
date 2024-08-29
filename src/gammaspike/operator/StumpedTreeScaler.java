@@ -24,7 +24,7 @@ public class StumpedTreeScaler extends Operator {
 
 
 	final public Input<Tree> treeInput = new Input<>("tree", "all tree divergence times are scaled", Input.Validate.REQUIRED);
-	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs for the tree", Input.Validate.REQUIRED);
+	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs for the tree", Input.Validate.OPTIONAL);
 	final public Input<List<StateNode>> upInput = new Input<>("up", "zero or more items to scale in the same direction as the tree", new ArrayList<>());
 	final public Input<List<StateNode>> downInput = new Input<>("down", "zero or more items to scale in the reverse direction of the tree", new ArrayList<>());
     
@@ -68,7 +68,10 @@ public class StumpedTreeScaler extends Operator {
             Stubs stubs = stubsInput.get();
             
             // Cache branch lengths before making proposal
-            double[] cachedBranchLengths = stubs.prepareJacobian();
+            double[] cachedBranchLengths = null;
+            if (stubs != null) {
+            	cachedBranchLengths = stubs.prepareJacobian();
+            }
             
             final Tree tree = (Tree)InputUtil.get(treeInput, this);
             if (rootOnlyInput.get()) {
@@ -93,8 +96,11 @@ public class StumpedTreeScaler extends Operator {
                 
                 // Hastings ratio needs to be aware of how many are on the two branches under and one above 
                 //int nstubs = stubs.getNStubsOnBranch(node.getLeft().getNr()) + stubs.getNStubsOnBranch(node.getRight().getNr());
-                double stubJacobian = stubs.getLogJacobian(cachedBranchLengths);
                
+                double stubJacobian = 0;
+                if (stubs != null) {
+            		stubJacobian = stubs.getLogJacobian(cachedBranchLengths);
+                }
                 
                 hastingsRatio = Math.log(scale) + stubJacobian;
                 
@@ -106,8 +112,7 @@ public class StumpedTreeScaler extends Operator {
                 // Scale the whole tree and a bunch of other parameters
                 final int scaledNodes = tree.scale(scale);
                 
-                // Stubs are automatically scaled with the tree, as their heights are relative but hastings ratio needs to be aware
-                double stubJacobian = stubs.getLogJacobian(cachedBranchLengths);
+               
                
                 
                 int goingUp = scaledNodes;
@@ -133,6 +138,12 @@ public class StumpedTreeScaler extends Operator {
                     }
                 }
                 
+                
+                // Stubs are automatically scaled with the tree, as their heights are relative but hastings ratio needs to be aware
+                double stubJacobian = 0;
+                if (stubs != null) {
+            		stubJacobian = stubs.getLogJacobian(cachedBranchLengths);
+                }
                 
                 // Hastings ratio
                 hastingsRatio = Math.log(scale) * (goingUp - goingDown) + stubJacobian;

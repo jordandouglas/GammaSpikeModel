@@ -18,7 +18,7 @@ import beast.base.util.Randomizer;
 import gammaspike.tree.Stubs;
 
 
-// TODO: does not give correct posterior when origin is used
+
 @Description("Prior distribution on a stumped tree")
 public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExpectation {
 
@@ -31,7 +31,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	//final public Input<RealParameter> rhoInput = new Input<>("rho", "extant sampling probability rho (default 1)", Input.Validate.OPTIONAL);
 	
 	
-	final public Input<RealParameter> originInput = new Input<>("origin", "length of origin branch", Validate.OPTIONAL);
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "the stubs of this tree", Input.Validate.OPTIONAL);
 	final public Input<Boolean> ignoreTreePriorInput = new Input<>("ignoreTreePrior", "ignore tree prior (debugging)", false);
 	final public Input<Boolean> ignoreStubPriorInput = new Input<>("ignoreStubPrior", "ignore tree prior (debugging)", false);
