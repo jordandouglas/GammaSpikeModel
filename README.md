@@ -12,7 +12,7 @@ Advantages over other clock models:
 
 1. Accounts for the common scenario where evolution is accelerated at the time of branching.
 2. The hypothesis of punctuated equilibrium is tested during MCMC using model averaging.
-3. If the hypothesis is rejected, then MCMC falls back on the standard relaxed clock (ORC model).
+3. If the hypothesis is rejected, then MCMC falls back on the standard relaxed clock ([ORC](https://github.com/jordandouglas/ORC) model).
 4. If the hypothesis is accepted, then divergence times and topology estimates are likely to be more accurate.
 5. In either case, the number of unobserved speciation events on each branch is also estimated (i.e., the *stubs*).
 
@@ -46,7 +46,7 @@ This package requires BEAST 2.7.7. or newer.
 	- This will introduce the following parameters
 		- The mean spike size `spikeMean` (under a Gamma distribution). High mean = larger expected spike sizes. 
 		- The shape of spike sizes `spikeShape` (Gamma distribution). High shape = smaller variance of spike sizes.
-		- One spike `spike` for every branch in the tree, whose sizes follow the Gamma distribution above.
+		- One `spike` for every branch in the tree, whose sizes are Gamma distributed under the prior.
 		- A boolean model indicator `useSpikeModel` that determines whether the spikes are being used or not.  
 
 4. Open the `Priors` tab and select the `Stumped Tree Prior`. 
