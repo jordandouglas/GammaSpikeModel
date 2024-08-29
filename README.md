@@ -12,8 +12,8 @@ Advantages over other clock models:
 
 1. Accounts for the common scenario where evolution is accelerated at the time of branching.
 2. The hypothesis of punctuated equilibrium is tested during MCMC using model averaging.
-3. If the hypothesis is rejected, then MCMC falls back on the standard relaxed clock ([ORC](https://github.com/jordandouglas/ORC) model).
-4. If the hypothesis is accepted, then divergence times and topology estimates are likely to be more accurate.
+3. If the hypothesis is rejected, then MCMC falls back on the relaxed clock ([ORC](https://github.com/jordandouglas/ORC) model).
+4. If the hypothesis is accepted, then the estimated tree is likely to be more accurate.
 5. In either case, the number of unobserved speciation events on each branch is also estimated (i.e., the *stubs*).
 
 
@@ -72,7 +72,7 @@ Si ~ Gamma(shape=spikeShape*(ni + 1), scale=spikeMean/spikeShape)
 
 where `ni` is the number of stubs on branch `i`. Longer branches and older branches usually have more stubs. The reported `spike` on each branch is the total sum of all `ni + 1` spikes along that branch.
 
-Then `spikeMean` is the average rate that sites change at each speciation event (observed or unobserved). For example an average spike size of 0.01 means that 1% of all sites are expected to change (possibly back into the original state) at each bifurcation. We examined 9 empirical datasets with support for punctuated equilibrium, and found that `spikeMean` estimates ranged from 0.007 to 0.07. The default prior for `spikeMean` is centered around this interval. This is an important parameter, and testing for sensitivity is recommended.
+Then `spikeMean` is the average rate that sites change at each speciation event (observed or unobserved). For example an average spike size of 0.01 means that 1% of all sites are expected to change (possibly back into the original state) at each bifurcation. We examined 9 empirical datasets with support for punctuated equilibrium, and found that `spikeMean` estimates ranged from 0.001 to 0.07. The default prior for `spikeMean` is centered around this interval. This is an important parameter, and testing for sensitivity is recommended.
 
 
 
