@@ -682,13 +682,19 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	
 	@Override
 	public double getArrayValue(int dim) {
+		if (!estimateStubs()) {
+			return sampleNStubsOnBranch(dim, dim == treeInput.get().getRoot().getNr() ? -1 : 0);
+		} else if (!getReversibleJump()) {
+			return getNStubsOnBranch(dim);
+		}
+		
 		return this.getNStubs();
 	}
 
 
 	@Override
 	public int getDimension() {
-		return 1;
+		return treeInput.get().getNodeCount();
 	}
 
 
