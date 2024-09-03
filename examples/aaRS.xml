@@ -206,9 +206,9 @@
             <parameter id="spikes" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
             <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
             <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
-            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
+            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.01</parameter>
 
-            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">$(initialSpikeIndicator)</parameter>
 
            
         </state>
@@ -469,7 +469,7 @@
                  </prior>
 
 
-                <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" indicator="@useSpikeModel" tree="@tree" stubs="@stubs" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
+                <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" indicator="@useSpikeModel" tree="@tree" stubs="@stubs" spikes="@spikes" shape="@spikeShape" />
                          
 
 
@@ -490,7 +490,7 @@
                       <substModel id="substModel" spec="WAG" />
                    </siteModel>
 
-                    <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@useSpikeModel" clock.rate="@clockRate" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" parseFromTree="false" />
+                    <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@useSpikeModel" clock.rate="@clockRate" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" parseFromTree="false" spikeMean="@spikeMean" />
 
                     
              
@@ -518,7 +518,7 @@
         <operator id="SpikeUpRateDown" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates" spikes="@spikes" scaleFactor="0.1" weight="5.0"/>
         <!-- <operator id="clockRate.scale" spec="kernel.BactrianScaleOperator" parameter="@clockRate" scaleFactor="0.1" weight="0.5"/> -->
         
-         <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1.0" />
+         <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="$(isModelAveraging)" />
 
 
         <!-- Site/clock model operators -->
@@ -579,7 +579,7 @@
             <log id="rateState" spec="beast.base.evolution.RateStatistic" tree="@tree" branchratemodel="@clockModel"/>
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
             <log idref="branchRates"/>
-            <log idref="spikes" />
+             <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
            
             <log idref="ArgRS.prior" />
             <log idref="CysRS.prior" />
@@ -604,9 +604,9 @@
 
         <logger id="treelog" spec="Logger" fileName="stumped.trees" logEvery="50000" mode="tree">
             <log id="TreeWithMetaDataLogger.t:class1" spec="gammaspike.logger.StumpedTreeLogger" tree="@tree">
-                <!-- <stubs idref="@stubs" /> -->
+                <stubs idref="stubs" />
                 <metadata idref="branchRates" />
-                <metadata idref="spikes" />
+                <metadata idref="weightedSpikes" />
             </log>
         </logger> 
         <operatorschedule id="OperatorSchedule" spec="OperatorSchedule" autoOptimizeDelay="5000"/>

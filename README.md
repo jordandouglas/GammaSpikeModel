@@ -85,13 +85,16 @@ Then `spikeMean` is the average number of changes per site per bifurcation (whic
 
 
 
+Limitation for advanced users: note that the number of stubs per-lineage is sampled at the time of logging. The number of stubs reported by the tree logger might not sum to the same value of `nstubs` reported by the trace logger. Both of these numbers are valid, but as the algorithm is stochastic, they will not be the same.
+
+
 
 ## Hypothesis testing
 
 The `useSpikeModel` parameter can be used for hypothesis testing. When this parameter is 1, the spike model is being used, and when 0 the relaxed clock. Every dataset is different, with some strongly favouring one model over the other, and others being uncertain. If the average value of `useSpikeModel` is over 0.9, there is strong support in favour of punctuated equilibrium. 
 
 
-By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. This can be adjusted using BEAUti.
+By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. 
 
 
 

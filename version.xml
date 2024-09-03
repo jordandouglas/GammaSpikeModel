@@ -7,7 +7,9 @@
 
         <provider classname="gammaspike.clockmodel.PunctuatedClockModel"/>
         <provider classname="gammaspike.clockmodel.PunctuatedRelaxedClockModel"/>
+        <provider classname="gammaspike.clockmodel.SpikeSize"/>
 
+        
         <provider classname="gammaspike.distribution.StumpedTreePrior"/>
         <provider classname="gammaspike.distribution.StumpedTreePriorOneLineage"/>
         <provider classname="gammaspike.distribution.TreeFlabelLikelihood"/>

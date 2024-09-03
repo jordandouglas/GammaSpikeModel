@@ -301,7 +301,10 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 
 	@Override
 	public void init(PrintStream out) {
-		out.print("nstubs\t");
+		String id = this.getID();
+		if (id == null || id.equals("")) id = "";
+		else id = id + ".";
+		out.print(id + "nstubs\t");
 	}
 
 	@Override

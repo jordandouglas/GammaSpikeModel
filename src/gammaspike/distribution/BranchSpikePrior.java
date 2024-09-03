@@ -29,10 +29,12 @@ public class BranchSpikePrior extends Distribution {
 	final public Input<IntegerParameter> nstubsInput = new Input<>("nstubs", "num stubs per branch", Input.Validate.OPTIONAL);
 	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
 	final public Input<RealParameter> shapeInput = new Input<>("shape", "shape parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED);
-	final public Input<RealParameter> meanInput = new Input<>("mean", "mean (=shape*scale) parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED); 
+	final public Input<RealParameter> meanInput = new Input<>("mean", "mean (=shape*scale) parameter for the gamma distribution of each spike.", Input.Validate.OPTIONAL); 
 	
 	final public Input<Tree> treeInput = new Input<>("tree", "tree required for setting the spike dimension (if direct sampling)", Input.Validate.OPTIONAL); 
 	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 of this is false", Input.Validate.OPTIONAL);
+	
+	//final public Input<Boolean> meanGamma1Input = new Input<>("meanGamma1", "if true, then spikes are divided by 'mean' to avoid smaller values of 'mean' from having a larger density", true);
 	
 	
 	// If there are too many stubs on a branch (eg. during mixing) then the gamma distribution shape is large, which causes
@@ -55,12 +57,26 @@ public class BranchSpikePrior extends Distribution {
         
         // Check shape and scale are positive
         double shape = shapeInput.get().getValue();
-        double mean = meanInput.get().getValue();
+        double mean = 1; //meanInput.get().getValue();
         if (shape <= 0 || mean <= 0) {
     		logP = Double.NEGATIVE_INFINITY;
     		return logP;
     	}
         double scale = mean / shape;
+        
+        //if (meanGamma1Input.get()) {
+    		//scale = 1/shape;
+    	//}
+        
+        
+//        double xxx = 1e-30;
+//        for (int i = 0; i < 30; i ++) {
+//        	xxx *= 10;
+//        	gamma = new GammaDistributionImpl(2, 0.5);
+//        	double p = gamma.logDensity(xxx);
+//        	Log.warning(xxx + " " + p);
+//        	
+//        }
         
         // Calculate density of the total spike size of each branch, assuming that each node or stub has an iid spike drawn from a Gamma(alpha, beta)
         // This approach integrates across all stub spike sizes, so we don't need to estimate them individually
@@ -68,6 +84,9 @@ public class BranchSpikePrior extends Distribution {
         for (int nodeNr = 0; nodeNr < spikesInput.get().getDimension(); nodeNr ++) {
         	
         	double spikeOfBranch = spikesInput.get().getValue(nodeNr);
+        	
+        	
+        	
         	if (spikeOfBranch < 0) {
         		logP = Double.NEGATIVE_INFINITY;
         		return logP;
@@ -82,6 +101,8 @@ public class BranchSpikePrior extends Distribution {
             	double alphaBranch = shape * (nstubsOnBranch + 1); // One spike for the branch, and one per stub
             	gamma = new GammaDistributionImpl(alphaBranch, scale);
             	logP += gamma.logDensity(spikeOfBranch);
+            	
+            	
         		
         	}else {
         		
@@ -167,7 +188,7 @@ public class BranchSpikePrior extends Distribution {
 	@Override
 	public List<String> getConditions() {
 		List<String> conds = new ArrayList<>();
-		conds.add(meanInput.get().getID());
+		//conds.add(meanInput.get().getID());
 		conds.add(shapeInput.get().getID());
 		if (stubsInput.get() != null) conds.add(stubsInput.get().getID());
 		if (treeInput.get() != null) conds.add(treeInput.get().getID());
@@ -207,7 +228,7 @@ public class BranchSpikePrior extends Distribution {
 		
 	    // Check shape and scale are positive
         double shape = shapeInput.get().getValue();
-        double mean = meanInput.get().getValue();
+        double mean = 1; //meanInput.get().getValue();
         if (shape <= 0 || mean <= 0) {
         	throw new IllegalArgumentException("Cannot sample spikes because shape or mean are non-positive " + shape + "  " + mean);
     	}
@@ -271,31 +292,40 @@ public class BranchSpikePrior extends Distribution {
 	public double[] getCumulativeProbs(double mu, int nodeNr) {
 		
 		
-		List<Double> cumprobs = new ArrayList<>();
+		List<Double> probs = new ArrayList<>();
 		
-		// Spike size
-		double spikeOfBranch = spikesInput.get().getValue(nodeNr);
+		
 		
 		// Shape and scale of gamma 
 		double shape = shapeInput.get().getValue();
-		double mean = meanInput.get().getValue();
+		double mean = 1; //meanInput.get().getValue();
 		if (shape <= 0 || mean <= 0) {
 			throw new IllegalArgumentException("Cannot sample spikes because shape or mean are non-positive " + shape + "  " + mean);
 		}
 		double scale = mean / shape;
+		
+		// Spike size
+		double spikeOfBranch = spikesInput.get().getValue(nodeNr);
+		//if (meanGamma1Input.get()) {
+    		//scale = 1 / shape;
+    	//}
 
 		
-		double branchP = 0;
+		
 		int k = 0;
-		double cumsum = 0;
-		while (cumsum < MAX_CUM_SUM) {
+		double poissonCumSum = 0;
+		
+		double branchPSum = 0;
+		while (poissonCumSum < MAX_CUM_SUM) {
+			
+			double branchP = 0;
 			
 			// P(k observations) under a Poisson(mu)
 			double p = -mu + k*Math.log(mu);
 			for (int i = 2; i <= k; i ++) p += -Math.log(i);
 			double pReal = Math.exp(p);
 			
-			cumsum += pReal;
+			
 			
 			// Integrate across all possible values in poisson distribution
 			double alphaBranch = shape * (k + 1); // One spike for the branch, and one per stub
@@ -306,22 +336,43 @@ public class BranchSpikePrior extends Distribution {
 				gamma = new GammaDistributionImpl(alphaBranch, scale);
 				double gammaLogP = gamma.logDensity(spikeOfBranch);
 				if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
+					if (poissonCumSum > 0) break;
 					branchP += 0;
 				}else {
 					branchP += Math.exp(p + gammaLogP);
 				}
+				
+				//Log.warning(mu + ": k=" + k + " -> " + gammaLogP);
+				//Log.warning("" + Math.exp(p + gammaLogP));
+				
 			}else {
 				branchP += pReal;
 			}
 			
-			cumprobs.add(branchP);
+			
+			poissonCumSum += pReal;
+			branchPSum += branchP;
+			probs.add(branchP);
 			
 			k++;
 		}
 		
 		
-		double[] array = new double[cumprobs.size()];
-		for(int i = 0; i < cumprobs.size(); i++) array[i] = cumprobs.get(i);
+		// Normalise to sum to 1
+		double[] array = new double[probs.size()];
+		for(int i = 0; i < probs.size(); i++) {
+			array[i] = probs.get(i) / branchPSum; 
+		}
+		
+		
+		// Convert into cumulative sum
+		double cumsum = 0;
+		for(int i = 0; i < probs.size(); i++) {
+			double p = array[i];
+			array[i] = p + cumsum;
+			cumsum += p;
+			//Log.warning("P(K<=" + i + ") = " + array[i]);
+		}
 		return array;
 	}
 	

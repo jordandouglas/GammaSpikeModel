@@ -121,7 +121,7 @@
 
 
 
-       <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@useSpikeModel" clock.rate="@clockRate" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" noSpikeOnDatedTips="false" parseFromTree="false" />
+       <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@useSpikeModel" clock.rate="@clockRate" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" noSpikeOnDatedTips="false" parseFromTree="false" spikeMean="@spikeMean" />
 
 
     <!-- <run id="mcmc" spec="coupledMCMC.CoupledMCMC" chains="4" resampleEvery="10000" chainLength="5000000"> -->
@@ -245,7 +245,7 @@ Vampyroteuthis_infernalis=0
             <parameter id="spikes" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
             <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
             <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
-            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
+            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.01</parameter>
 
             <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">$(initialSpikeIndicator)</parameter>
 
@@ -405,7 +405,7 @@ Vampyroteuthis_infernalis=0
                  </prior>
 
 
-                 <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" indicator="@useSpikeModel" tree="@tree" stubs="@stubs" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
+                 <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" indicator="@useSpikeModel" tree="@tree" stubs="@stubs" spikes="@spikes" shape="@spikeShape" />
                          
 
 
@@ -629,7 +629,7 @@ Vampyroteuthis_infernalis=0
             <log id="rateState" spec="beast.base.evolution.RateStatistic" tree="@tree" branchratemodel="@clockModel"/>
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
             <log idref="branchRates"/>
-            <log idref="spikes" />
+           <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
            
 
 
@@ -649,7 +649,7 @@ Vampyroteuthis_infernalis=0
             <log id="TreeWithMetaDataLogger.t:class1" spec="gammaspike.logger.StumpedTreeLogger" tree="@tree">
                 <stubs idref="stubs" />
                 <metadata idref="branchRates" />
-                <metadata idref="spikes" />
+                <metadata idref="weightedSpikes" />
             </log>
         </logger> 
         <operatorschedule id="OperatorSchedule" spec="OperatorSchedule" autoOptimizeDelay="5000"/>

@@ -846,13 +846,13 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
     @Override
     public void init(final PrintStream out) {
        // out.print(getID() + "\t" + "g0\tg1\tg2\tg3\t"+ "stubGsum\t"+ "stubH\t");
-        out.print(getID() + "\t" + "stubGsum\t"+ "stubH\t");
+        out.print(getID() + "\t");
     }
 
     @Override
     public void log(final long sample, final PrintStream out) {
     	//out.print(getCurrentLogP() + "\t" + this.getG(0) + "\t" + this.getG(1) + "\t" + this.getG(2) + "\t" + this.getG(3) + "\t" + this.getGSum()  +"\t"+ this.getH() + "\t");
-        out.print(getCurrentLogP() + "\t" + this.getGSum()  +"\t"+ this.getH() + "\t");
+        out.print(getCurrentLogP() + "\t");
     }
 
 

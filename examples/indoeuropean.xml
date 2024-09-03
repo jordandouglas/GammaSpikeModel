@@ -882,7 +882,7 @@
 
 
                  
-                  <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" indicator="@useSpikeModel" stubs="@stubs" tree="@tree" spikes="@spikes" shape="@spikeShape" mean="@spikeMean"/>
+                  <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" indicator="@useSpikeModel" stubs="@stubs" tree="@tree" spikes="@spikes" shape="@spikeShape" />
 
 
                   <prior name="distribution" x="@clockRate">
@@ -912,7 +912,7 @@
 
                    </siteModel>
                     
-                    <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@useSpikeModel" clock.rate="@clockRate" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" parseFromTree="false" distr="@branchRatePrior" />
+                    <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@useSpikeModel" clock.rate="@clockRate" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" parseFromTree="false" distr="@branchRatePrior" spikeMean="@spikeMean" />
                     
                 </distribution>
 
@@ -931,9 +931,10 @@
         <operator id="SATreeRootScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95" tree="@tree" rootOnly="true" weight="3.0" />
         <operator id="SATreeScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95"  tree="@tree" weight="3.0"/>
         <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="5.0"/>
-        <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.7" weight="10.0">
+        <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.7" weight="20.0">
                 <tree idref="tree"/>
                 <down idref="clockRate"/>
+                <down idref="spikeMean"/>
         </operator>
 
         <!-- Site/clock model operators -->
@@ -1097,7 +1098,7 @@
 
             <log idref="spikeShape"/>
             <log idref="spikeMean"/>
-            <log idref="spikes"/>
+            <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
 
             <!-- <log idref="East_Polynesian.prior"/> -->
             <!-- <log idref="polynesian.prior"/> -->
@@ -1176,7 +1177,7 @@
             <log id="TreeWithMetaDataLogger.t:class1" spec="gammaspike.logger.StumpedTreeLogger" tree="@tree">
                 <stubs idref="stubs" />
                 <metadata idref="branchRates" />
-                <metadata idref="spikes"/>
+                <metadata idref="weightedSpikes"/>
             </log>
         </logger> 
         <operatorschedule id="OperatorSchedule" spec="OperatorSchedule" autoOptimizeDelay="5000"/>

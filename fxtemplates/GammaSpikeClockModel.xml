@@ -15,7 +15,9 @@
                      gammaspike.clockmodel.PunctuatedRelaxedClockModel.distr,
                      gammaspike.clockmodel.PunctuatedRelaxedClockModel.stubs,
                      gammaspike.clockmodel.PunctuatedRelaxedClockModel.nstubsPerBranch,
-                     gammaspike.clockmodel.PunctuatedRelaxedClockModel.indicator,
+                     gammaspike.clockmodel.PunctuatedRelaxedClockModel.parseFromTree,
+                     gammaspike.clockmodel.PunctuatedRelaxedClockModel.initialSpike,
+                     gammaspike.clockmodel.PunctuatedRelaxedClockModel.noSpikeOnDatedTips,
                      gammaspike.clockmodel.PunctuatedRelaxedClockModel.rates,
                      gammaspike.clockmodel.PunctuatedRelaxedClockModel.flabel,
                      gammaspike.distribution.BranchSpikePrior.tree,
@@ -28,24 +30,27 @@
             <parameter id="GSMspikes.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
             <parameter id="GSMclockSD.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
             <parameter id="GSMspikeShape.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
-            <parameter id="GSMspikeMean.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
+            <parameter id="GSMspikeMean.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">0.01</parameter>
 
             <parameter id="GSMclockRate.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
            
             <parameter id="GSMuseSpikeModel.c:$(n)" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+
+            <log id="GSMweightedSpikes.c:$(n)" spec="gammaspike.clockmodel.SpikeSize" spikes="@GSMspikes.c:$(n)" spikeMean="@GSMspikeMean.c:$(n)"/>
 
             <branchRateModel id="GammaSpikeRelaxedClock.c:$(n)" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" 
                 	indicator="@GSMuseSpikeModel.c:$(n)" 
                 	clock.rate="@GSMclockRate.c:$(n)" 
                 	tree="@Tree.t:$(n)" 
                 	spikes="@GSMspikes.c:$(n)" 
+                  spikeMean="@GSMspikeMean.c:$(n)"
                 	rates="@GSMbranchRates.c:$(n)" 
                 	parseFromTree="false"
                 	relaxed="true">
 			</branchRateModel>
 
                  <prior id="GSMclockRatePrior.c:$(n)" name="distribution" x="@GSMclockRate.c:$(n)">
-					<Gamma alpha="0.1" beta="100.0" name="distr"/>
+					    <Gamma alpha="0.1" beta="100.0" name="distr"/>
                  </prior>
 
                  <prior id="GSMclockSDPrior.c:$(n)" name="distribution" x="@GSMclockSD.c:$(n)">
@@ -57,7 +62,7 @@
                  </prior> 
 
                 <prior id="GSMspikeMeanPrior.c:$(n)" name="distribution" x="@GSMspikeMean.c:$(n)">
-                    <LogNormal  name="distr" meanInRealSpace="true" M="0.05" S="1.2"/>
+                    <LogNormal  name="distr" meanInRealSpace="true" M="0.01" S="1.2"/>
                  </prior>
 
                  <prior id="GSMspikeShapePrior.c:$(n)" name="distribution" x="@GSMspikeShape.c:$(n)">
@@ -68,14 +73,15 @@
                 	spec="gammaspike.distribution.BranchSpikePrior" 
                 	spikes="@GSMspikes.c:$(n)" 
                 	shape="@GSMspikeShape.c:$(n)" 
-                	mean="@GSMspikeMean.c:$(n)" 
+                  indicator="@GSMuseSpikeModel.c:$(n)"
                 	tree="@Tree.t:$(n)"/>
 		
 
-       <operator id="GSMSpikeUpRateDown.c:$(n)" spec="gammaspike.operator.SpikeUpRateDown" parameter="@GSMbranchRates.c:$(n)" spikes="@GSMspikes.c:$(n)" scaleFactor="0.1" weight="5.0"/>
-        <operator id="GSMclockRateScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMclockRate.c:$(n)" scaleFactor="0.1" weight="0.5"/>
-        
-         <operator id="GSMBitFlipOperator.c:$(n)" spec="BitFlipOperator" uniform="true" parameter="@GSMuseSpikeModel.c:$(n)" weight="1.0" />
+      <operator id="GSMSpikeUpRateDown.c:$(n)" spec="gammaspike.operator.SpikeUpRateDown" parameter="@GSMbranchRates.c:$(n)" spikes="@GSMspikes.c:$(n)" scaleFactor="0.1" weight="5.0"/>
+      <operator id="GSMclockRateScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMclockRate.c:$(n)" scaleFactor="0.1" weight="0.5"/>
+      <operator id="GSMBitFlipOperator.c:$(n)" spec="BitFlipOperator" uniform="true" parameter="@GSMuseSpikeModel.c:$(n)" weight="1.0" />
+
+         
 
 
         <!-- Site/clock model operators -->
@@ -83,6 +89,11 @@
         <operator id="GSMspikeShapeScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeShape.c:$(n)" scaleFactor="0.1" weight="1.0"/>
         <operator id="GSMspikeMeanScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeMean.c:$(n)" scaleFactor="0.1" weight="20.0"/>
         <operator id="GSMspikesScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikes.c:$(n)" scaleFactor="0.1" weight="30.0"/>
+        <operator id="GSMUpDownSpikeTree.c:$(n)" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.1" weight="5.0">
+            <tree idref="Tree.t:$(n)" />
+            <down idref="GSMspikeMean.c:$(n)" />
+        </operator>
+
 
         <operator id="GSMAdaptableOperatorSamplerRatesInternal.c:$(n)" spec="AdaptableOperatorSampler" weight="20.0">
             <parameter idref="GSMbranchRates.c:$(n)"/>
@@ -116,6 +127,10 @@
                      if='inlikelihood(GSMclockRate.c:$(n)) and GSMclockRate.c:$(n)/estimate=true'/>
             <connect srcID='GSMuseSpikeModel.c:$(n)' targetID='state' inputName='stateNode'
                      if='inlikelihood(GSMuseSpikeModel.c:$(n)) and GSMuseSpikeModel.c:$(n)/estimate=true'/>
+
+
+            <connect srcID='GSMweightedSpikes.c:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' 
+               if='inlikelihood(GSMuseSpikeModel.c:$(n)) and GSMuseSpikeModel.c:$(n)/estimate=true'/>
 
 
             <connect srcID='GSMclockRatePrior.c:$(n)' targetID='prior' inputName='distribution'
@@ -159,6 +174,20 @@
             <connect srcID='GSMclockRateScale.c:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(GammaSpikeRelaxedClock.c:$(n)) and inlikelihood(GSMclockRate.c:$(n)) and GSMclockRate.c:$(n)/estimate=true'>Scale mean clock rate and tree of partition c:$(n)
             </connect>
+
+
+             <connect srcID='GSMUpDownSpikeTree.c:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(GammaSpikeRelaxedClock.c:$(n)) and GSMuseSpikeModel.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true'>
+                     Move spike model mean and tree simultaneously for partition c:$(n)
+            </connect>
+
+
+            <connect srcID='GSMclockRate.c:$(n)' targetID='GSMUpDownSpikeTree.c:$(n)' inputName='down'
+                     if='inlikelihood(GammaSpikeRelaxedClock.c:$(n)) and GSMuseSpikeModel.c:$(n)/estimate=true and Tree.t:$(n)/estimate=true and GSMclockRate.c:$(n)/estimate=true' />
+
+
+
+            
 
             <connect srcID='GSMBitFlipOperator.c:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(GammaSpikeRelaxedClock.c:$(n)) and GSMuseSpikeModel.c:$(n)/estimate=true'/>

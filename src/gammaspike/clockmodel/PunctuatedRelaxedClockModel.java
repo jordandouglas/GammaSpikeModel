@@ -28,6 +28,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs of the tree", Input.Validate.OPTIONAL);
 	final public Input<IntegerParameter> nstubsPerBranchInput = new Input<>("nstubsPerBranch", "num stubs per brancg.", Input.Validate.OPTIONAL); 
 	
+	final public Input<RealParameter> spikeMeanInput = new Input<>("spikeMean", "mean spike size.", Input.Validate.REQUIRED); 
 	
 	
 	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 of this is false", Input.Validate.OPTIONAL);
@@ -170,9 +171,12 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		if (noSpikeOnDatedTipsInput.get()) {
 			if (node.isLeaf() && node.getHeight() > 0) return 0;
 		}
+		
+		
+		double spikeMean = spikeMeanInput.get().getValue();
 
 		// One spike per branch
-		return spikesInput.get().getValue(node.getNr());
+		return spikesInput.get().getValue(node.getNr()) * spikeMean;
 
 		
 	}
@@ -215,9 +219,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		//Log.warning(node.getID() + " has burst rate=" + effectiveRate + " b = " + burstRate + " d= " + branchDistance);
 		//Log.warning("r=" + effectiveRate);
 		
-		if (effectiveRate <= 0 || Double.isNaN(effectiveRate)) {
-			Log.warning(node.getNr() + " r=" + effectiveRate);
-		}
+
 		
 		return effectiveRate;
 	}
@@ -229,7 +231,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
     protected boolean requiresRecalculation() {
 		
 
-        if (InputUtil.isDirty(spikesInput) || InputUtil.isDirty(meanRateInput) || 
+        if (InputUtil.isDirty(spikesInput) || InputUtil.isDirty(meanRateInput) || InputUtil.isDirty(spikeMeanInput) ||
     		InputUtil.isDirty(ratesInput) || InputUtil.isDirty(nstubsPerBranchInput) || InputUtil.isDirty(stubsInput)) {
        	 	return true;
         }
