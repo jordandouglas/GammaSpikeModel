@@ -96,10 +96,10 @@ BEAST 2 will log the following parameters onto the tree:
 
 ## Hypothesis testing
 
-The `useSpikeModel` parameter can be used for hypothesis testing. When this parameter is 1, the spike model is being used, and when 0 the relaxed clock. Every dataset is different, with some strongly favouring one model over the other, and others being uncertain. If the average value of `useSpikeModel` is over 0.9, there is strong support in favour of punctuated equilibrium. 
+The `useSpikeModel` parameter can be used for hypothesis testing. When this parameter is 1, the spike model is being used, and when 0 the relaxed clock. Every dataset is different, with some strongly favouring one model over the other, and others being uncertain. 
 
 
-By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. 
+By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. If the average value of `useSpikeModel` is over 0.91 (corresponding to a Bayes factor of 10 in this case) there is strong support in favour of punctuated equilibrium. 
 
 
 
@@ -115,7 +115,7 @@ In most instances, we found this model converged reasonably well despite its lar
 
 3. In general, it is good practice to run multiple MCMC chains in parallel and confirm they have converged to the same distribution. If they did, then the chains can be combined, thereby expediting the process.
 
-4. If the spike-related parameters have low effective sample sizes, it might come from the `spikeShape` jumping between two modes. In this case, consider fixing `spikeShape` (e.g., to 2). 
+
 
 
 ## Example files
