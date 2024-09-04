@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="BEAST.base v2.7.5:BICEPS v1.1.2:bModelTest v1.3.3:OBAMA v1.1.1:ORC v1.1.2:BEASTLabs v2.0.2" version="2.7">
+
+
+    <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
+
+    <map name="Exponential" >beast.base.inference.distribution.Exponential</map>
+
+    <map name="LogNormal" >beast.base.inference.distribution.LogNormalDistributionModel</map>
+
+    <map name="Normal" >beast.base.inference.distribution.Normal</map>
+
+    <map name="Beta" >beast.base.inference.distribution.Beta</map>
+
+    <map name="Gamma" >beast.base.inference.distribution.Gamma</map>
+
+    <map name="LaplaceDistribution" >beast.base.inference.distribution.LaplaceDistribution</map>
+
+    <map name="prior" >beast.base.inference.distribution.Prior</map>
+
+    <map name="InverseGamma" >beast.base.inference.distribution.InverseGamma</map>
+
+    <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
+
+    <map name="Poisson" >beast.base.inference.distribution.Poisson</map>
+
+
+
+
+    <run id="mcmc" spec="MCMC" chainLength="100000000">
+        <state id="state" spec="State" storeEvery="10000">
+
+
+            <!-- The initial tree is the true tree -->
+            <stateNode spec="beast.base.evolution.tree.TreeParser" id="tree" IsLabelledNewick="true" adjustTipHeights="false" newick="((1:0.0,(((2:0.4219823849421629,((((3:0.0,(4:0.22266863105756318,(5:0.1796144368376149,(6:0.08803803327958626,7:0.08803803327958626):0.09157640355802865):0.04305419421994827):0.2996091434276321):0.40390622502201057,8:0.9261839995072059):0.752116071402031,9:1.6783000709092368):0.2733060266734846,((((10:0.0,((11:0.03612694542782435,12:0.03612694542782435):0.19991455466173313,13:0.2360415000895575):1.1539753085747912):0.1331225796365063,14:0.22561095158381317):0.28581592652747556,((15:0.0,(16:0.14901265478173453,17:0.14901265478173453):0.06990687713106761):0.44898257858939616,(18:0.0,19:0.21198465509504563):0.45591745540715267):1.1410532043261323):0.060389187130439836,((20:0.0,21:0.07361525203134205):1.0146867294525046,(22:0.29783232010980587,23:0.29783232010980587):0.7904696613740407):0.7810425204749238):0.08226159562395097):0.7594677504261975):0.37351944214243193,24:0.13436501410798085):0.10502579670675338,((25:0.4154805376612236,(26:0.27752713035734544,(27:0.0,28:0.19674418379523254):0.0807829465621129):0.13795340730387817):1.0773730672695567,29:0.5512645413746287):1.696765481927324):3.1017321204420085):0.24370133031329821,(30:0.0,(31:0.0,(32:0.0,((33:0.7153935202159487,(34:0.011523423174075731,35:0.011523423174075731):1.1132543380420579):1.0233080371734617,36:0.4147003871140762):1.8132031569039908):0.39512554868663763):1.3484813779152596):0.8301566557179276):0.0;">
+            </stateNode>
+
+           
+            <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="0">1.29062867735262</parameter>
+            <parameter id="r0" spec="parameter.RealParameter" name="stateNode" lower="1">1.16685033234848</parameter>
+            <parameter id="samplingProportion" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.203054043665433</parameter>
+            
+
+            <!-- Stub parameters -->
+            <parameter id="stubsPerBranch" spec="parameter.IntegerParameter" name="stateNode" lower="0">1</parameter>
+
+
+
+
+           
+        </state>
+
+
+        <distribution id="posterior" spec="CompoundDistribution">
+            <distribution id="prior" spec="CompoundDistribution">
+               
+
+
+                <distribution id="ForwardTimeSimulatorResub" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" lambda="@lambda" samplingProportion="@samplingProportion" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
+                    <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" stubsPerBranch="@stubsPerBranch" />
+                 </distribution>
+
+
+
+                 <prior name="distribution" x="@lambda">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="2" S="0.5"/>
+                 </prior>
+
+
+                <prior name="distribution" x="@r0">
+                    <Exponential  name="distr" mean="2" offset="1"/>
+                 </prior>
+
+                <prior name="distribution" x="@samplingProportion">
+                    <Beta name="distr" alpha="2" beta="5"/>
+                 </prior>
+
+
+
+            </distribution>
+
+        </distribution>
+
+
+
+        <!-- Tree operators -->
+         <operator id="StumpedTreeUniform.t:tree" spec="gammaspike.operator.StumpedTreeUniform" tree="@tree" stubs="@stubs" weight="5.0"/>
+        <operator id="StumpedTreeScaler.t:tree" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="false" scaleFactor="0.7" weight="5.0"/>
+        <operator id="StumpedTreeRootScaler.t:tree" spec="gammaspike.operator.StumpedTreeScaler" tree="@tree" stubs="@stubs" rootOnly="true" scaleFactor="0.7" weight="5.0"/>
+
+        <operator id="StubTreeStretchOperator.t:tree" spec="gammaspike.operator.StubTreeStretchOperator" tree="@tree" stubs="@stubs" scaleFactor="0.7" weight="5.0"/>
+        <operator id="StubEpochFlexOperator.t:tree" spec="gammaspike.operator.StubEpochFlexOperator" tree="@tree" stubs="@stubs" scaleFactor="0.7" weight="5.0"/>
+
+
+        <operator id="StumpedTreeNarrowExchange.t:tree" spec="gammaspike.operator.StumpedTreeExchange" stubs="@stubs" isNarrow="true" tree="@tree" weight="20.0"/>
+        <operator id="StumpedTreeWideExchange.t:tree" spec="gammaspike.operator.StumpedTreeExchange" stubs="@stubs" isNarrow="false" tree="@tree" weight="5.0"/>
+
+        <!-- Add or remove a sampled ancestor -->
+        <operator id="LeafToSampledAncestorJump.t:tree" spec="gammaspike.operator.StubbedLeafToSampledAncestorJump" stubs="@stubs" tree="@tree" weight="1.0"/>
+
+        
+
+       <!-- Turn these operators back on to estimate branching parameters as well as tree --> 
+        <!-- 
+        <operator id="lambda.scale" spec="kernel.BactrianScaleOperator" parameter="@lambda" scaleFactor="0.1" weight="0.5"/>
+        <operator id="r0.scale" spec="kernel.BactrianScaleOperator" parameter="@r0" scaleFactor="0.1" weight="0.5"/>
+        <operator id="samplingProportion.scale" spec="kernel.BactrianScaleOperator" parameter="@samplingProportion" scaleFactor="0.1" weight="0.5"/>
+        <operator id="AVMN" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="1">
+            <transformations spec="operator.kernel.Transform$LogTransform">
+                 <f idref="lambda"/>
+                 <f idref="r0"/>
+            </transformations>
+             <transformations spec="operator.kernel.Transform$LogitTransform">
+                 <f idref="samplingProportion"/>
+            </transformations>
+        </operator> 
+      -->
+
+
+
+         <!-- Stub operators -->
+        <operator id="swapStubs" spec="SwapOperator" intparameter="@stubsPerBranch" weight="10.0"/> 
+        <operator id="stubRandomWalk" spec="IntRandomWalkOperator" parameter="@stubsPerBranch" weight="1.0" windowSize="10.0"/> 
+        
+
+
+       
+        <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
+            <log idref="posterior"/>
+            <log idref="lambda"/>
+            <log idref="r0"/>
+            <log idref="samplingProportion"/>
+            <log idref="ForwardTimeSimulatorResub"/>
+            <log idref="stubs"/>
+            <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
+
+        </logger>
+        <logger id="screenlog" spec="Logger" logEvery="10000">
+            <log idref="posterior"/>
+            <log idref="lambda"/>
+            <log idref="r0"/>
+            <log idref="samplingProportion"/>
+            <log idref="treeHeight"/>
+            <log idref="stubs"/>
+        </logger>
+
+        <logger id="treelog" spec="Logger" fileName="$(filebase).trees" logEvery="10000" mode="tree">
+            <log id="TreeWithMetaDataLogger.t:class1" spec="gammaspike.logger.StumpedTreeLogger" stubs="@stubs" tree="@tree"/>
+        </logger> 
+        <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
+    </run>
+
+</beast>
