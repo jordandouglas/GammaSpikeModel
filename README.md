@@ -1,5 +1,5 @@
 
-# GammaSpikeModel
+# Testing for punctuated equilibrium in BEAST 2
 
 The gamma spike model is a phylogenetic clock model for BEAST 2. This method tests for punctuated equilibrium, by assigning each branch a gradual clock-rate and an instaneaneous spike of abrupt evolution. The magnitudes of each branch rate and branch spike are independent and identically distributed.  
 
@@ -46,22 +46,29 @@ This package requires BEAST 2.7.7. or newer.
 
 3. Open the `Clock Model` tab and select `Punctuated Relaxed Clock Model`.
 	- This will introduce the following parameters
-		- The mean spike size `spikeMean` (under a Gamma distribution). High mean = larger expected spike sizes. 
-		- The shape of spike sizes `spikeShape` (Gamma distribution). High shape = smaller variance of spike sizes.
+		- The mean spike size `GSMspikeMean` (under a Gamma distribution). High mean = larger expected spike sizes. 
+		- The shape of spike sizes `GSMspikeShape` (Gamma distribution). High shape = smaller variance of spike sizes.
 		- One `spike` for every branch in the tree, whose sizes are Gamma distributed under the prior.
-		- The standard deviation `sigma` of branch rates under a gradual relaxed clock (for a LogNormal distribution). High standard deviation = higher variance of branch rates. Same meaning as relaxed clock / ORC model.
+		- The standard deviation `GSMclockSD` of branch rates under a gradual relaxed clock (for a LogNormal distribution). High standard deviation = higher variance of branch rates. Same meaning as relaxed clock / ORC model.
 		- One `rate` for every branch in the tree, whose sizes are LogNormally distributed under the prior.
 		- The `clockRate` in units of 'gradual changes per site per unit of time'. If there is no temporal information (e.g., tip dates, node calibrations) then leave this term fixed at 1.0. 
-		- A boolean model indicator `useSpikeModel` that determines whether the spikes are being used or not.  
+		- A boolean model indicator `GSMuseSpikeModel` that determines whether the spikes are being used or not.  
 
-4. Open the `Priors` tab and select the `Stumped Tree Prior`. 
-	- This uses the [fossilised birth-death](https://www.beast2.org/divergence-dating-with-sampled-ancestors-fbd-model/) tree prior with the following parameters
-		- Birth rate `lambdaXX` .
-		- Reproduction number `R0`, which is assumed to be greater than 1. 
-		- Sampling proportion `XXXX`. If all taxa are extant, then set this to 0 and the model is just a birth-death process. If not, then sampled ancestors are estimated. 
-	- By using this prior, the number of stubs on each branch will be logged and inform the clock model spike sizes.
-	- If a stumped tree prior is not selected, the clock model will assume there are no stubs on any branch.
-	- Currently, stubs are only available for the fossilised-birth-death model (and not coalescent or skyline models).
+![Setting up the clock model](figs/Fig1.png)
+
+4. Open the `Priors` tab and select one of the following tree priors:
+- `Birth Death Model With Stubs` (BDWS) is the standard birth-death model when tip dates are not used. Parameters:
+		- Birth rate `BDWSBirthRate` .
+		- Reproduction number `BDWSReproductionNumber`, which is assumed to be greater than 1. 
+- `Fossilised Birth Death Model With Stubs` (FBDWS) is the [fossilised birth-death](https://www.beast2.org/divergence-dating-with-sampled-ancestors-fbd-model/) tree prior with serially sampled tip dates, sampled ancestors estimated, and the following parameters
+	- Birth rate `FBDWSBirthRate` .
+	- Reproduction number `FBDWSReproductionNumber`, which is assumed to be greater than 1. 
+	- Sampling proportion `FBDWSsamplingProportion`.
+	
+By using one of these priors, the number of stubs on each branch will be logged and inform the clock model spike sizes. If a stumped tree prior is not selected, the clock model will assume there are no stubs on any branch. Currently, stubs are only available for these two models (and not coalescent or skyline models).
+
+
+![Setting up the tree prior](figs/Fig2.png)
 
 5. Configure priors and save the XML file as per usual.
 
@@ -79,8 +86,12 @@ where `ni` is the number of stubs on branch `i`. Longer branches and older branc
 
 Then `spikeMean` is the average number of changes per site per bifurcation (which may be observed or unobserved). For example an average spike size of 0.01 means that 1% of all sites are expected to change (possibly back into the original state) at each bifurcation - one per internal node and one per stub. We examined 8 empirical datasets with support for punctuated equilibrium, and found that `spikeMean` estimates ranged from 0.001 to 0.07. The default prior for `spikeMean` is centered around this interval. This is an important parameter, and testing for sensitivity is recommended.
 
+BEAST 2 will log the following parameters onto the tree:
 
-
+- `BDWSstubs` or `FBDWSstubs`: number of stubs per branch (if using the appropriate tree prior).
+- `GSMbranchRates`: the relative branch rates (relaxed clock).
+- `GSMweightedSpikes`: the sum of all spikes along the branch (units: instantaneous changes per site along lineage).
+- `rate`: the total rate of the branch accounting for both gradual (branchRates) and abrupt (spike) evolution. 
 
 
 ## Hypothesis testing
