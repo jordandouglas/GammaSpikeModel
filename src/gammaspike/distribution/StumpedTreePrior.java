@@ -45,6 +45,12 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	
 	boolean initialising = true;
 	
+	
+	@Override
+	public boolean canHandleTipDates() {
+		return samplingProportionInput.get() != null;
+	}
+	
 	@Override
     public void initAndValidate() {
         super.initAndValidate();

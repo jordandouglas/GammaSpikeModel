@@ -57,7 +57,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		
 
 		
-		this.nRates = treeInput.get().getNodeCount() - 1;
+		this.nRates = treeInput.get().getNodeCount();
         this.ratesArray = new double[this.nRates];
         
         

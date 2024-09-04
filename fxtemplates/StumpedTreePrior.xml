@@ -172,7 +172,7 @@
                     <Exponential name="distr" mean="5" offset="1"/>
                  </prior> 
 
-                 <prior id="FBDWSamplingProportionPrior.t:$(n)" name="distribution" x="@FBDWSsamplingProportion.t:$(n)">
+                 <prior id="FBDWSsamplingProportionPrior.t:$(n)" name="distribution" x="@FBDWSsamplingProportion.t:$(n)">
                     <Beta name="distr" alpha="1" beta="5"/>
                  </prior>
 
@@ -221,8 +221,8 @@
             <connect srcID='FBDWSReproductionNumberPrior.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSReproductionNumber.t:$(n)/estimate=true'>Stumped tree prior ReproductionNumber of partition t:$(n)
             </connect>
-            <connect srcID='FBDWSSamplingProportionPrior.t:$(n)' targetID='prior' inputName='distribution'
-                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'>Stumped tree prior samplping proportion of partition t:$(n)
+            <connect srcID='FBDWSsamplingProportionPrior.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'>Stumped tree prior sampling proportion of partition t:$(n)
             </connect>
             
          <connect srcID='FossilisedBirthDeathModelWithStubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>

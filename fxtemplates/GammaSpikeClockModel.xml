@@ -129,9 +129,7 @@
                      if='inlikelihood(GSMuseSpikeModel.c:$(n)) and GSMuseSpikeModel.c:$(n)/estimate=true'/>
 
 
-            <connect srcID='GSMweightedSpikes.c:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' 
-               if='inlikelihood(GSMuseSpikeModel.c:$(n)) and GSMuseSpikeModel.c:$(n)/estimate=true'/>
-
+            
 
             <connect srcID='GSMclockRatePrior.c:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(GSMclockRate.c:$(n)) and GSMclockRate.c:$(n)/estimate=true'>
@@ -162,9 +160,11 @@
             <connect srcID='GSMStumpedTreePrior.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(GSMStumpedTreePrior.c:$(n))'/>
             <connect srcID='GSMrateStat.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
             
-            <connect srcID='GammaSpikeRelaxedClock.t:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='branchratemodel'
+            <connect srcID='GammaSpikeRelaxedClock.c:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='branchratemodel'
                      if='inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
-            <connect srcID='GSMspikes.t:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata'
+            <connect srcID='GSMweightedSpikes.c:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' 
+                     if='inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
+            <connect srcID='GSMbranchRates.c:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' 
                      if='inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
 
 

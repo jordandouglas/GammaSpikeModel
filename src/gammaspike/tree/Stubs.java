@@ -208,7 +208,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 			
 			// Do not initialise if we are resuming
 			p.setLower(0);
-			p.setDimension(nNodes-2);
+			p.setDimension(nNodes-1);
 			for (int i = 0; i < p.getDimension(); i ++) {
 				p.setValue(i, 0);
 			}

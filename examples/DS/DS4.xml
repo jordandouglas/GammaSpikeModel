@@ -77,8 +77,8 @@ name="alignment">
             <parameter id="kappa.s:DS4" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
             <parameter id="freqParameter.s:DS4" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
             <parameter id="gammaShape.s:DS4" spec="parameter.RealParameter" lower="0.1" name="stateNode">1.0</parameter>
-            <parameter id="GSMbranchRates.c:DS4" spec="parameter.RealParameter" dimension="80" lower="0.0" name="stateNode">1.0</parameter>
-            <parameter id="GSMspikes.c:DS4" spec="parameter.RealParameter" dimension="80" lower="0.0" name="stateNode">1.0</parameter>
+            <parameter id="GSMbranchRates.c:DS4" spec="parameter.RealParameter" dimension="81" lower="0.0" name="stateNode">1.0</parameter>
+            <parameter id="GSMspikes.c:DS4" spec="parameter.RealParameter" dimension="81" lower="0.0" name="stateNode">1.0</parameter>
             <parameter id="GSMspikeMean.c:DS4" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.01</parameter>
             <stateNode id="GSMuseSpikeModel.c:DS4" spec="parameter.BooleanParameter">false</stateNode>
             <parameter id="GSMclockSD.c:DS4" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.5</parameter>
@@ -254,9 +254,10 @@ name="alignment">
             <log idref="prior"/>
         </logger>
         <logger id="treelog.t:DS4" spec="Logger" fileName="$(filebase)-$(tree).trees" logEvery="1000" mode="tree">
-            <log id="TreeWithMetaDataLogger.t:DS4" spec="beast.base.evolution.TreeWithMetaDataLogger" tree="@Tree.t:DS4">
+            <log id="TreeWithMetaDataLogger.t:DS4" spec="beast.base.evolution.TreeWithMetaDataLogger" branchratemodel="@GammaSpikeRelaxedClock.c:DS4" tree="@Tree.t:DS4">
                 <metadata id="GSMweightedSpikes.c:DS4" spec="gammaspike.clockmodel.SpikeSize" spikeMean="@GSMspikeMean.c:DS4" spikes="@GSMspikes.c:DS4"/>
                 <metadata idref="BDWSstubs.t:DS4"/>
+                <metadata idref="GSMbranchRates.c:DS4"/>
             </log>
         </logger>
         <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>
