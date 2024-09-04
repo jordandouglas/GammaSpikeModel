@@ -27,12 +27,12 @@ This package requires BEAST 2.7.7. or newer.
 
 1. Launch BEAUti
 2. Click on `File` -> `Manage Packages`
-3. Install GammaSpikeModel. If it is not in the list of packages, you may need to add an extra package repository as follows:
+3. Install `gammaspike`. If it is not in the list of packages, you may need to add an extra package repository as follows:
 - Click the `Packager repositories` button. A dialog pops up.
 - Click the Add URL button. A dialog is shown where you can enter https://raw.githubusercontent.com/CompEvol/CBAN/master/packages-extra-2.7.xml
 - Click `OK`. There should be an extra entry in the list.
 - Click `Done`.
-- After a short delay, GammaSpikeModel should appear in the list of packages.
+- After a short delay, `gammaspike` should appear in the list of packages.
 
 
 
@@ -44,7 +44,7 @@ This package requires BEAST 2.7.7. or newer.
 
 2. Import data and set up site model, as per usual.
 
-3. Open the `Clock Model` tab and select `Punctuated Relaxed Clock Model`.
+3. Open the `Clock Model` tab and select `Gamma Spike Relaxed Clock`.
 	- This will introduce the following parameters
 		- The mean spike size `GSMspikeMean` (under a Gamma distribution). High mean = larger expected spike sizes. 
 		- The shape of spike sizes `GSMspikeShape` (Gamma distribution). High shape = smaller variance of spike sizes.
@@ -65,7 +65,7 @@ This package requires BEAST 2.7.7. or newer.
 	- Reproduction number `FBDWSReproductionNumber`, which is assumed to be greater than 1. 
 	- Sampling proportion `FBDWSsamplingProportion`.
 	
-By using one of these priors, the number of stubs on each branch will be logged and inform the clock model spike sizes. If a stumped tree prior is not selected, the clock model will assume there are no stubs on any branch. Currently, stubs are only available for these two models (and not coalescent or skyline models).
+By using one of these priors, the number of stubs on each branch will be logged and inform the clock model spike sizes. If a stumped tree prior is not selected, the clock model will assume there are no stubs on any branch. Currently, stubs are only available for these two tree priors (and not coalescent or skyline for instance).
 
 
 ![Setting up the tree prior](figs/Fig2.png)
@@ -86,7 +86,7 @@ where `ni` is the number of stubs on branch `i`. Longer branches and older branc
 
 Then `spikeMean` is the average number of changes per site per bifurcation (which may be observed or unobserved). For example an average spike size of 0.01 means that 1% of all sites are expected to change (possibly back into the original state) at each bifurcation - one per internal node and one per stub. We examined 8 empirical datasets with support for punctuated equilibrium, and found that `spikeMean` estimates ranged from 0.001 to 0.07. The default prior for `spikeMean` is centered around this interval. This is an important parameter, and testing for sensitivity is recommended.
 
-BEAST 2 will log the following parameters onto the tree:
+BEAST 2 will log the following terms onto the tree:
 
 - `BDWSstubs` or `FBDWSstubs`: number of stubs per branch (if using the appropriate tree prior).
 - `GSMbranchRates`: the relative branch rates (relaxed clock).
