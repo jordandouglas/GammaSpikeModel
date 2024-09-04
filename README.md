@@ -125,7 +125,7 @@ The `examples` directory contains:
 1. Three case studies in `examples/cases/` that strongly favour the spike model:
  - `aaRS.xml`: Class I aminoacyl-tRNA synthetase amino acid sequences from [Douglas et al. 2024](https://www.aars.online).
 - `cephalopods.xml`: Cephalopoda morphological traits from [Whalen and Landman 2021](https://doi.org/10.1038/s41467-022-28333-5).
-- `indoeuropean.xml`: Indo-European cognate data from [Heggarty et al. 2024](https://doi.org/10.1126/science.abg0818).
+- `indoeuropean.xml`: Indo-European cognate data from [Heggarty et al. 2023](https://doi.org/10.1126/science.abg0818).
 
 2. The `examples/DS/` directory contains other datasets that have varying levels of support for the spike model:
 - `DS1, DS2, ..., DS11.xml`: These eleven nucleotide datasets were collected by [Whidden and Matsen 2015](https://doi.org/10.1093/sysbio/syv006). Please refer to their article to find the respective references for each dataset.
