@@ -123,7 +123,7 @@ In most instances, we found this model converged reasonably well despite its lar
 The `examples` directory contains:
 
 1. Three case studies in `examples/cases/` that strongly favour the spike model:
- - `aaRS.xml`: Class I aminoacyl-tRNA synthetase amino acid sequences from [Douglas et al. 2024].(https://www.aars.online).
+ - `aaRS.xml`: Class I aminoacyl-tRNA synthetase amino acid sequences from [Douglas et al. 2024](https://www.aars.online).
 - `cephalopods.xml`: Cephalopoda morphological traits from [Whalen and Landman 2021](https://doi.org/10.1038/s41467-022-28333-5).
 - `indoeuropean.xml`: Indo-European cognate data from [Heggarty et al. 2024](https://doi.org/10.1126/science.abg0818).
 
