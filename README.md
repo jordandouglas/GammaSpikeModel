@@ -58,8 +58,8 @@ This package requires BEAST 2.7.7. or newer.
 
 4. Open the `Priors` tab and select one of the following tree priors:
 - `Birth Death Model With Stubs` (BDWS) is the standard birth-death model when tip dates are not used. Parameters:
-		- Birth rate `BDWSBirthRate` .
-		- Reproduction number `BDWSReproductionNumber`, which is assumed to be greater than 1. 
+    - Birth rate `BDWSBirthRate` .
+    - Reproduction number `BDWSReproductionNumber`, which is assumed to be greater than 1. 
 - `Fossilised Birth Death Model With Stubs` (FBDWS) is the [fossilised birth-death](https://www.beast2.org/divergence-dating-with-sampled-ancestors-fbd-model/) tree prior with serially sampled tip dates, sampled ancestors estimated, and the following parameters
 	- Birth rate `FBDWSBirthRate` .
 	- Reproduction number `FBDWSReproductionNumber`, which is assumed to be greater than 1. 
@@ -99,7 +99,7 @@ BEAST 2 will log the following terms onto the tree:
 The `useSpikeModel` parameter can be used for hypothesis testing. When this parameter is 1, the spike model is being used, and when 0 the relaxed clock. Every dataset is different, with some strongly favouring one model over the other, and others being uncertain. 
 
 
-By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. If the average value of `useSpikeModel` is over 0.91 (corresponding to a Bayes factor of 10 in this case) there is strong support in favour of punctuated equilibrium. 
+By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. If the average value of `useSpikeModel` is over 0.91 (corresponding to a Bayes factor of 10 in this case) there is strong support in favour of punctuated equilibrium. Less than 0.09 probability is strong evidence against the model at this threshold.
 
 
 
