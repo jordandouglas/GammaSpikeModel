@@ -30,7 +30,7 @@
             <parameter id="GSMspikes.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
             <parameter id="GSMclockSD.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
             <parameter id="GSMspikeShape.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
-            <parameter id="GSMspikeMean.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">0.01</parameter>
+            <parameter id="GSMspikeMean.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.01</parameter>
 
             <parameter id="GSMclockRate.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
            
@@ -87,7 +87,7 @@
         <!-- Site/clock model operators -->
         <operator id="GSMclockSDScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMclockSD.c:$(n)" scaleFactor="0.1" weight="5.0"/>
         <operator id="GSMspikeShapeScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeShape.c:$(n)" scaleFactor="0.1" weight="1.0"/>
-        <operator id="GSMspikeMeanScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeMean.c:$(n)" scaleFactor="0.1" weight="20.0"/>
+        <operator id="GSMspikeMeanScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeMean.c:$(n)" scaleFactor="0.1" weight="3.0"/>
         <operator id="GSMspikesScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikes.c:$(n)" scaleFactor="0.1" weight="30.0"/>
         <operator id="GSMUpDownSpikeTree.c:$(n)" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.1" weight="5.0">
             <tree idref="Tree.t:$(n)" />
