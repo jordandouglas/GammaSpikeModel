@@ -2,6 +2,7 @@ package gammaspike.clockmodel;
 
 import org.apache.commons.math.MathException;
 
+import beast.base.core.Citation;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Log;
@@ -21,6 +22,9 @@ import gammaspike.tree.Stubs;
 
 
 @Description("Adds a burst of mutations after speciation events that result in a label change. Each branch has it's own base rate")
+@Citation(value =
+"Douglas, J., Bouckaert, R., Harris, S.C., Carter Jr, C.W., Wills, P.R. (2024) Evolution is coupled with branching across many granularities of life. bioRxiv 2024.09.08.611933", DOI = "https://doi.org/10.1101/2024.09.08.611933",
+year = 2024, firstAuthorSurname = "Douglas")
 public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements SpikeModel {
 	
 	final public Input<Tree> treeInput = new Input<>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);

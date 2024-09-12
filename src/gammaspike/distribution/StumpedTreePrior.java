@@ -3,6 +3,7 @@ package gammaspike.distribution;
 
 import java.io.PrintStream;
 
+import beast.base.core.Citation;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Log;
@@ -20,6 +21,9 @@ import gammaspike.tree.Stubs;
 
 
 @Description("Prior distribution on a stumped tree")
+@Citation(value =
+"Douglas, J., Bouckaert, R., Harris, S.C., Carter Jr, C.W., Wills, P.R. (2024) Evolution is coupled with branching across many granularities of life. bioRxiv 2024.09.08.611933", DOI = "https://doi.org/10.1101/2024.09.08.611933",
+year = 2024, firstAuthorSurname = "Douglas")
 public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExpectation {
 
 	final public Input<RealParameter> lambdaInput = new Input<>("lambda", "birth rate lambda", Validate.REQUIRED);

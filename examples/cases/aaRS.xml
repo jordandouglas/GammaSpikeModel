@@ -206,7 +206,7 @@
             <parameter id="spikes" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
             <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
             <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
-            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.01</parameter>
+            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.01</parameter>
 
             <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">$(initialSpikeIndicator)</parameter>
 
@@ -382,7 +382,7 @@
                     <taxon id='TrpRS_PDB_Bact_G_stearo_1I6M' spec='Taxon' />
                     <taxon id='TrpRS_PDB_Bact_Y_pestis_3N9I' spec='Taxon' />
                     </taxonset>
-                    <LogNormal name='distr' meanInRealSpace='true' M='3.5' S='0.1' />
+                    <!-- <LogNormal name='distr' meanInRealSpace='true' M='3.5' S='0.1' /> -->
                     </distribution>
 
                     <distribution id='TyrRS.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree='@tree'>
@@ -524,7 +524,7 @@
         <!-- Site/clock model operators -->
         <operator id="clockSD.scale" spec="kernel.BactrianScaleOperator" parameter="@clockSD" scaleFactor="0.1" weight="5.0"/>
         <operator id="spikeShape.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeShape" scaleFactor="0.1" weight="1.0"/>
-        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="20.0"/>
+        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="5.0"/>
         <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="30.0"/>
 
         <operator id="ORCAdaptableOperatorSampler_rates_internal.c:tree" spec="AdaptableOperatorSampler" weight="20.0">
@@ -594,7 +594,7 @@
 
 
         </logger>
-        <logger id="screenlog" spec="Logger" logEvery="10000">
+        <logger id="screenlog" spec="Logger" logEvery="1000">
             <log idref="posterior"/>
             <log idref="treeHeight" />
             <log idref="spikeShape"/>

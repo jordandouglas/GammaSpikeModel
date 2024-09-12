@@ -107,7 +107,7 @@ By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distr
 
 ## Speeding up MCMC convergence
 
-In most instances, we found this model converged reasonably well despite its large parameter space.  If this model is taking too long to converge, we recommend the following remedies:
+In most instances, we found this model converged reasonably well despite its large parameter space. But if this model is taking too long to converge, we recommend the following remedies:
 
 1. Try using [Coupled MCMC](https://www.beast2.org/2020/01/14/metropolis-coupled-mcmcmc3-works.html), which is especially useful if the posterior distribtuion is multimodal.
 
@@ -115,7 +115,7 @@ In most instances, we found this model converged reasonably well despite its lar
 
 3. In general, it is good practice to run multiple MCMC chains in parallel and confirm they have converged to the same distribution. If they did, then the chains can be combined, thereby expediting the process.
 
-4. Sometimes the `spikeMean` parameter takes a long time to reach burn-in. One would expect this parameter to lie in the order of 0.0001 - 0.01 (substitutions per site per bifurcation), but during burn-in it can be much larger. To ease this issue, by default the parameter is assigned a conservative upper limit of 1.0, which seems to help. However, if burn-in is still slow, you could lower this limit even further by tweaking the spikeMean `upper` on BEAUti or in the xml file under: `<parameter id="GSMspikeMean.c:data" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.01</parameter>`. After reaching burn-in, you could then stop BEAST, restore/remove the upper limit, and then resume BEAST, making sure to discard the part of the chain that was sampled prior to resuming.
+4. Sometimes, the `spikeMean` parameter takes a long time to reach burn-in. One would expect this parameter to lie in the order of 0.0001 - 0.01 (substitutions per site per bifurcation), but during burn-in it can be much larger. To ease this issue, by default the parameter is assigned a conservative upper limit of 1.0, which seems to help. However, if burn-in is still slow, you could lower this limit even further by tweaking the spikeMean `upper` on BEAUti or in the xml file under: `<parameter id="GSMspikeMean.c:data" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.01</parameter>`. After reaching burn-in, you could then stop BEAST, restore/remove the upper limit, and then resume BEAST, making sure to discard the part of the chain that was sampled prior to resuming.
 
 
 ## Example files
