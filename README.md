@@ -102,6 +102,9 @@ The `useSpikeModel` parameter can be used for hypothesis testing. When this para
 By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distribtuion, meaning that the spike model is *a priori* assumed to be correct with 0.5 probability. If the average value of `useSpikeModel` is over 0.91 (corresponding to a Bayes factor of 10 in this case) there is strong support in favour of punctuated equilibrium. Less than 0.09 probability is strong evidence against the model at this threshold.
 
 
+Some parameters will have different estimates depending on the value of  `useSpikeModel`, which may potentially result in a bimodal distribution, e.g., for `spikeMean`, `spikeShape`, `likelihood`, and `clockRate`. In this event, it makes more sense to report the estimate for the parameter conditional on the model. If there are few samples, one way to do this is by rerunning BEAST 2 with `useSpikeModel` fixed at 0 or 1. Providing estimates conditional on the model is especilaly important for `spikeMean` and `spikeShape` since they will be sampled from the prior when `useSpikeModel=0`.
+
+
 
 ## Speeding up MCMC convergence
 
