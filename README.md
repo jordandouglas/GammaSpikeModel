@@ -124,6 +124,8 @@ In most instances, we found this model converged reasonably well despite its lar
 4. Sometimes, the `spikeMean` parameter takes a long time to reach burn-in. One would expect this parameter to lie in the range of 0.0001 - 0.1 (substitutions per site per bifurcation), but during burn-in it can be much larger. To ease this issue, by default the parameter is assigned a conservative upper limit of 1.0, which seems to help. However, if burn-in is still slow, you could lower this limit even further by tweaking the spikeMean `upper` on BEAUti or in the xml file under: `<parameter id="GSMspikeMean.c:data" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.01</parameter>`. After reaching burn-in, you could then stop BEAST, restore/remove the upper limit, and then resume BEAST, making sure to discard the part of the chain that was sampled prior to resuming.
 
 
+5. To further improve runtime, consider installing BEAGLE, and if you have access to a GPU, try running with BEAGLE on a GPU. Both of these can make a considerable difference. [See performance suggestions](https://www.beast2.org/performance-suggestions/).
+
 ## Example files
 
 The `examples` directory contains:
