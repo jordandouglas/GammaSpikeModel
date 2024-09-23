@@ -104,7 +104,12 @@ By default, the model indicator `useSpikeModel` has a Bernoulli(0.5) prior distr
 
 Some parameters will have different estimates depending on the value of  `useSpikeModel`, which may potentially result in a bimodal distribution, e.g., for `spikeMean`, `spikeShape`, `likelihood`, and `clockRate`. In this event, it makes more sense to report the estimate for the parameter conditional on the model. If there are few samples, one way to do this is by rerunning BEAST 2 with `useSpikeModel` fixed at 0 or 1. Providing estimates conditional on the model is especilaly important for `spikeMean` and `spikeShape` since they will be sampled from the prior when `useSpikeModel=0`.
 
+## What happens when model averaging cannot pick a single model?
 
+When `useSpikeModel` is of an intermediate value, e.g., close to 0.5, this is the method's way of saying "I don't know if there is punctuated equilibrium."  In this case, these posterior estimates are averaged across both possibilities, which is arguably more robust than just looking at one of the two models. Adding more data, such as longer sequences or more taxa, may also add further clarity here.
+
+Looking at the broader picture, the Bayesian approach is capable of saying "I don't know", which is a perfectly valid answer. Contrast this with model selection via AIC or BIC, which selects a single model without reporting its probability relative to the other models.
+Also contrast this with ChatGPT, which invents knowledge when it does not know the answer. 
 
 ## Speeding up MCMC convergence
 
