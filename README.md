@@ -106,7 +106,7 @@ Some parameters will have different estimates depending on the value of  `useSpi
 
 ## What happens when model averaging cannot pick a single model?
 
-When `useSpikeModel` is of an intermediate value, e.g., close to 0.5, this is the method's way of saying "I don't know if there is punctuated equilibrium."  In this case, these posterior estimates are averaged across both possibilities, which is arguably more robust than just looking at one of the two models. Adding more data, such as longer sequences or more taxa, may also add further clarity here.
+When `useSpikeModel` is of an intermediate value, e.g., close to 0.5, this is the method's way of saying "I don't know if there is punctuated equilibrium."  In this case, the posterior estimates are averaged across both possibilities, which is arguably more robust than just looking at one of the two models. Adding more data, such as longer sequences or more taxa, may also add further clarity here.
 
 Looking at the broader picture, the Bayesian approach is capable of saying "I don't know", which is a perfectly valid answer. Contrast this with model selection via AIC or BIC, which selects a single model without reporting its probability relative to the other models.
 Also contrast this with ChatGPT, which invents knowledge when it does not know the answer. 
@@ -121,7 +121,7 @@ In most instances, we found this model converged reasonably well despite its lar
 
 3. In general, it is good practice to run multiple MCMC chains in parallel and confirm they have converged to the same distribution. If they did, then the chains can be combined, thereby expediting the process.
 
-4. Sometimes, the `spikeMean` parameter takes a long time to reach burn-in. One would expect this parameter to lie in the order of 0.0001 - 0.01 (substitutions per site per bifurcation), but during burn-in it can be much larger. To ease this issue, by default the parameter is assigned a conservative upper limit of 1.0, which seems to help. However, if burn-in is still slow, you could lower this limit even further by tweaking the spikeMean `upper` on BEAUti or in the xml file under: `<parameter id="GSMspikeMean.c:data" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.01</parameter>`. After reaching burn-in, you could then stop BEAST, restore/remove the upper limit, and then resume BEAST, making sure to discard the part of the chain that was sampled prior to resuming.
+4. Sometimes, the `spikeMean` parameter takes a long time to reach burn-in. One would expect this parameter to lie in the range of 0.0001 - 0.1 (substitutions per site per bifurcation), but during burn-in it can be much larger. To ease this issue, by default the parameter is assigned a conservative upper limit of 1.0, which seems to help. However, if burn-in is still slow, you could lower this limit even further by tweaking the spikeMean `upper` on BEAUti or in the xml file under: `<parameter id="GSMspikeMean.c:data" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.01</parameter>`. After reaching burn-in, you could then stop BEAST, restore/remove the upper limit, and then resume BEAST, making sure to discard the part of the chain that was sampled prior to resuming.
 
 
 ## Example files
