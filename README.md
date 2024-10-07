@@ -154,6 +154,5 @@ Jordan Douglas jordan.douglas@auckland.ac.nz
 
 ## References
 
-"Evolution is coupled with branching across many granularities of life".
-Jordan Douglas, Remco Bouckaert, Simon C Harris, Charles W Carter Jr., and Peter R Wills. bioRxiv 2024.09.08.611933; doi: https://doi.org/10.1101/2024.09.08.611933
+"Evolution is coupled with branching across many granularities of life". bioRxiv 2024.09.08.611933; doi: https://doi.org/10.1101/2024.09.08.611933
 
