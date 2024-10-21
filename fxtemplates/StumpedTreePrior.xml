@@ -97,7 +97,7 @@
             <connect srcID='BDWSstubs.t:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' if='inposterior(BirthDeathModelWithStubs.t:$(n))'/>
             <!-- connect stubst to GammaSpikeRelaxedClock if present -->
             <connect srcID='BDWSstubs.t:$(n)' targetID='GSMStumpedTreeConstantDistanceOperator.c:$(n)' inputName='stubs' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
-            <connect srcID='BDWSstubs.t:$(n)' targetID='GammaSpikeRelaxedClock.c:$(n)' inputName='stubs' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
+            <connect srcID='BDWSstubs.t:$(n)' targetID='GSMbranchSpikePrior.c:$(n)' inputName='stubs' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and inposterior(GSMbranchSpikePrior.c:$(n))'/>
             
             <connect srcID='BDWSbirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
                      if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSBirthRate.t:$(n)/estimate=true'>
@@ -234,7 +234,7 @@
             <connect srcID='FBDWSstubs.t:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
             <!-- connect stubst to GammaSpikeRelaxedClock if present -->
             <connect srcID='FBDWSstubs.t:$(n)' targetID='GSMStumpedTreeConstantDistanceOperator.c:$(n)' inputName='stubs' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
-            <connect srcID='FBDWSstubs.t:$(n)' targetID='GammaSpikeRelaxedClock.c:$(n)' inputName='stubs' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
+            <connect srcID='FBDWSstubs.t:$(n)' targetID='GSMbranchSpikePrior.c:$(n)' inputName='stubs' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and inposterior(GSMbranchSpikePrior.c:$(n))'/>
             
             <connect srcID='FBDWSbirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSBirthRate.t:$(n)/estimate=true'>

@@ -46,6 +46,9 @@ public class BranchSpikePrior extends Distribution {
 	@Override
     public void initAndValidate() {
 		 
+		if (stubsInput.get() != null) {
+			stubsInput.get().setBranchSpikePrior(this);
+		}
 		 
 	}
 	

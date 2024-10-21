@@ -166,31 +166,32 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 			Log.warning("Found distribution " + ((BEASTObject)stubExpectation).getID());
 			
 			// Find the object that is used to compute the spike prior
-			for (BEASTInterface o : this.getOutputs()) {
-				if (o != null && o instanceof BEASTObject) {
-					//Log.warning("input :" + o.getClass().getCanonicalName());
-					
-					if (o instanceof BranchSpikePrior) {
-						
-						if (spikePrior != null) {
-							throw new IllegalArgumentException("Found multiple BranchSpikePrior objects that are pointing to "
-									+ this.getID() + ". Please ensure there is 1 at most (or estimate stubs directly).");
-						}
-						
-						spikePrior = (BranchSpikePrior)o;
-						Log.warning("Found spike prior " + spikePrior.getID());
-					}
-					
-					else if (o instanceof Distribution && o != stubExpectation) {
-						throw new IllegalArgumentException("Found an unknown distribtuion " + o.getID() + " pointing to "
-								+ this.getID() + ". Please ensure the only priors being used are the tree prior and a spike prior (or estimate stubs directly).");
-				
-						
-					}
-				}
-				
-				
-			}
+//			for (BEASTInterface o : this.getOutputs()) {
+//				if (o != null && o instanceof BEASTObject) {
+//					//Log.warning("input :" + o.getClass().getCanonicalName());
+//					
+//					if (o instanceof BranchSpikePrior) {
+//						
+//						if (spikePrior != null) {
+//							Log.warning(this.getID() + " has priors " + spikePrior.getID() + " and " + o.getID());
+//							throw new IllegalArgumentException("Found multiple BranchSpikePrior objects that are pointing to "
+//									+ this.getID() + ". Please ensure there is 1 at most (or estimate stubs directly).");
+//						}
+//						
+//						spikePrior = (BranchSpikePrior)o;
+//						Log.warning("Found spike prior " + spikePrior.getID());
+//					}
+//					
+//					else if (o instanceof Distribution && o != stubExpectation) {
+//						throw new IllegalArgumentException("Found an unknown distribtuion " + o.getID() + " pointing to "
+//								+ this.getID() + ". Please ensure the only priors being used are the tree prior and a spike prior (or estimate stubs directly).");
+//				
+//						
+//					}
+//				}
+//				
+//				
+//			}
 			
 			if (stubExpectation == null) {
 				throw new IllegalArgumentException("Cannot find an object that implements 'StubExpectation'");
@@ -257,6 +258,10 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 
 		
 		
+	}
+	
+	public void setBranchSpikePrior(BranchSpikePrior prior) {
+		this.spikePrior = prior;
 	}
 	
 	
@@ -416,6 +421,8 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		} 
 		
 		else {
+			
+			//Log.warning(this.getID() + " using spikes from " + this.spikePrior.getID());
 			
 			// Sample from a Gamma-Poisson distribution
 			double[] cf = this.spikePrior.getCumulativeProbs(poissonMean, nodeNr);

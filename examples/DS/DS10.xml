@@ -136,7 +136,7 @@ name="alignment">
                         <M id="Function$Constant.6" spec="Function$Constant" value="1.0"/>
                     </LogNormal>
                 </prior>
-                <distribution id="GSMbranchSpikePrior.c:DS10" spec="gammaspike.distribution.BranchSpikePrior" indicator="@GSMuseSpikeModel.c:DS10" shape="@GSMspikeShape.c:DS10" spikes="@GSMspikes.c:DS10" tree="@Tree.t:DS10"/>
+                <distribution id="GSMbranchSpikePrior.c:DS10" stubs="@BDWSstubs.t:DS10" spec="gammaspike.distribution.BranchSpikePrior" indicator="@GSMuseSpikeModel.c:DS10" shape="@GSMspikeShape.c:DS10" spikes="@GSMspikes.c:DS10" tree="@Tree.t:DS10"/>
                 <prior id="GSMclockSDPrior.c:DS10" name="distribution" x="@GSMclockSD.c:DS10">
                     <Gamma id="Gamma.3" name="distr">
                         <alpha id="Function$Constant.4" spec="Function$Constant" value="5.0"/>
