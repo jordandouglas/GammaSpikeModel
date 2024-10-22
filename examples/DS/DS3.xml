@@ -242,6 +242,7 @@ name="alignment">
             <log idref="BDWSBirthRate.t:DS3"/>
             <log idref="BDWSReproductionNumber.t:DS3"/>
             <log idref="BDWSstubs.t:DS3"/>
+            <log id="SaltativeProportionLogger" spec="gammaspike.logger.SaltativeProportionLogger" tree="@Tree.t:DS3" clock="@GammaSpikeRelaxedClock.c:DS3"/>
         </logger>
         <logger id="screenlog" spec="Logger" logEvery="1000">
             <log idref="posterior"/>

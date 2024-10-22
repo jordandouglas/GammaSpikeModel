@@ -265,6 +265,7 @@ name="alignment">
             <log idref="kappa.s:DS7"/>
             <log idref="freqParameter.s:DS7"/>
             <log idref="gammaShape.s:DS7"/>
+             <log id="SaltativeProportionLogger" spec="gammaspike.logger.SaltativeProportionLogger" tree="@Tree.t:DS7" clock="@GammaSpikeRelaxedClock.c:DS7"/>
         </logger>
         <logger id="screenlog" spec="Logger" logEvery="1000">
             <log idref="posterior"/>

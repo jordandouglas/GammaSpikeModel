@@ -235,11 +235,13 @@ name="alignment">
             <log idref="BDWSBirthRate.t:DS2"/>
             <log idref="BDWSReproductionNumber.t:DS2"/>
             <log idref="BDWSstubs.t:DS2"/>
+            <log id="SaltativeProportionLogger" spec="gammaspike.logger.SaltativeProportionLogger" tree="@Tree.t:DS2" clock="@GammaSpikeRelaxedClock.c:DS2"/>
         </logger>
         <logger id="screenlog" spec="Logger" logEvery="1000">
             <log idref="posterior"/>
             <log idref="likelihood"/>
             <log idref="prior"/>
+            <log idref="SaltativeProportionLogger" />
         </logger>
         <logger id="treelog.t:DS2" spec="Logger" fileName="$(filebase)-$(tree).trees" logEvery="1000" mode="tree">
             <log id="TreeWithMetaDataLogger.t:DS2" spec="beast.base.evolution.TreeWithMetaDataLogger" branchratemodel="@GammaSpikeRelaxedClock.c:DS2" tree="@Tree.t:DS2">
