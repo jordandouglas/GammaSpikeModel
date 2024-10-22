@@ -91,7 +91,10 @@ BEAST 2 will log the following terms onto the tree:
 - `BDWSstubs` or `FBDWSstubs`: number of stubs per branch (if using the appropriate tree prior).
 - `GSMbranchRates`: the relative branch rates (relaxed clock).
 - `GSMweightedSpikes`: the sum of all spikes along the branch (units: instantaneous changes per site along lineage).
-- `rate`: the total rate of the branch accounting for both gradual (branchRates) and abrupt (spike) evolution. 
+- `rate`: the total rate of the branch accounting for both gradual (branchRates) and abrupt (spike) evolution.
+
+The following term will also be logged into the .log file:
+- `GammaSpikeRelaxedClock.ProportionOfSaltation`: the proportion of total change that can be attributed to abrupt bursts. This is equal to the total spike size across the whole tree divided by the total evolutionary distance across the tree. If this value is over 0.5, then more than half of the total evolution occurs at the time of branching.
 
 
 ## Hypothesis testing
