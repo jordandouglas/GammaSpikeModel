@@ -20,6 +20,9 @@ Advantages over other clock models:
 
 
 
+**Warning:** this package is still in prerelease.
+
+
 ## Installation instructions
 
 
