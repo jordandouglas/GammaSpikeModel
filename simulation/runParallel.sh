@@ -2,7 +2,6 @@
 
 nthreads=4
 
-
 rm templates/rep*/*.log
 
 for ((i=1;i<=nthreads;i++)); do
@@ -12,8 +11,4 @@ for ((i=1;i<=nthreads;i++)); do
 	#bash runParallel_b.sh $i $nthreads
 
 done
-
-
-#Rscript scripts/plot.R
-
 
