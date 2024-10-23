@@ -84,29 +84,15 @@ for (simnum in 1:NSIMS){
 	JSON[["tree"]] = gsub("&", "&amp;", species.trees[rownum])
 	write(JSON[["tree"]], paste0(f, "/trueTree.newick"))
 
-
-	JSON[["selectionRate"]] = 	sample(c(10, 50, 100, 500, 1000), 1)
-	JSON[["popSize"]] = 		sample(c(5, 10, 20, 50), 1)
-
-
 	
 	# Branch rates
 	branchRates = as.numeric(truth.df[rownum,grep("branchRates", colnames(truth.df))])
 	JSON[["branchRates.all"]] = paste0(branchRates, collapse = " ")
 
-	# Label data
-	labelData = as.numeric(truth.df[rownum,grep("labelData", colnames(truth.df))])
-	JSON[["labelData.all"]] = paste0(labelData, collapse = " ")
-
-
 
 	ntaxa = truth.df[rownum,"tree.ntaxa"]
 	JSON[["ntaxa"]] = ntaxa
 	JSON[["taxonRange"]] = paste0(1:ntaxa, collapse=",")
-
-
-
-
 
 
 	JSON_str = as.character(rjson::toJSON(JSON, indent=1))
