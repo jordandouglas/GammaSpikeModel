@@ -17,7 +17,6 @@ for ((i=1;i<=END;i++)); do
 done
 
 
-cd ../
-Rscript scripts/plot.R
+
 
 
