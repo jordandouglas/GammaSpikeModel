@@ -38,10 +38,14 @@ public class SaltativeProportionLogger  extends BEASTObject implements Loggable 
 		
 		for (Node node : treeInput.get().getNodesAsArray()) {
 			
+			if (node.getLength() <= 0 || node.isDirectAncestor() || node.isRoot()) continue;
+			
 			// Total distance on branch
 			double branchTime = node.isRoot() ? 0 : node.getLength();
 			double branchRate = clockInput.get().getRateForBranch(node);
 			double branchDistance = branchTime*branchRate;
+			
+			
 			totalChange += branchDistance;
 			
 			
