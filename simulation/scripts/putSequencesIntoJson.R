@@ -36,12 +36,6 @@ for(x in colnames(sub.df)){
 }	
 		
 
-# Label data
-labelData = as.numeric(sim.df[1,grep("labelData", colnames(sim.df))])
-JSON[["labelData.all"]] = paste0(labelData, collapse = " ")
-
-
-
 JSON_str = as.character(rjson::toJSON(JSON, indent=1))
 write(JSON_str, "var.seq.json")
 
