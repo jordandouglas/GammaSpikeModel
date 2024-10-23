@@ -304,7 +304,7 @@
             <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
             <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
             <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
-            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">$(initialSpikeIndicator)</parameter>
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
 
             <parameter id="reproductiveNumber" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="Infinity">1.5</parameter>
             <parameter id="becomeUninfectiousRate" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="Infinity">2.0</parameter>
@@ -948,7 +948,7 @@
 
 
 
-        <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="$(isModelAveraging)" />
+        <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="1" />
 
 
 
@@ -1156,7 +1156,7 @@
             <log idref="TsakonianPropontis.leaf.prior"/>
             <log idref="Umbrian.leaf.prior"/>
             <log idref="VedicEarly.leaf.prior"/>
-
+            <log id="SaltativeProportionLogger" spec="gammaspike.logger.SaltativeProportionLogger" tree="@tree" clock="@clockModel"/>
 
 
             
@@ -1171,6 +1171,7 @@
             <log idref="useSpikeModel"/>
             <log idref="stubs"/>
             <log idref="treeHeight"/>
+            <log idref="SaltativeProportionLogger" />
         </logger>
 
         <logger id="treelog" spec="Logger" fileName="stumped.trees" logEvery="100000" mode="tree">
