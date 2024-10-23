@@ -110,7 +110,7 @@ name="alignment">
             <parameter id="kappa.s:DS9" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
             <parameter id="freqParameter.s:DS9" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
             <parameter id="gammaShape.s:DS9" spec="parameter.RealParameter" lower="0.1" name="stateNode">1.0</parameter>
-            <stateNode id="GSMuseSpikeModel.c:DS9" spec="parameter.BooleanParameter">true</stateNode>
+            <stateNode id="GSMuseSpikeModel.c:DS9" spec="parameter.BooleanParameter">false</stateNode>
         </state>
         <init id="RandomTree.t:DS9" spec="RandomTree" estimate="false" initial="@Tree.t:DS9" taxa="@DS9">
             <populationModel id="ConstantPopulation0.t:DS9" spec="ConstantPopulation">
@@ -254,7 +254,7 @@ name="alignment">
         <operator id="GSMUpDownSpikeTree.c:DS9" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.1" tree="@Tree.t:DS9" weight="5.0">
             <down idref="GSMspikeMean.c:DS9"/>
         </operator>
-        <!-- <operator id="GSMBitFlipOperator.c:DS9" spec="operator.BitFlipOperator" parameter="@GSMuseSpikeModel.c:DS9" weight="1.0"/> -->
+        <operator id="GSMBitFlipOperator.c:DS9" spec="operator.BitFlipOperator" parameter="@GSMuseSpikeModel.c:DS9" weight="1.0"/>
         <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="1000" model="@posterior" sanitiseHeaders="true" sort="smart">
             <log idref="posterior"/>
             <log idref="likelihood"/>

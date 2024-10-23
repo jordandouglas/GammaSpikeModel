@@ -108,6 +108,7 @@
         </operator>
 
 		<log id="GSMrateStat.c:$(n)" spec="beast.base.evolution.RateStatistic" tree="@Tree.t:$(n)" branchratemodel="@GammaSpikeRelaxedClock.c:$(n)"/>
+      <log id="GSMSaltativeProportionLogger.c:$(n)" spec="gammaspike.logger.SaltativeProportionLogger" tree="@Tree.t:$(n)" clock="@GammaSpikeRelaxedClock.c:$(n)"/>
 
 			]]>
 
@@ -159,7 +160,9 @@
             <connect srcID='GSMspikeMean.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(GSMspikeMean.c:$(n))'/>
             <connect srcID='GSMStumpedTreePrior.c:$(n)' targetID='tracelog' inputName='log' if='inposterior(GSMStumpedTreePrior.c:$(n))'/>
             <connect srcID='GSMrateStat.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
-            
+            <connect srcID='GSMSaltativeProportionLogger.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
+
+
             <connect srcID='GammaSpikeRelaxedClock.c:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='branchratemodel'
                      if='inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
             <connect srcID='GSMweightedSpikes.c:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' 
@@ -202,6 +205,7 @@
 
             <connect srcID='Tree.t:$(n)' targetID='GammaSpikeRelaxedClock.c:$(n)' inputName='tree' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
             <connect srcID='Tree.t:$(n)' targetID='GSMrateStat.c:$(n)' inputName='tree' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
+            <connect srcID='Tree.t:$(n)' targetID='GSMSaltativeProportionLogger.c:$(n)' inputName='tree' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
 
         </subtemplate>
 	</mergewith>
