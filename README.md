@@ -198,5 +198,19 @@ Jordan Douglas jordan.douglas@auckland.ac.nz
 
 ## References
 
-"Evolution is coupled with branching across many granularities of life". bioRxiv 2024.09.08.611933; doi: https://doi.org/10.1101/2024.09.08.611933
 
+### Manuscript
+
+Douglas, J., Bouckaert, R., Harris, S., Carter, C., & Wills, P. (2025). "Evolution is coupled with branching across many granularities of life". (In Press) doi: https://doi.org/10.1101/2024.09.08.611933
+
+
+
+### Zenodo repository (code)
+
+Douglas, J., Bouckaert, R., Harris, S., Carter, C., & Wills, P. (2025). Gamma spike model for testing punctuated evolution (1.0.0). Zenodo. https://doi.org/10.5281/zenodo.15014835
+
+
+
+### Dryad repository (data)
+
+TBC
