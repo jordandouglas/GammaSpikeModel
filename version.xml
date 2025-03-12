@@ -1,4 +1,4 @@
-<package name='gammaspike' version='0.0.3'>
+<package name='gammaspike' version='1.0.0'>
 	<depends on='BEAST.base' atleast='2.7.5'/>
     <depends on='SA' atleast='2.1.1'/>
 

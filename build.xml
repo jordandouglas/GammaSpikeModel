@@ -237,7 +237,7 @@
 
 
 	<!-- Release -->
-	<property name="version" value="0.0.3" />
+	<property name="version" value="1.0.0" />
 	<property name="version_number" value="${gammaspikeversion}" />
 	<property name="release_dirgammaspike" value="release" />
 	<property name="copyright" value="CladeAge development team 2013" />
