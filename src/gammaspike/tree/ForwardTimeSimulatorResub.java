@@ -218,7 +218,7 @@ public class ForwardTimeSimulatorResub extends YuleModel {
 	        
 	        // If one of the two root children are extinct, try again
 	        if (allDescendantsAreExtinct(root.getLeft()) || allDescendantsAreExtinct(root.getRight())) {
-	        	Log.warning("bad root");
+	        	//Log.warning("bad root");
 	        	continue;
 	        }
 	        

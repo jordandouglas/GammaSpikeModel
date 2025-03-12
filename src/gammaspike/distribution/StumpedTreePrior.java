@@ -26,8 +26,9 @@ import gammaspike.tree.Stubs;
 year = 2024, firstAuthorSurname = "Douglas")
 public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExpectation {
 
-	final public Input<RealParameter> lambdaInput = new Input<>("lambda", "birth rate lambda", Validate.REQUIRED);
-	//final public Input<RealParameter> muInput = new Input<>("mu", "death rate mu", Validate.REQUIRED);
+	final public Input<RealParameter> lambdaInput = new Input<>("lambda", "birth rate lambda");
+	final public Input<RealParameter> netDiversificationRateInput = new Input<>("netDiversificationRate", "lambda - mu", Input.Validate.XOR, lambdaInput);
+	
 	final public Input<RealParameter> r0Input = new Input<>("r0", "ratio between birth and death rate");
 	final public Input<RealParameter> turnoverInput = new Input<>("turnover", "inverse of r0", Input.Validate.XOR, r0Input);
 	
@@ -73,7 +74,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
         
         // Ensure valid initial state
         final int nattempts = 1000;
-		double lambda = lambdaInput.get().getValue();
+		double lambda = this.getLambda();
 		double mu = this.getMu();
 		double psi = this.getPsi();
 		//Log.warning("psi " + psi);
@@ -123,7 +124,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		// Get variables
 		double p = 0;
 		Tree tree = (Tree) treeInterface;
-		double lambda = lambdaInput.get().getValue();
+		double lambda = this.getLambda();
 		double mu = this.getMu();
 		double psi = this.getPsi();
 		
@@ -584,6 +585,27 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		
 	}
 	
+	
+	public double getLambda() {
+		if (this.lambdaInput.get() == null) {
+			double net = netDiversificationRateInput.get().getValue();
+			
+			// Calculate without calling getMu() or there will be a never ending loop
+			if (r0Input.get() != null) {
+				double r = r0Input.get().getValue();
+				return net / (1 - 1/r);
+			}else {
+				double t = turnoverInput.get().getValue();
+				return net / (1 - t);
+			}
+			
+			
+		}else {
+			return this.lambdaInput.get().getValue();
+		}
+	}
+	
+	
 	public double getPsi() {
 		if (samplingProportionInput.get() == null) return 0.0;
 		double mu = this.getMu();
@@ -595,7 +617,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	
 	
 	public double getMu() {
-		double lambda = lambdaInput.get().getValue();
+		double lambda = this.getLambda();
 		if (r0Input.get() != null) {
 			return lambda / r0Input.get().getValue();
 		}else {
@@ -663,7 +685,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		double gSum = 0;
 		
 		Tree tree = (Tree) treeInput.get();
-		double lambda = lambdaInput.get().getValue();
+		double lambda = this.getLambda();
 		double mu = getMu();
 		double T = tree.getRoot().getHeight();
 		
@@ -705,7 +727,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	private double getH() {
 		
 		Tree tree = (Tree) treeInput.get();
-		double lambda = lambdaInput.get().getValue();
+		double lambda = this.getLambda();
 		double mu = getMu();
 		double T = tree.getRoot().getHeight();
 		
@@ -738,7 +760,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	private double getBlueIntegral() {
 		
 		Tree tree = (Tree) treeInput.get();
-		double lambda = lambdaInput.get().getValue();
+		double lambda = this.getLambda();
 		double mu = getMu();
 		double T = tree.getRoot().getHeight();
 		
@@ -843,7 +865,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
         return super.requiresRecalculation() || 
         		InputUtil.isDirty(lambdaInput) || 
         		InputUtil.isDirty(r0Input) || 
-        		//InputUtil.isDirty(rhoInput) || 
+        		InputUtil.isDirty(netDiversificationRateInput) || 
         		InputUtil.isDirty(turnoverInput) || 
         		InputUtil.isDirty(samplingProportionInput) ||
         		InputUtil.isDirty(stubsInput);
@@ -882,7 +904,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		
 		if (parentHeight <= height) return 0;
 		
-		double lambda = lambdaInput.get().getValue();
+		double lambda = this.getLambda();
 		double mu = this.getMu();
 		double psi = this.getPsi();
 		if (psi == 0) {

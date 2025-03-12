@@ -212,7 +212,7 @@ public class BirthDeathStubSimulator extends YuleModel {
 	        
 	        // If one of the two root children are extinct, try again
 	        if (allDescendantsAreUnsampled(root.getLeft()) || allDescendantsAreUnsampled(root.getRight())) {
-	        	Log.warning("bad root");
+	        	//Log.warning("bad root");
 	        	continue;
 	        }
 	        
@@ -325,6 +325,10 @@ public class BirthDeathStubSimulator extends YuleModel {
 			double height = node.getHeight();
 			double poissonRate = length*samplingRate;
 			int numberOfSamples = (int)Randomizer.nextPoisson(poissonRate);
+			
+			
+			
+			
 			numberOfAncestralSamples += numberOfSamples;
 			//Log.warning("Adding " + numberOfSamples + " samples ");
 			if (numberOfSamples > 0) {

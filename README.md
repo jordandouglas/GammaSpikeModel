@@ -1,4 +1,5 @@
 
+
 # Testing for punctuated equilibrium in BEAST 2
 
 The gamma spike model is a phylogenetic clock model for BEAST 2. This method tests for punctuated equilibrium, by assigning each branch a gradual clock-rate and an instaneaneous spike of abrupt evolution. The magnitudes of each branch rate and branch spike are independent and identically distributed.  
@@ -115,7 +116,6 @@ Some parameters will have different estimates depending on the value of  `useSpi
 When `useSpikeModel` is of an intermediate value, e.g., close to 0.5, this is the method's way of saying "I don't know if there is punctuated equilibrium."  In this case, the posterior estimates are averaged across both possibilities, which is arguably more robust than just looking at one of the two models. Adding more data, such as longer sequences or more taxa, may also add further clarity here.
 
 Looking at the broader picture, the Bayesian approach is capable of saying "I don't know", which is a perfectly valid answer. Contrast this with model selection via AIC or BIC, which selects a single model without reporting its probability relative to the other models.
-Also contrast this with ChatGPT, which invents knowledge when it does not know the answer. 
 
 ## Speeding up MCMC convergence
 
@@ -131,6 +131,10 @@ In most instances, we found this model converged reasonably well despite its lar
 
 
 5. To further improve runtime, consider installing BEAGLE, and if you have access to a GPU, try running with BEAGLE on a GPU. Both of these can make a considerable difference. [See performance suggestions](https://www.beast2.org/performance-suggestions/).
+
+
+
+
 
 ## Example files
 
@@ -149,6 +153,46 @@ The `examples` directory contains:
 - `rjStuvs.xml`: the time and placement of each stub is estimated using reversible-jump MCMC. Note that special tree operators are required to handle stubs. This is the slowest at mixing.
 - `nrStubs.xml`: number of stubs on each lineage is estimated using MCMC, but their times are integrated out.
 - `stochasticStubs.xml`: the number of stubs on each lineage is sampled at the time of logging during MCMC, i.e., not as part of the state. This is the default setting, but less versatile than the other two. This is the fastest at mixing. Limitation: note that the number of stubs per-lineage is sampled at the time of logging. The number of stubs reported by the tree logger might not sum to the same value of `nstubs` reported by the trace logger. Both of these numbers are valid, but as the algorithm is stochastic, they will not be the same.
+
+
+## Alternative parameterisations
+
+By default, the tree prior has the following parameterisation:
+
+`lambda` = birth rate
+`r0` = birth rate / death rate (aka reproduction number)
+
+These two terms can be replaced to other parameterisations:
+
+`netDiversificationRate` = lambda - mu. This parameter can be specified instead of `lambda`.
+`turnover` = 1/`r0` = death rate / birth rate. This parameter can be specified instead of `r0`.
+
+These alternative parameterisations are currently not supported by BEAUti and will require manual editing of the XML file. See some examples below:
+
+
+**Lambda and r0 (default):**
+``
+<distribution id="BirthDeathModelWithStubs.t:data" spec="gammaspike.distribution.StumpedTreePrior" lambda="@BDWSBirthRate.t:data" r0="@BDWSReproductionNumber.t:data" tree="@Tree.t:data"/>
+`` 
+
+**Lambda and turnover:**
+``
+<distribution id="BirthDeathModelWithStubs.t:data" spec="gammaspike.distribution.StumpedTreePrior" lambda="@BDWSBirthRate.t:data" turnover="@turnover.t:data" tree="@Tree.t:data"/>
+`` 
+
+**net rate and r0**
+``
+<distribution id="BirthDeathModelWithStubs.t:data" spec="gammaspike.distribution.StumpedTreePrior" netDiversificationRate="@netRate.t:data" r0="@BDWSReproductionNumber.t:data" tree="@Tree.t:data"/>
+`` 
+
+
+**net rate and turnover**
+``
+<distribution id="BirthDeathModelWithStubs.t:data" spec="gammaspike.distribution.StumpedTreePrior" netDiversificationRate="@netRate.t:data" turnover="@turnover.t:data" tree="@Tree.t:data"/>
+`` 
+
+When introducing new parameters, make sure to update their prior distributions and assign them operators.
+
 
 
 ## Support
