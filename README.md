@@ -21,8 +21,6 @@ Advantages over other clock models:
 
 
 
-**Warning:** this package is still in prerelease.
-
 
 ## Installation instructions
 
@@ -31,13 +29,7 @@ This package requires BEAST 2.7.7. or newer.
 
 1. Launch BEAUti
 2. Click on `File` -> `Manage Packages`
-3. Install `gammaspike`. If it is not in the list of packages, you may need to add an extra package repository as follows:
-- Click the `Packager repositories` button. A dialog pops up.
-- Click the Add URL button. A dialog is shown where you can enter https://raw.githubusercontent.com/CompEvol/CBAN/master/packages-extra-2.7.xml
-- Click `OK`. There should be an extra entry in the list.
-- Click `Done`.
-- After a short delay, `gammaspike` should appear in the list of packages.
-
+3. Install `gammaspike`. 
 
 
 ## Setting up an analysis
