@@ -159,12 +159,14 @@ The `examples` directory contains:
 
 By default, the tree prior has the following parameterisation:
 
-`lambda` = birth rate
-`r0` = birth rate / death rate (aka reproduction number)
+`lambda` = birth rate.
+
+`r0` = birth rate / death rate (aka reproduction number).
 
 These two terms can be replaced to other parameterisations:
 
 `netDiversificationRate` = lambda - mu. This parameter can be specified instead of `lambda`.
+
 `turnover` = 1/`r0` = death rate / birth rate. This parameter can be specified instead of `r0`.
 
 These alternative parameterisations are currently not supported by BEAUti and will require manual editing of the XML file. See some examples below:
