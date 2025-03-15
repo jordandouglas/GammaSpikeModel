@@ -207,10 +207,14 @@ Douglas, J., Bouckaert, R., Harris, S., Carter, C., & Wills, P. (2025). "Evoluti
 
 ### Zenodo repository (code)
 
+Version 1.0.0 has been archived at:
+
 Douglas, J., Bouckaert, R., Harris, S., Carter, C., & Wills, P. (2025). Gamma spike model for testing punctuated evolution (1.0.0). Zenodo. https://doi.org/10.5281/zenodo.15014835
 
 
 
 ### Dryad repository (data)
 
-TBC
+Posterior distribution log files for three case studies are available at:
+
+Douglas, J., Bouckaert, R., Harris, S., Carter, C., & Wills, P. (2025). Evolution is coupled with branching across many granularities of life [Dataset]. Dryad. https://doi.org/10.5061/dryad.sxksn03dj
