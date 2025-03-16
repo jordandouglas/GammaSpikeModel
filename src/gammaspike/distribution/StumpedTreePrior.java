@@ -105,7 +105,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	        }
 
 	        if (attemptNr >= nattempts) {
-	        	throw new IllegalArgumentException("Cannot find valid initial state. Try tweaking lambda, mu, and psi");
+	        	throw new IllegalArgumentException("Cannot find valid initial state. Try tweaking lambda, mu, psi, and rho");
 	        }
 
 
