@@ -47,7 +47,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	final public Input<Boolean> parseFromTreeInput = new Input<>("parseFromTree", "Set to true if initial values are to be loaded from tree metadata.", false); 
 	final public Input<ParametricDistribution> rateDistInput = new Input<>("distr", "the distribution governing the rates among branches. "
 			+ "Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.OPTIONAL);
-	final public Input<Double> initialSpikeSizeInput = new Input<>("initialSpike", "initial value of a spike.", 1e-3); 
+	final public Input<Double> initialSpikeSizeInput = new Input<>("initialSpike", "initial value of a spike.", 1.0); 
 	
 	
 	final public Input<Boolean> noSpikeOnDatedTipsInput = new Input<>("noSpikeOnDatedTips", "Set to true if dated tips should have a spike of 0.", false); 
