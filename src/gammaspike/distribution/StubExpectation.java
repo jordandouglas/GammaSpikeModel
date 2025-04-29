@@ -6,7 +6,7 @@ package gammaspike.distribution;
  */
 public interface StubExpectation {
 	/*
-	 * The mean number of stubs along a lineage between two heights (parentHeight > height)
+	 * The mean number of stubs along a lineage between two heights (parentHeight > nodeHeight)
 	 */
-	public double getMeanStubNumber(double height, double parentHeight);
+	public double getMeanStubNumber(double nodeHeight, double parentHeight);
 }
