@@ -90,7 +90,7 @@ BEAST 2 will log the following terms onto the tree:
 - `rate`: the total rate of the branch accounting for both gradual (branchRates) and abrupt (spike) evolution.
 
 The following term will also be logged into the .log file:
-- `GammaSpikeRelaxedClock.ProportionOfSaltation`: the proportion of total change that can be attributed to abrupt bursts. This is equal to the total spike size across the whole tree divided by the total evolutionary distance across the tree. If this value is over 0.5, then more than half of the total evolution occurs at the time of branching.
+- `GammaSpikeRelaxedClock.ProportionOfSaltation`: the proportion of total change that can be attributed to abrupt bursts. This is equal to the total spike size across the whole tree divided by the total evolutionary distance across the tree. If this value is over 0.5, then more than half of the total evolution occurs at the time of branching. In the puncutuated equilibrium empirical datasets we looked at, this term is often around 0.1 - 0.3, but in one extreme case it was 0.99.
 
 
 ## Hypothesis testing
@@ -119,10 +119,7 @@ In most instances, we found this model converged reasonably well despite its lar
 
 3. In general, it is good practice to run multiple MCMC chains in parallel and confirm they have converged to the same distribution. If they did, then the chains can be combined, thereby expediting the process.
 
-4. Sometimes, the `spikeMean` parameter takes a long time to reach burn-in. One would expect this parameter to lie in the range of 0.0001 - 0.1 (substitutions per site per bifurcation), but during burn-in it can be much larger. To ease this issue, by default the parameter is assigned a conservative upper limit of 1.0, which seems to help. However, if burn-in is still slow, you could lower this limit even further by tweaking the spikeMean `upper` on BEAUti or in the xml file under: `<parameter id="GSMspikeMean.c:data" spec="parameter.RealParameter" lower="0.0" name="stateNode" upper="1.0">0.01</parameter>`. After reaching burn-in, you could then stop BEAST, restore/remove the upper limit, and then resume BEAST, making sure to discard the part of the chain that was sampled prior to resuming.
-
-
-5. To further improve runtime, consider installing BEAGLE, and if you have access to a GPU, try running with BEAGLE on a GPU. Both of these can make a considerable difference. [See performance suggestions](https://www.beast2.org/performance-suggestions/).
+4. To further improve runtime, consider installing BEAGLE, and if you have access to a GPU, try running with BEAGLE on a GPU. Both of these can make a considerable difference. [See performance suggestions](https://www.beast2.org/performance-suggestions/).
 
 
 
