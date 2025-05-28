@@ -1,14 +1,12 @@
-<package name='gammaspike' version='1.0.0'>
+<package name='gammaspike' version='1.0.1'>
 	<depends on='BEAST.base' atleast='2.7.5'/>
     <depends on='SA' atleast='2.1.1'/>
 
 
     <service type="beast.base.core.BEASTInterface">
 
-        <provider classname="gammaspike.clockmodel.PunctuatedClockModel"/>
         <provider classname="gammaspike.clockmodel.PunctuatedRelaxedClockModel"/>
         <provider classname="gammaspike.clockmodel.SpikeSize"/>
-
 
         
         <provider classname="gammaspike.distribution.StumpedTreePrior"/>
@@ -18,8 +16,6 @@
         <provider classname="gammaspike.distribution.BranchRatePrior"/>
         <provider classname="gammaspike.distribution.BinomialPrior"/>
 
-        <provider classname="gammaspike.flabel.Flabel"/>
-        <provider classname="gammaspike.flabel.FlabelData"/>
 
         <provider classname="gammaspike.logger.StumpedTreeLogger"/>
         <provider classname="gammaspike.logger.TaxonCountLogger"/>
@@ -41,11 +37,13 @@
         <provider classname="gammaspike.operator.StubEpochFlexOperator"/>
         
 
-
         <provider classname="gammaspike.tree.ForwardTimeSimulatorResub"/>
         <provider classname="gammaspike.tree.BirthDeathStubSimulator"/>
         <provider classname="gammaspike.tree.Stubs"/>
-        <provider classname="gammaspike.tree.LabelledTreeInitialiser"/>
+
+
+         <provider classname="gammaspike.sitemodel.ClockMixtureModel"/>
+         <provider classname="gammaspike.logger.SiteCategoryLogger"/>
 
 
     </service>

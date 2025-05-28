@@ -15,7 +15,6 @@ import beast.base.inference.parameter.IntegerParameter;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.inference.util.InputUtil;
 import beast.base.util.Randomizer;
-import gammaspike.flabel.Flabel;
 import gammaspike.tree.ForwardTimeSimulatorResub;
 import gammaspike.tree.Stubs;
 
@@ -23,33 +22,22 @@ import gammaspike.tree.Stubs;
 
 @Description("Adds a burst of mutations after speciation events that result in a label change. Each branch has it's own base rate")
 @Citation(value =
-"Douglas, J., Bouckaert, R., Harris, S.C., Carter Jr, C.W., Wills, P.R. (2024) Evolution is coupled with branching across many granularities of life. bioRxiv 2024.09.08.611933", DOI = "https://doi.org/10.1101/2024.09.08.611933",
-year = 2024, firstAuthorSurname = "Douglas")
+"Douglas, J., Bouckaert, R., Harris, S.C., Carter Jr, C.W., Wills, P.R. (2025) Evolution is coupled with branching across many granularities of life. Proceedings of the Royal Society Series B 29220250182", DOI = "http://doi.org/10.1098/rspb.2025.0182",
+year = 2025, firstAuthorSurname = "Douglas")
 public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements SpikeModel {
 	
 	final public Input<Tree> treeInput = new Input<>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
-	
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs of the tree", Input.Validate.OPTIONAL);
 	final public Input<IntegerParameter> nstubsPerBranchInput = new Input<>("nstubsPerBranch", "num stubs per brancg.", Input.Validate.OPTIONAL); 
-	
 	final public Input<RealParameter> spikeMeanInput = new Input<>("spikeMean", "mean spike size.", Input.Validate.REQUIRED); 
-	
-	
 	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 of this is false", Input.Validate.OPTIONAL);
 	final public Input<BooleanParameter> relaxedInput = new Input<>("relaxed", "if false then use strict clock", Input.Validate.OPTIONAL);
-	
 	final public Input<RealParameter> ratesInput = new Input<>("rates", "the rates associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.OPTIONAL); 
-	
-	
-	
 	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
-	
 	final public Input<Boolean> parseFromTreeInput = new Input<>("parseFromTree", "Set to true if initial values are to be loaded from tree metadata.", false); 
 	final public Input<ParametricDistribution> rateDistInput = new Input<>("distr", "the distribution governing the rates among branches. "
 			+ "Must have mean of 1. The clock.rate parameter can be used to change the mean rate.", Input.Validate.OPTIONAL);
 	final public Input<Double> initialSpikeSizeInput = new Input<>("initialSpike", "initial value of a spike.", 1.0); 
-	
-	
 	final public Input<Boolean> noSpikeOnDatedTipsInput = new Input<>("noSpikeOnDatedTips", "Set to true if dated tips should have a spike of 0.", false); 
 	
 	
