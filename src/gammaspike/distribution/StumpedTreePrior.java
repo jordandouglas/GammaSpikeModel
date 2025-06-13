@@ -22,8 +22,8 @@ import gammaspike.tree.Stubs;
 
 @Description("Prior distribution on a stumped tree")
 @Citation(value =
-"Douglas, J., Bouckaert, R., Harris, S.C., Carter Jr, C.W., Wills, P.R. (2024) Evolution is coupled with branching across many granularities of life. bioRxiv 2024.09.08.611933", DOI = "https://doi.org/10.1101/2024.09.08.611933",
-year = 2024, firstAuthorSurname = "Douglas")
+"Douglas, J., Bouckaert, R., Harris, S.C., Carter Jr, C.W., Wills, P.R. (2025) Evolution is coupled with branching across many granularities of life. Proceedings of the Royal Society Series B 29220250182", DOI = "http://doi.org/10.1098/rspb.2025.0182",
+year = 2025, firstAuthorSurname = "Douglas")
 public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExpectation {
 
 	final public Input<RealParameter> lambdaInput = new Input<>("lambda", "birth rate lambda");

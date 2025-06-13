@@ -198,7 +198,8 @@ Jordan Douglas jordan.douglas@auckland.ac.nz
 
 ### Manuscript
 
-Douglas, J., Bouckaert, R., Harris, S., Carter, C., & Wills, P. (2025). "Evolution is coupled with branching across many granularities of life". (In Press) doi: https://doi.org/10.1101/2024.09.08.611933
+Douglas, J., Bouckaert, R., Harris, S., Carter, C., & Wills, P. (2025). "Evolution is coupled with branching across many granularities of life". Proc. R. Soc. B.29220250182
+http://doi.org/10.1098/rspb.2025.0182
 
 
 
