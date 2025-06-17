@@ -611,7 +611,7 @@ Vampyroteuthis_infernalis=0
             <log idref="lambda"/>
             <log idref="r0"/>
             <log idref="samplingProportion"/>
-
+            <log id="nSampledAncestors" spec="sa.evolution.tree.SampledAncestorLogger" tree="@tree"/>
 
             <log idref="mutationRate.s:data2"/>
             <log idref="mutationRate.s:data3"/>
@@ -629,7 +629,7 @@ Vampyroteuthis_infernalis=0
             <log id="rateState" spec="beast.base.evolution.RateStatistic" tree="@tree" branchratemodel="@clockModel"/>
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
             <log idref="branchRates"/>
-           <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
+           <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean" clockModel="@clockModel"/>
             <log id="SaltativeProportionLogger" spec="gammaspike.logger.SaltativeProportionLogger" tree="@tree" clock="@clockModel"/>
 
 
@@ -644,6 +644,7 @@ Vampyroteuthis_infernalis=0
             <log idref="BranchSpikePrior"/>
             <log idref="clockRate"/>
             <log idref="SaltativeProportionLogger" />
+            <log idref="nSampledAncestors"/>
         </logger>
 
         <logger id="treelog" spec="Logger" fileName="stumped.trees" logEvery="100000" mode="tree">

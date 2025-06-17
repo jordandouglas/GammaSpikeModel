@@ -36,7 +36,7 @@
            
             <parameter id="GSMuseSpikeModel.c:$(n)" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
 
-            <log id="GSMweightedSpikes.c:$(n)" spec="gammaspike.clockmodel.SpikeSize" spikes="@GSMspikes.c:$(n)" spikeMean="@GSMspikeMean.c:$(n)"/>
+            <log id="GSMweightedSpikes.c:$(n)" spec="gammaspike.clockmodel.SpikeSize" spikes="@GSMspikes.c:$(n)" spikeMean="@GSMspikeMean.c:$(n)" clockModel="@GammaSpikeRelaxedClock.c:$(n)" />
 
             <branchRateModel id="GammaSpikeRelaxedClock.c:$(n)" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" 
                 	indicator="@GSMuseSpikeModel.c:$(n)" 

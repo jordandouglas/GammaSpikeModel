@@ -1085,7 +1085,7 @@
 
             <log idref="useSpikeModel"/>
             <log idref="gammaShape"/>
-
+            <log id="nSampledAncestors" spec="sa.evolution.tree.SampledAncestorLogger" tree="@tree"/>
             <log idref="stubs"/>
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
             <log idref="kappa"/>
@@ -1097,8 +1097,8 @@
 
 
             <log idref="spikeShape"/>
-            <log idref="spikeMean"/>
-            <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
+            <log idref="spikeMean"/> 
+            <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean" clockModel="@clockModel"/>
 
             <!-- <log idref="East_Polynesian.prior"/> -->
             <!-- <log idref="polynesian.prior"/> -->
@@ -1172,6 +1172,7 @@
             <log idref="stubs"/>
             <log idref="treeHeight"/>
             <log idref="SaltativeProportionLogger" />
+            <log idref="nSampledAncestors" />
         </logger>
 
         <logger id="treelog" spec="Logger" fileName="stumped.trees" logEvery="100000" mode="tree">
