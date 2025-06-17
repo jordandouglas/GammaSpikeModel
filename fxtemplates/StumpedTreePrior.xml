@@ -177,6 +177,9 @@
                  </prior>
 
 
+          <log id="FBDWSsampledAncestorCount.t:$(n)" spec="sa.evolution.tree.SampledAncestorLogger" tree="@Tree.t:$(n)"/>
+
+
            <!-- Tree operators -->
            <operator id="FBDWSEpochTop.t:$(n)" spec="EpochFlexOperator" scaleFactor="0.1" tree="@Tree.t:$(n)" weight="5.0"/>
            <operator id="FBDWSEpochAll.t:$(n)" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@Tree.t:$(n)" weight="5.0"/>
@@ -225,7 +228,10 @@
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'>Stumped tree prior sampling proportion of partition t:$(n)
             </connect>
             
-         <connect srcID='FossilisedBirthDeathModelWithStubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
+
+
+            <connect srcID='FBDWSsampledAncestorCount.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
+            <connect srcID='FossilisedBirthDeathModelWithStubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
             <connect srcID='FBDWSBirthRate.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSBirthRate.t:$(n)/estimate=true'/>
             <connect srcID='FBDWSReproductionNumber.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSReproductionNumber.t:$(n)/estimate=true'/>
             <connect srcID='FBDWSsamplingProportion.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'/>
