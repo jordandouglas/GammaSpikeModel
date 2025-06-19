@@ -21,6 +21,10 @@ import beast.base.inference.parameter.RealParameter;
 public class SpikeSize extends CalculationNode implements Function, Loggable {
     final public Input<RealParameter> spikesInput = new Input<>("spikes", "argument to be summed", Validate.REQUIRED);
     final public Input<RealParameter> spikeMeanInput = new Input<>("spikeMean", "mean spike size", Validate.REQUIRED);
+    
+    final public Input<PunctuatedRelaxedClockModel> clockModelInput = 
+    		new Input<>("clockModel", "clockModel is only required the spikes are estimated directly (not the default behaviour) and when sampled ancestors are used", Validate.OPTIONAL);
+    
 
 
     @Override
@@ -42,7 +46,14 @@ public class SpikeSize extends CalculationNode implements Function, Loggable {
 
     @Override
     public double getArrayValue(int dim) {
-    	return spikesInput.get().getValue(dim) * spikeMeanInput.get().getValue();
+    	
+    	if (clockModelInput.get() != null) {
+    		return clockModelInput.get().getBurstSize(dim);
+    	}else {
+    		return spikesInput.get().getValue(dim) * spikeMeanInput.get().getValue();
+    	}
+    	
+    	
     }
 
    

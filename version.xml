@@ -21,6 +21,12 @@
         <provider classname="gammaspike.logger.TaxonCountLogger"/>
         <provider classname="gammaspike.logger.SaltativeProportionLogger"/>
 
+
+
+
+        <provider classname="gammaspike.operator.SpikeFlipOperator"/>
+        <provider classname="gammaspike.operator.SpikeAndSampledAncestorJump"/>
+        <provider classname="gammaspike.operator.SpikeAndSampledAncestorNeighbourJump"/>
         <provider classname="gammaspike.operator.StubCreator"/>
         <provider classname="gammaspike.operator.StubGibbsOperatorSingleLineage"/>
         <provider classname="gammaspike.operator.StumpedTreeScaler"/>

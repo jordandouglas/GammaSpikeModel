@@ -80,9 +80,13 @@
       <operator id="GSMSpikeUpRateDown.c:$(n)" spec="gammaspike.operator.SpikeUpRateDown" parameter="@GSMbranchRates.c:$(n)" spikes="@GSMspikes.c:$(n)" scaleFactor="0.1" weight="5.0"/>
       <operator id="GSMclockRateScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMclockRate.c:$(n)" scaleFactor="0.1" weight="0.5"/>
       <operator id="GSMBitFlipOperator.c:$(n)" spec="BitFlipOperator" uniform="true" parameter="@GSMuseSpikeModel.c:$(n)" weight="1.0" />
+      
 
+
+      <operator id="GSMSpikeFlipOperator.c:$(n)" spec="gammaspike.operator.SpikeFlipOperator" spikes="@GSMspikes.c:$(n)" spikeMean="0.005" weight="3.0"/>
+      <operator id="GSMSpikeAndSampledAncestorJump.c:$(n)" spec="gammaspike.operator.SpikeAndSampledAncestorJump" tree="@Tree.t:$(n)" spikes="@GSMspikes.c:$(n)" spikeMean="0.001" weight="5.0"/>
+      <operator id="GSMSpikeAndSampledAncestorNeighbourJump.c:$(n)" spec="gammaspike.operator.SpikeAndSampledAncestorNeighbourJump" tree="@Tree.t:$(n)" spikes="@GSMspikes.c:$(n)" spikeMean="0.001" weight="5.0"/>
          
-
 
         <!-- Site/clock model operators -->
         <operator id="GSMclockSDScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMclockSD.c:$(n)" scaleFactor="0.1" weight="5.0"/>
@@ -197,9 +201,23 @@
             <connect srcID='GSMclockSDScale.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(GSMclockSD.c:$(n))'/>
             <connect srcID='GSMspikeShapeScale.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(GSMspikeShape.c:$(n))'/>
             <connect srcID='GSMspikeMeanScale.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(GSMspikeMean.c:$(n))'/>
-            <connect srcID='GSMspikesScale.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(GSMspikes.c:$(n))'/>
+
+            <connect srcID='GSMspikesScale.c:$(n)'       targetID='mcmc' inputName='operator' if='inposterior(GSMspikes.c:$(n)) and GSMspikes.c:$(n)/estimate=true'/>
+            <connect srcID='GSMSpikeFlipOperator.c:$(n)' targetID='mcmc' inputName='operator' if='inposterior(GSMspikes.c:$(n)) and GSMspikes.c:$(n)/estimate=true'/>
             
             <connect srcID='GSMAdaptableOperatorSamplerRatesInternal.c:$(n)' targetID='mcmc' inputName='operator' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
+
+
+             <!-- connect sampled ancestor spike operators if we are using fossiled birth death model -->
+           <connect srcID='GSMSpikeAndSampledAncestorJump.c:$(n)' targetID='mcmc' inputName='operator' 
+                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(GSMspikes.c:$(n)) and GSMspikes.c:$(n)/estimate=true'>
+                     Toggles a node between unspiked sampled ancestor (branch length 0, spike size 0), to a spiked cousin (branch length >0, spike size >0) 
+           </connect>
+            <connect srcID='GSMSpikeAndSampledAncestorNeighbourJump.c:$(n)' targetID='mcmc' inputName='operator' 
+                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and Tree.t:$(n)/estimate=true and inposterior(GSMspikes.c:$(n)) and GSMspikes.c:$(n)/estimate=true'>
+                     Toggles a node between unspiked sampled ancestor with an unspiked sibling (branch length 0, spike size 0, sibling spike 0), to a spiked cousin with a spiked sibling (branch length >0, spike size >0, sibling spike >0) 
+           </connect>
+
 
 
 

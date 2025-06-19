@@ -931,6 +931,12 @@
         <operator id="SATreeRootScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95" tree="@tree" rootOnly="true" weight="3.0" />
         <operator id="SATreeScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95"  tree="@tree" weight="3.0"/>
         <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="5.0"/>
+
+        <operator id="SpikeFlipOperator" spec="gammaspike.operator.SpikeFlipOperator" spikes="@spikes" spikeMean="0.005" weight="10.0"/>
+        <operator id="SpikeAndSampledAncestorJump" spec="gammaspike.operator.SpikeAndSampledAncestorJump" spikes="@spikes" spikeMean="0.005" tree="@tree" weight="10.0"/>
+        <operator id="SpikeAndSampledAncestorNeighbourJump" spec="gammaspike.operator.SpikeAndSampledAncestorNeighbourJump" spikes="@spikes" spikeMean="0.005" tree="@tree" weight="10.0"/>
+
+        
         <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.7" weight="20.0">
                 <tree idref="tree"/>
                 <down idref="clockRate"/>

@@ -101,11 +101,34 @@ public class BranchSpikePrior extends Distribution {
         		
         		// Known value of stubs
             	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr);
-            	double alphaBranch = shape * (nstubsOnBranch + 1); // One spike for the branch, and one per stub
-            	gamma = new GammaDistributionImpl(alphaBranch, scale);
-            	logP += gamma.logDensity(spikeOfBranch);
             	
             	
+            	
+            	// Number of spikes is nstubs+1, unless the sibling is a sampled ancestor, in which case it is nstubs
+            	Node node = treeInput.get().getNode(nodeNr);
+				int spikeSum = getNSpikes(node, nstubsOnBranch);
+				if (spikeSum == 0) {
+					
+					
+					// Delta function
+					double logprob = 0 ;
+					if (spikeOfBranch != 0) {
+						logprob = Double.NEGATIVE_INFINITY;
+					}else {
+						logprob = 0;
+					}
+					
+					logP += logprob;
+					
+				}
+				
+				else {
+            	
+	            	double alphaBranch = shape * spikeSum; 
+	            	gamma = new GammaDistributionImpl(alphaBranch, scale);
+	            	logP += gamma.logDensity(spikeOfBranch);
+            	
+				}
         		
         	}else {
         		
@@ -131,23 +154,35 @@ public class BranchSpikePrior extends Distribution {
         				double pReal = Math.exp(p);
         				
         				
-        				//double pReal = Math.exp(-mu) * Math.pow(mu, k);
-        				//for (int i = 2; i <= k; i ++) pReal = pReal / i;
-        				
-        				
         				cumsum += pReal;
         				
-        				// Integrate across all possible values in poisson distribution
-        				double alphaBranch = shape * (k + 1); // One spike for the branch, and one per stub
         				
-        				gamma = new GammaDistributionImpl(alphaBranch, scale);
-        				double gammaLogP = gamma.logDensity(spikeOfBranch);
-        				if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
-        					branchP += 0;
-        				}else {
-        					branchP += Math.exp(p + gammaLogP);
+        				// Number of spikes is nstubs+1, unless the sibling is a sampled ancestor, in which case it is nstubs
+        				int spikeSum = getNSpikes(node, k);
+        				if (spikeSum == 0) {
+        					
+        					
+        					// Delta function
+        					if (spikeOfBranch != 0) {
+        						branchP += 0;
+        					}else {
+        						branchP += Math.exp(p);
+        					}
+        					
         				}
         				
+        				else {
+        				
+	        				double alphaBranch = shape * spikeSum; 
+	        				gamma = new GammaDistributionImpl(alphaBranch, scale);
+	        				double gammaLogP = gamma.logDensity(spikeOfBranch);
+	        				if (spikeOfBranch == 0|| gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
+	        					branchP += 0;
+	        				}else {
+	        					branchP += Math.exp(p + gammaLogP);
+	        				}
+        				
+        				}
         				
         				
         				k++;
@@ -156,15 +191,34 @@ public class BranchSpikePrior extends Distribution {
         			
         			//Log.warning(spikeOfBranch + " k = " + (k-1) + " -> " + Math.log(branchP));
         			
+        			
         			logP += Math.log(branchP);
         			
         		}
         		
         		else {
         			
-        			// If the branch length is 0 (eg sampled ancestor) then we must keep this spike sampled from the Gamma prior
-                	gamma = new GammaDistributionImpl(shape, scale);
-                	logP += gamma.logDensity(spikeOfBranch);
+        			
+        			int spikeSum = getNSpikes(node, 0);
+    				if (spikeSum == 0) {
+	        			
+	        			//Log.warning("SA " + spikeOfBranch);
+	        			
+	        			// Delta function
+						if (spikeOfBranch != 0) {
+							logP += Double.NEGATIVE_INFINITY;
+						}else {
+							logP += 0;
+						}
+						
+    				}else {
+    					
+    					//Log.warning("not SA " + spikeOfBranch);
+        			
+    					gamma = new GammaDistributionImpl(shape, scale);
+    					logP += gamma.logDensity(spikeOfBranch);
+    					
+    				}
         			
         		}
         		
@@ -187,6 +241,34 @@ public class BranchSpikePrior extends Distribution {
         
         return logP;
     }
+	
+	
+	/**
+	 * Number of spikes on a branch is number of stubs plus 1
+	 * Unless the parent is a sampled ancestor, in which case it is just the number of stubs
+	 * @param node
+	 * @param nstubs
+	 * @return
+	 */
+	public static int getNSpikes(Node node, int nstubs) {
+		
+		if (node.isRoot()) {
+			return nstubs + 1;
+		}
+		
+		if (node.isDirectAncestor()) {
+			return 0;
+		}
+		
+		if (node.getParent().isFake()) {
+			return nstubs;
+		}
+		
+		return nstubs + 1;
+		
+		
+		
+	}
 	
 	@Override
 	public List<String> getConditions() {
@@ -249,24 +331,30 @@ public class BranchSpikePrior extends Distribution {
         	}
         	
         	
+        	Node node = treeInput.get().getNode(nodeNr);;
+        	int nspikes = getNSpikes(node, nstubsOnBranch);
         	
-        	//nstubsOnBranch = 0; // TMP
+        	if (nspikes == 0) {
+        		double spikeOfBranch = 0;
+        		spikesInput.get().setValue(nodeNr, spikeOfBranch);
+        	}
+        	
+        	else {
+        		
+        		double alphaBranch = shape * nspikes; // One spike for the branch, and one per stub
+            	gamma = new GammaDistributionImpl(alphaBranch, scale);
+            	
+            	try {
+    				double spikeOfBranch = gamma.inverseCumulativeProbability(random.nextFloat());
+    				spikesInput.get().setValue(nodeNr, spikeOfBranch);
+    				
+    			} catch (MathException e) {
+    				e.printStackTrace();
+    				throw new IllegalArgumentException("Unexpected error when sampling from Gamma(" + shape + ", " + scale + ")");
+    			}
+        	}
         	
         	
-        	double alphaBranch = shape * (nstubsOnBranch + 1); // One spike for the branch, and one per stub
-        	gamma = new GammaDistributionImpl(alphaBranch, scale);
-        	
-        	
-        	//Log.warning("Sampling with " + nstubsOnBranch + " stubs");
-        	
-        	try {
-				double spikeOfBranch = gamma.inverseCumulativeProbability(random.nextFloat());
-				spikesInput.get().setValue(nodeNr, spikeOfBranch);
-				
-			} catch (MathException e) {
-				e.printStackTrace();
-				throw new IllegalArgumentException("Unexpected error when sampling from Gamma(" + shape + ", " + scale + ")");
-			}
         	
         }
 		
