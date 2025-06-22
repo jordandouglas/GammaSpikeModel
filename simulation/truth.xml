@@ -62,7 +62,7 @@
     </taxonset>
 </tree>
 
-<run spec="beast.base.inference.DirectSimulator" nSamples="100">
+<run spec="beast.base.inference.DirectSimulator" nSamples="200">
 
 
 
@@ -104,9 +104,9 @@
          </prior> 
 
 
-       <!--   <prior name="distribution" x="@spikeMean">
+         <prior name="distribution" x="@spikeMean">
             <LogNormal  name="distr" meanInRealSpace="true" M="0.01" S="0.8"/>
-         </prior> -->
+         </prior>
 
 
          <prior name="distribution" x="@spikeShape">
@@ -117,9 +117,6 @@
          </prior>
 
          <prior name="distribution" spec="gammaspike.distribution.BranchRatePrior" branchRates="@branchRates" tree="@tree" sigma="@clockSD"/>
-         <!-- <prior name="distribution" x="@branchRates">
-            <LogNormal meanInRealSpace="true" name="distr" M="1" S="@clockSD"/>
-        </prior>  -->
                  
         <distribution spec="gammaspike.distribution.BinomialPrior" id="indicator.prior" x="@useSpikeModel" p="0.5" />
                     
@@ -140,7 +137,7 @@
             <log idref="spikeMean"/>
             <log idref="spikeShape"/>
             <log idref="useSpikeModel" />
-            
+            <log id="nSampledAncestors" spec="sa.evolution.tree.SampledAncestorLogger" tree="@tree"/>
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
 
             <log idref="BirthDeathStubSimulator"/>
