@@ -536,6 +536,11 @@ Vampyroteuthis_infernalis=0
         <operator id="SATreeRootScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95" tree="@tree" rootOnly="true" weight="3.0" />
         <operator id="SATreeScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95"  tree="@tree" weight="3.0"/>
         <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="5.0"/>
+
+        <operator id="SpikeFlipOperator" spec="gammaspike.operator.SpikeFlipOperator" spikes="@spikes" spikeMean="0.005" weight="10.0"/>
+        <operator id="SpikeAndSampledAncestorJump" spec="gammaspike.operator.SpikeAndSampledAncestorJump" spikes="@spikes" spikeMean="0.005" tree="@tree" weight="10.0"/>
+        <operator id="SpikeAndSampledAncestorNeighbourJump" spec="gammaspike.operator.SpikeAndSampledAncestorNeighbourJump" spikes="@spikes" spikeMean="0.005" tree="@tree" weight="10.0"/>
+
         <operator id="UpDown" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.7" weight="10.0">
                 <tree idref="tree"/>
                 <down idref="clockRate"/>
@@ -611,7 +616,7 @@ Vampyroteuthis_infernalis=0
             <log idref="lambda"/>
             <log idref="r0"/>
             <log idref="samplingProportion"/>
-
+            <log id="nSampledAncestors" spec="sa.evolution.tree.SampledAncestorLogger" tree="@tree"/>
 
             <log idref="mutationRate.s:data2"/>
             <log idref="mutationRate.s:data3"/>
@@ -629,7 +634,7 @@ Vampyroteuthis_infernalis=0
             <log id="rateState" spec="beast.base.evolution.RateStatistic" tree="@tree" branchratemodel="@clockModel"/>
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
             <log idref="branchRates"/>
-           <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
+           <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean" clockModel="@clockModel"/>
             <log id="SaltativeProportionLogger" spec="gammaspike.logger.SaltativeProportionLogger" tree="@tree" clock="@clockModel"/>
 
 
@@ -644,6 +649,7 @@ Vampyroteuthis_infernalis=0
             <log idref="BranchSpikePrior"/>
             <log idref="clockRate"/>
             <log idref="SaltativeProportionLogger" />
+            <log idref="nSampledAncestors"/>
         </logger>
 
         <logger id="treelog" spec="Logger" fileName="stumped.trees" logEvery="100000" mode="tree">

@@ -36,23 +36,8 @@
     <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" prior="@ForwardTimeSimulatorResub" />
 
     <!-- <run id="mcmc" spec="coupledMCMC.CoupledMCMC" chains="4" resampleEvery="10000" chainLength="5000000"> -->
-    <run id="mcmc" spec="MCMC" chainLength="5000000">
+    <run id="mcmc" spec="MCMC" chainLength="10000000">
         <state id="state" spec="State" storeEvery="100000">
-
-
-            <!-- <tree id="tree" name="stateNode">
-
-
-
-                <trait id="traitsetDate" spec="beast.base.evolution.tree.TraitSet" traitname="date-backward" taxa="@taxonset">
-                11=0.1,
-                18=0.1          
-                </trait>
-
-                <taxonset id="taxonset" spec="beast.base.evolution.alignment.TaxonSet">
-                    <data idref="data" name="alignment"/>
-                </taxonset>
-            </tree> -->
 
 
 
@@ -98,9 +83,6 @@
 
 
                  <distribution id="ForwardTimeSimulatorResub" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" lambda="@lambda" samplingProportion="@samplingProportion" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
-                    <!-- <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" branchNr="@stubBranchNumbers" time="@stubTimes" /> -->
-                    <!-- <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" stubsPerBranch="@stubsPerBranch" /> -->
-                    
                  </distribution>
 
 
@@ -129,31 +111,6 @@
 
                
 
-                <!-- Misspecification -->
-         <!--          <prior name="distribution" x="@lambda">
-                    <LogNormal  name="distr" meanInRealSpace="true" M="10" S="3"/>
-                 </prior>
-
-
-                <prior name="distribution" x="@r0">
-                    <Exponential  name="distr" mean="5" offset="1"/>
-                 </prior>
-
-                <prior name="distribution" x="@samplingProportion">
-                    <Beta name="distr" alpha="2" beta="2"/>
-                 </prior>
-
-
-                 <prior name="distribution" x="@spikeMean">
-                    <LogNormal  name="distr" meanInRealSpace="true" M="0.1" S="2"/>
-                 </prior>
-
-
-                 <prior name="distribution" x="@spikeShape">
-                   <LogNormal  name="distr" meanInRealSpace="true" M="1" S="2"/>
-                 </prior> -->
-                 
-
 
                  <!-- Constant priors -->
                 <prior name="distribution" x="@gammaShape">
@@ -169,12 +126,6 @@
                  <prior name="distribution" x="@clockSD">
                     <Gamma name="distr" alpha="5" beta="0.05"/>
                  </prior> 
-
-
-
-                <!--  <prior name="distribution" x="@branchRates">
-                    <LogNormal meanInRealSpace="true" name="distr" M="1" S="@clockSD"/>
-                </prior>  -->
 
                 <prior name="distribution" spec="gammaspike.distribution.BranchRatePrior" branchRates="@branchRates" tree="@tree" sigma="@clockSD"/>
 
@@ -220,13 +171,15 @@
         <operator id="SAUniformOperatorFBD.tree" spec="sa.evolution.operators.SAUniform" tree="@tree" weight="30.0" />
         <operator id="SATreeRootScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95" tree="@tree" rootOnly="true" weight="3.0" />
         <operator id="SATreeScalerFBD.tree" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95"  tree="@tree" weight="3.0"/>
-        <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="5.0"/>
 
 
 
         <operator id="SpikeUpRateDown" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates" spikes="@spikes" scaleFactor="0.1" weight="5.0"/>
-        <!-- <operator id="clockRate.scale" spec="kernel.BactrianScaleOperator" parameter="@clockRate" scaleFactor="0.1" weight="0.5"/> -->
-        
+        <operator id="SpikeFlipOperator" spec="gammaspike.operator.SpikeFlipOperator" spikes="@spikes" spikeMean="0.005" weight="10.0"/>
+        <operator id="SpikeAndSampledAncestorJump" spec="gammaspike.operator.SpikeAndSampledAncestorJump" spikes="@spikes" spikeMean="0.005" tree="@tree" weight="10.0"/>
+        <operator id="SpikeAndSampledAncestorNeighbourJump" spec="gammaspike.operator.SpikeAndSampledAncestorNeighbourJump" spikes="@spikes" spikeMean="0.005" tree="@tree" weight="10.0"/>
+        <operator id="LeafToSampledAncestorJump.t:tree" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@tree" weight="10.0"/> 
+
          <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="10.0" />
 
 
@@ -248,8 +201,8 @@
             </operator>
         </operator>
 
-        <operator id="_KappaScaler.s:dna" spec="ScaleOperator" parameter="@kappa" scaleFactor="0.5" weight="0.1"/>
-        <operator id="_gammaShapeScaler.s:dna" spec="ScaleOperator" parameter="@gammaShape" scaleFactor="0.5" weight="0.1"/>
+        <operator id="_KappaScaler.s:dna" spec="ScaleOperator" parameter="@kappa" scaleFactor="0.5" weight="0.5"/>
+        <operator id="_gammaShapeScaler.s:dna" spec="ScaleOperator" parameter="@gammaShape" scaleFactor="0.5" weight="0.5"/>
 
         <!-- Tree prior operators -->
         <operator id="lambda.scale" spec="kernel.BactrianScaleOperator" parameter="@lambda" scaleFactor="0.1" weight="0.5"/>
@@ -272,27 +225,10 @@
                  <f idref="lambda"/>
                  <f idref="spikeShape"/>
                  <f idref="spikeMean"/>
-                 <!-- <f idref="clockRate"/> -->
                  <f idref="r0"/>
             </transformations>
         </operator> 
 
-
-     
-       
-
-        <!-- Stub operators -->
-     <!--    <operator id="swapStubs" spec="SwapOperator" intparameter="@stubsPerBranch" weight="10.0"/> 
-        <operator id="stubRandomWalk" spec="IntRandomWalkOperator" parameter="@stubsPerBranch" weight="10.0" windowSize="1"/> 
-         -->
-
-         
-        <!-- Stub operators -->
-       <!--  <operator id="stubCreator" spec="gammaspike.operator.StubCreator" stubs="@stubs" tree="@tree" weight="1.0" />
-        <operator id="stub.scale" spec="kernel.BactrianScaleOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0" />  
-        <operator id="stubTimesInterval" spec="kernel.BactrianIntervalOperator" parameter="@stubTimes" scaleFactor="0.1" weight="1.0"/>
-        <operator id="swapBranches" spec="gammaspike.operator.StubSwapOperator" parameter="@stubBranchNumbers" weight="1.0"/> 
-        --> 
 
 
         <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
@@ -316,18 +252,16 @@
 
 
 
-             <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
-
+            <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
+            <log id="nSampledAncestors" spec="sa.evolution.tree.SampledAncestorLogger" tree="@tree"/>
 
             
 
         </logger>
         <logger id="screenlog" spec="Logger" logEvery="10000">
             <log idref="likelihood"/>
-            <log idref="treeHeight" />
-            <log idref="useSpikeModel"/>
-            <log idref="spikeMean"/>
-            <log idref="stubs"/>
+            <log idref="spikeShape"/>
+            <log idref="nSampledAncestors"/>
         </logger>
 
         <logger id="treelog" spec="Logger" fileName="stumped.trees" logEvery="10000" mode="tree">

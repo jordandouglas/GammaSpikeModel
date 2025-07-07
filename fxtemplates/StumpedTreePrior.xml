@@ -98,6 +98,7 @@
             <!-- connect stubst to GammaSpikeRelaxedClock if present -->
             <connect srcID='BDWSstubs.t:$(n)' targetID='GSMStumpedTreeConstantDistanceOperator.c:$(n)' inputName='stubs' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
             <connect srcID='BDWSstubs.t:$(n)' targetID='GSMbranchSpikePrior.c:$(n)' inputName='stubs' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and inposterior(GSMbranchSpikePrior.c:$(n))'/>
+            <connect srcID='BDWSstubs.t:$(n)' targetID='GammaSpikeRelaxedClock.c:$(n)' inputName='stubs' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
             
             <connect srcID='BDWSbirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
                      if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSBirthRate.t:$(n)/estimate=true'>
@@ -177,6 +178,9 @@
                  </prior>
 
 
+          <log id="FBDWSsampledAncestorCount.t:$(n)" spec="sa.evolution.tree.SampledAncestorLogger" tree="@Tree.t:$(n)"/>
+
+
            <!-- Tree operators -->
            <operator id="FBDWSEpochTop.t:$(n)" spec="EpochFlexOperator" scaleFactor="0.1" tree="@Tree.t:$(n)" weight="5.0"/>
            <operator id="FBDWSEpochAll.t:$(n)" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@Tree.t:$(n)" weight="5.0"/>
@@ -186,7 +190,12 @@
            <operator id="FBDWSUniformOperatorSA.t:$(n)" spec="sa.evolution.operators.SAUniform" tree="@Tree.t:$(n)" weight="30.0" />
            <operator id="FBDWSTreeRootScalerSA.t:$(n)" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95" tree="@Tree.t:$(n)" rootOnly="true" weight="3.0" />
            <operator id="FBDWSTreeScalerSA.t:$(n)" spec="sa.evolution.operators.SAScaleOperator" scaleFactor="0.95"  tree="@Tree.t:$(n)" weight="3.0"/>
+
+
            <operator id="FBDWSLeafToSampledAncestorJump.t:$(n)" spec="sa.evolution.operators.LeafToSampledAncestorJump" tree="@Tree.t:$(n)" weight="5.0"/>
+           
+         
+
 
                     
               <!-- Tree prior operators -->
@@ -225,16 +234,24 @@
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'>Stumped tree prior sampling proportion of partition t:$(n)
             </connect>
             
-         <connect srcID='FossilisedBirthDeathModelWithStubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
+
+
+            <connect srcID='FBDWSsampledAncestorCount.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
+            <connect srcID='FossilisedBirthDeathModelWithStubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
             <connect srcID='FBDWSBirthRate.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSBirthRate.t:$(n)/estimate=true'/>
             <connect srcID='FBDWSReproductionNumber.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSReproductionNumber.t:$(n)/estimate=true'/>
             <connect srcID='FBDWSsamplingProportion.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'/>
 
             <connect srcID='FBDWSstubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
             <connect srcID='FBDWSstubs.t:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
-            <!-- connect stubst to GammaSpikeRelaxedClock if present -->
+            <!-- connect stubs to GammaSpikeRelaxedClock if present -->
             <connect srcID='FBDWSstubs.t:$(n)' targetID='GSMStumpedTreeConstantDistanceOperator.c:$(n)' inputName='stubs' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
             <connect srcID='FBDWSstubs.t:$(n)' targetID='GSMbranchSpikePrior.c:$(n)' inputName='stubs' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and inposterior(GSMbranchSpikePrior.c:$(n))'/>
+            <connect srcID='FBDWSstubs.t:$(n)' targetID='GammaSpikeRelaxedClock.c:$(n)' inputName='stubs' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and inposterior(GammaSpikeRelaxedClock.c:$(n))'/>
+
+
+
+
             
             <connect srcID='FBDWSbirthRateScaler.t:$(n)' targetID='mcmc' inputName='operator'
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSBirthRate.t:$(n)/estimate=true'>
@@ -291,6 +308,10 @@
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and Tree.t:$(n)/estimate=true'>
                      Toggles a node between sampled ancestor (branch length 0) and cousin (branch length >0) 
             </connect>
+
+
+
+
 
 
         </subtemplate>

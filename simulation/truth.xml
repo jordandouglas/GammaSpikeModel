@@ -54,8 +54,7 @@
     </taxonset>
 </tree>
 
-
-<run spec="beast.base.inference.DirectSimulator" nSamples="100">
+<run spec="beast.base.inference.DirectSimulator" nSamples="200">
 
     <distribution id="posterior" spec="beast.base.inference.CompoundDistribution">
 

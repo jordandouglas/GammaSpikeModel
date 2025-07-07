@@ -266,7 +266,7 @@ name="alignment">
         <logger id="treelog.t:DS6" spec="Logger" fileName="$(filebase)-$(tree).trees" logEvery="1000" mode="tree">
             <log id="TreeWithMetaDataLogger.t:DS6" spec="beast.base.evolution.TreeWithMetaDataLogger" branchratemodel="@GammaSpikeRelaxedClock.c:DS6" tree="@Tree.t:DS6">
                 <metadata idref="BDWSstubs.t:DS6"/>
-                <metadata id="GSMweightedSpikes.c:DS6" spec="gammaspike.clockmodel.SpikeSize" spikeMean="@GSMspikeMean.c:DS6" spikes="@GSMspikes.c:DS6"/>
+                <metadata id="GSMweightedSpikes.c:DS6" spec="gammaspike.clockmodel.SpikeSize" clockModel="@GammaSpikeRelaxedClock.c:DS6" spikeMean="@GSMspikeMean.c:DS6" spikes="@GSMspikes.c:DS6"/>
                 <metadata idref="GSMbranchRates.c:DS6"/>
             </log>
         </logger>
