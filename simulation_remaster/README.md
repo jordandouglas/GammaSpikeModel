@@ -3,13 +3,14 @@
 ## Dependencies
 
 - BEAST v2.7, which could be directly called up upon by `beast`
+- ReMASTER package installed
 - GammaSpikeModel package installed
 - Artifact feastMCMC.jar built from this repository
 - R v4, available from command line as `Rscript` 
 
 ## Instructions
 
-1. Simulate 200 FBD trees and simulate 200 datasets of 500-bp long under these trees (with the gamma spike model),  
+1. Simulate 200 FBD trees using ReMASTER and simulate 200 datasets of 500-bp long under these trees (with the gamma spike model),  
 
 ```bash prepare.sh --nsims 200 --seqlength 500```
 
