@@ -102,11 +102,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	        }
 
 
-//	        samplingProportionInput.setValue(psi / (psi + mu), this);
-			Double[] d = new Double[1];
-			d[0] = psi / (psi + mu);
-			RealParameter tmp = new RealParameter(d);
-			samplingProportionInput.setValue(tmp, this);
+	        samplingProportionInput.setValue(psi / (psi + mu), this);
 
 
 		}
