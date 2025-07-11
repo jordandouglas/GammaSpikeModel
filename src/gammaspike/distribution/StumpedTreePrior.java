@@ -3,7 +3,10 @@ package gammaspike.distribution;
 
 import java.io.PrintStream;
 
-import beast.base.core.*;
+import beast.base.core.Citation;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Log;
 import beast.base.core.Input.Validate;
 import beast.base.evolution.speciation.SpeciesTreeDistribution;
 import beast.base.evolution.tree.Node;
@@ -23,15 +26,15 @@ import gammaspike.tree.Stubs;
 year = 2025, firstAuthorSurname = "Douglas")
 public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExpectation {
 
-	final public Input<Function> lambdaInput = new Input<>("lambda", "birth rate lambda");
-	final public Input<Function> netDiversificationRateInput = new Input<>("netDiversificationRate", "lambda - mu", Input.Validate.XOR, lambdaInput);
+	final public Input<RealParameter> lambdaInput = new Input<>("lambda", "birth rate lambda");
+	final public Input<RealParameter> netDiversificationRateInput = new Input<>("netDiversificationRate", "lambda - mu", Input.Validate.XOR, lambdaInput);
 
-	final public Input<Function> r0Input = new Input<>("r0", "ratio between birth and death rate");
-	final public Input<Function> turnoverInput = new Input<>("turnover", "inverse of r0", Input.Validate.XOR, r0Input);
+	final public Input<RealParameter> r0Input = new Input<>("r0", "ratio between birth and death rate");
+	final public Input<RealParameter> turnoverInput = new Input<>("turnover", "inverse of r0", Input.Validate.XOR, r0Input);
 
-	final public Input<Function> samplingProportionInput = new Input<>("samplingProportion", "sampling rate psi divided by (psi + mu)", Input.Validate.OPTIONAL);
+	final public Input<RealParameter> samplingProportionInput = new Input<>("samplingProportion", "sampling rate psi divided by (psi + mu)", Input.Validate.OPTIONAL);
 
-	final public Input<Function> rhoInput = new Input<>("rho", "extant sampling probability rho", Validate.REQUIRED);
+	final public Input<RealParameter> rhoInput = new Input<>("rho", "extant sampling probability rho", Validate.REQUIRED);
 
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "the stubs of this tree", Input.Validate.OPTIONAL);
 
@@ -102,7 +105,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	        }
 
 
-	        samplingProportionInput.setValue(psi / (psi + mu), this);
+	        samplingProportionInput.get().setValue(psi / (psi + mu));
 
 
 		}
@@ -494,41 +497,41 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 
 	public double getLambda() {
 		if (this.lambdaInput.get() == null) {
-			double net = netDiversificationRateInput.get().getArrayValue();
+			double net = netDiversificationRateInput.get().getValue();
 
 			// Calculate without calling getMu() or there will be a never ending loop
 			if (r0Input.get() != null) {
-				double r = r0Input.get().getArrayValue();
+				double r = r0Input.get().getValue();
 				return net / (1 - 1/r);
 			}else {
-				double t = turnoverInput.get().getArrayValue();
+				double t = turnoverInput.get().getValue();
 				return net / (1 - t);
 			}
 
 
 		} else {
-			return this.lambdaInput.get().getArrayValue();
+			return this.lambdaInput.get().getValue();
 		}
 	}
 
 	public double getPsi() {
 		if (samplingProportionInput.get() == null) return 0.0;
 		double mu = this.getMu();
-		double samplingProportion = samplingProportionInput.get().getArrayValue();
+		double samplingProportion = samplingProportionInput.get().getValue();
 		return samplingProportion*mu / (1-samplingProportion);
 	}
 
 	public double getMu() {
 		double lambda = this.getLambda();
 		if (r0Input.get() != null) {
-			return lambda / r0Input.get().getArrayValue();
+			return lambda / r0Input.get().getValue();
 		} else {
-			return turnoverInput.get().getArrayValue() * lambda;
+			return turnoverInput.get().getValue() * lambda;
 		}
 	}
 
 	public double getRho() {
-		return rhoInput.get().getArrayValue();
+		return rhoInput.get().getValue();
 	}
 
 	public Tree getTree() {
