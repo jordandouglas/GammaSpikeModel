@@ -88,7 +88,7 @@ cd templates
 for rep in rep*/;
 do
 	cd $rep
-	beast -overwrite -D seqLength=$SEQLEN -df var.json ../../seqsim.xml
+	java -jar ~/beastMCMC/feastMCMC.jar -overwrite -D seqLength=$SEQLEN -df var.json ../../seqsim.xml
 	echo "---------------"
 	echo $rep
 	echo "---------------"
