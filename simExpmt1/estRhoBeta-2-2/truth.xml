@@ -7,12 +7,12 @@
         <!-- <distr spec="LogNormalDistributionModel" M="0.1" S="0.5" meanInRealSpace="false"/> -->
         <distr spec="Uniform" lower="3" upper="4"/>
     </param>
-    <!-- <param id="turnover" spec="feast.parameter.RandomRealParameter" value="0.5" lower="0">
-        <distr spec="Beta" alpha="2" beta="2"/>
-    </param> -->
-    <param id="lambda" spec="feast.parameter.RandomRealParameter" value="4" lower="4">
-        <distr spec="LogNormalDistributionModel" M="2" S="0.4" meanInRealSpace="true" offset="4"/>
+    <param id="turnover" spec="feast.parameter.RandomRealParameter" value="0.2" lower="0">
+        <distr spec="Beta" alpha="2" beta="5"/>
     </param>
+    <!-- <param id="lambda" spec="feast.parameter.RandomRealParameter" value="4" lower="4">
+        <distr spec="LogNormalDistributionModel" M="2" S="0.4" meanInRealSpace="true" offset="4"/>
+    </param> -->
     <param id="samplingProportion" spec="feast.parameter.RandomRealParameter" value="0.5" lower="0" upper="1">
         <distr spec="Beta" alpha="2" beta="10"/>
     </param>
@@ -49,25 +49,25 @@
     <param id="origin" spec="RealParameter" value="1">
     </param>
 
-    <!-- <param id="mu" spec="feast.expressions.ExpCalculator" value="turnover * netDiv / (1 - turnover)">
+    <param id="mu" spec="feast.expressions.ExpCalculator" value="turnover * netDiv / (1 - turnover)">
         <arg idref="turnover"/>
-        <arg idref="netDiv"/>
-    </param> -->
-
-    <param id="mu" spec="feast.expressions.ExpCalculator" value="lambda - netDiv">
-        <arg idref="lambda"/>
         <arg idref="netDiv"/>
     </param>
 
-    <param id="turnover" spec="feast.expressions.ExpCalculator" value="mu/lambda">
+    <!-- <param id="mu" spec="feast.expressions.ExpCalculator" value="lambda - netDiv">
+        <arg idref="lambda"/>
+        <arg idref="netDiv"/>
+    </param> -->
+
+    <!-- <param id="turnover" spec="feast.expressions.ExpCalculator" value="mu/lambda">
         <arg idref="lambda"/>
         <arg idref="mu"/>
-    </param>
+    </param> -->
 
-    <!-- <param id="lambda" spec="feast.expressions.ExpCalculator" value="mu/turnover">
+    <param id="lambda" spec="feast.expressions.ExpCalculator" value="mu/turnover">
         <arg idref="turnover"/>
         <arg idref="mu"/>
-    </param> -->
+    </param>
 
     <param id="psi" spec="feast.expressions.ExpCalculator" value="(mu * samplingProportion)/(1 - samplingProportion)">
         <arg idref="samplingProportion"/>
@@ -107,18 +107,22 @@
             <log id="ntaxa" spec="gammaspike.logger.TaxonCountLogger" tree="@tree"/>
             <log id="nSampledAncestors" spec="sa.evolution.tree.SampledAncestorLogger" tree="@tree"/>
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
+
             <log idref="lambda"/>
             <log idref="mu"/>
             <log idref="psi"/>
+
             <log idref="rhoSampling"/>
             <log idref="netDiv"/>
             <log idref="turnover"/>
             <log idref="samplingProportion"/>
+
             <log idref="clockMean"/>
             <log idref="clockSD"/>
             <log idref="useSpikeModel"/>
             <log idref="spikeMean"/>
             <log idref="spikeShape"/>
+
             <log idref="gammaShape"/>
             <log idref="kappa"/>
         </logger>

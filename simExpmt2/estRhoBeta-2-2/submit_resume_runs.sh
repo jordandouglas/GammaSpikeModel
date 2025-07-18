@@ -63,7 +63,7 @@ for ((i=1; i<=NSIMS; i++)); do
 
 cd "\$SLURM_SUBMIT_DIR/templates/$rep_dir"
 java -jar ~/beastMCMC/feastMCMC.jar -resume -df var.seq.json -DFout run.out.xml ../../run.xml
-rm run.out.xml
+java -jar ~/beastMCMC/feastMCMC.jar -overwrite ../../compute_bdpsi.xml
 EOF
 
   chmod +x "$job_script"

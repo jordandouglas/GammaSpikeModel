@@ -28,47 +28,62 @@ out_file <- opt$out
 
 # ---- Load true values ----
 truth <- tracerer::parse_beast_tracelog_file("../truth/truth_param.log")
-truth_trees <- tracerer::parse_beast_trees("../truth/truth_annotated.trees")
+# truth_trees <- tracerer::parse_beast_trees("../truth/truth_annotated.trees")
 
-if (length(truth_trees) != nrow(truth)) {
-  stop("Mismatch between number of trees and rows in truth table.")
-}
+# if (length(truth_trees) != nrow(truth)) {
+#   stop("Mismatch between number of trees and rows in truth table.")
+# }
 
-tree_heights <- sapply(truth_trees, function(tr) max(ape::node.depth.edgelength(tr)))
-tree_lengths <- sapply(truth_trees, function(tr) sum(tr$edge.length))
+# tree_heights <- sapply(truth_trees, function(tr) max(ape::node.depth.edgelength(tr)))
+# tree_lengths <- sapply(truth_trees, function(tr) sum(tr$edge.length))
 
-truth$tree.height <- tree_heights
-truth$tree.treeLength <- tree_lengths
+# truth$tree.height <- tree_heights
+# truth$tree.treeLength <- tree_lengths
 
-# Parameters to extract
-params <- c("tree.height", "tree.treeLength", "stubs.nstubs", "nSampleAncestors",
-            "netDiv", "lambda", "turnover", "samplingProportion", "rhoSampling",
+# ---- Parameters to extract ----
+params <- c("tree.height", "tree.treeLength", "stubs.nstubs", "nSampledAncestors",
+            "netDiv", "turnover", "samplingProportion", "lambda", "mu", "psi", "rhoSampling",
             "clockMean", "clockSD", "spikeMean", "spikeShape", "gammaShape", "kappa")
 
+# ---- Efficient log reader ----
+read_logs <- function(nsims) {
+  log_data <- vector("list", nsims)
+
+  for (i in 1:nsims) {
+    log_data[[i]] <- list()
+    log_main_path <- sprintf("../templates/rep%d/estimatedParameters.log", i)
+    log_bdpsi_path <- sprintf("../templates/rep%d/estimatedParameters_bdpsi.log", i)
+
+    log_data[[i]]$main <- if (file.exists(log_main_path)) {
+      tryCatch(tracerer::parse_beast_tracelog_file(log_main_path), error = function(e) NULL)
+    } else NULL
+
+    log_data[[i]]$bdpsi <- if (file.exists(log_bdpsi_path)) {
+      tryCatch(tracerer::parse_beast_tracelog_file(log_bdpsi_path), error = function(e) NULL)
+    } else NULL
+  }
+
+  return(log_data)
+}
+
 # ---- Summarization Function ----
-summarize_param <- function(param_name, nsims, burnin) {
+summarize_param <- function(param_name, log_data, truth, burnin) {
+  nsims <- length(log_data)
   param_results <- vector("list", nsims)
 
   message(sprintf("Summarizing: %s", param_name))
 
   for (i in 1:nsims) {
-    message(sprintf("  [Param: %s] Processing replicate %d / %d", param_name, i, nsims))
-    path <- paste0("../templates/rep", i, "/estimatedParameters.log")
+    log_source <- if (param_name %in% c("lambda", "mu", "psi")) "bdpsi" else "main"
+    post <- log_data[[i]][[log_source]]
 
-    if (!file.exists(path)) {
-      message(sprintf("    Skipping: file not found"))
+    if (is.null(post)) {
+      message(sprintf("  [rep %d] Skipping: %s log missing or unreadable", i, log_source))
       next
     }
 
-    post <- tryCatch({
-      tracerer::parse_beast_tracelog_file(path)
-    }, error = function(e) {
-      message(sprintf("    Skipping: failed to parse (%s)", e$message))
-      return(NULL)
-    })
-
-    if (is.null(post) || !(param_name %in% colnames(post))) {
-      message("    Skipping: parameter missing in log")
+    if (!(param_name %in% colnames(post))) {
+      message(sprintf("  [rep %d] Skipping: parameter %s missing", i, param_name))
       next
     }
 
@@ -76,13 +91,15 @@ summarize_param <- function(param_name, nsims, burnin) {
     post_vals <- post_trimmed[[param_name]]
 
     if (length(post_vals) <= 1 || all(is.na(post_vals))) {
-      message("    Skipping: only one or no valid post-burnin sample")
+      message(sprintf("  [rep %d] Skipping: insufficient valid post-burnin samples", i))
       next
     }
 
     hpd <- HPDinterval(as.mcmc(post_vals))
     mean_val <- mean(post_vals)
     true_val <- truth[[param_name]][i]
+    tolerance <- .Machine$double.eps^0.5
+    in_hpd <- (true_val + tolerance) >= hpd[1] & (true_val - tolerance) <= hpd[2]
 
     param_results[[i]] <- data.frame(
       replicate = i,
@@ -90,13 +107,13 @@ summarize_param <- function(param_name, nsims, burnin) {
       mean = mean_val,
       hpd_low = hpd[1],
       hpd_high = hpd[2],
-      in_hpd = true_val >= hpd[1] & true_val <= hpd[2]
+      in_hpd = in_hpd
+    #   in_hpd = true_val >= hpd[1] & true_val <= hpd[2]
     )
   }
 
   result_df <- do.call(rbind, param_results[!sapply(param_results, is.null)])
   return(list(data = result_df, n_plotted = nrow(result_df)))
-
 }
 
 # ---- Plot Function ----
@@ -115,20 +132,21 @@ plot_param <- function(result_list, param_name) {
     labs(
       x = "Truth", y = "Estimated",
       title = param_name,
-      subtitle = sprintf("Coverage = %.0f%%, Pearson = %.2f, N plooted = %d", coverage * 100, pearson, n_plotted)
+      subtitle = sprintf("Coverage = %.0f%%, Pearson = %.2f, N plotted = %d", coverage * 100, pearson, n_plotted)
     ) +
     theme_minimal()
 }
 
-# ---- Run summary and plotting ----
+# ---- Run summaries and plots ----
+log_data <- read_logs(nsims)
+
 all_results <- list()
 all_plots <- list()
 
 for (param in params) {
-  result_list <- summarize_param(param, nsims, burnin)
-  plt <- plot_param(result_list, param)
+  result_list <- summarize_param(param, log_data, truth, burnin)
   all_results[[param]] <- result_list$data
-  all_plots[[param]] <- plt
+  all_plots[[param]] <- plot_param(result_list, param)
 }
 
 # ---- Save results ----

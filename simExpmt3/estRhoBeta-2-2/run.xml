@@ -19,16 +19,29 @@
         $(seq-data)
     </data>
 
-    <param id="turnover" spec="feast.expressions.ExpCalculator" value="(lambda-netDiv)/lambda">
+    <!-- <param id="turnover" spec="feast.expressions.ExpCalculator" value="(lambda-netDiv)/lambda">
         <arg idref="netDiv"/>
         <arg idref="lambda"/>
+    </param> -->
+
+    <!-- <param id="mu" spec="feast.expressions.ExpCalculator" value="netDiv*turnover/(1-turnover)">
+        <arg idref="netDiv"/>
+        <arg idref="turnover"/>
     </param>
+    <param id="lambda" spec="feast.expressions.ExpCalculator" value="netDiv+mu">
+        <arg idref="netDiv"/>
+        <arg idref="mu"/>
+    </param>
+    <param id="psi" spec="feast.expressions.ExpCalculator" value="samplingProportion*mu/(1-samplingProportion)">
+        <arg idref="mu"/>
+        <arg idref="samplingProportion"/>
+    </param> -->
 
     <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" prior="@FBDTreeWithStubs" />
 
     <!-- <run id="mcmc" spec="coupledMCMC.CoupledMCMC" chains="4" resampleEvery="10000" chainLength="5000000"> -->
-    <run id="mcmc" spec="MCMC" chainLength="50000000">
-        <state id="state" spec="State" storeEvery="5000000">
+    <run id="mcmc" spec="MCMC" chainLength="100000000">
+        <state id="state" spec="State" storeEvery="1000000">
 
             <!-- <tree id="tree" name="stateNode">
                 <trait id="traitsetDate" spec="beast.base.evolution.tree.TraitSet" traitname="date-backward" taxa="@taxonset">
@@ -45,7 +58,7 @@
             <stateNode spec="beast.base.evolution.tree.TreeParser" id="tree" IsLabelledNewick="true" adjustTipHeights="false" newick="$(tree)" />
 
             <parameter id="netDiv" spec="parameter.RealParameter" name="stateNode" lower="3">$(netDiv)</parameter>
-            <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="4">$(lambda)</parameter>
+            <!-- <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="4">$(lambda)</parameter> -->
             <parameter id="samplingProportion" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">$(samplingProportion)</parameter>
             <parameter id="rhoSampling" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">$(rhoSampling)</parameter>
 
@@ -67,7 +80,7 @@
             <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">$(spikeMean)</parameter>
 
             <!-- <parameter id="mu" spec="parameter.RealParameter" name="stateNode">$(mu)</parameter> -->
-            <!-- <parameter id="turnover" spec="parameter.RealParameter" name="stateNode">$(turnover)</parameter> -->
+            <parameter id="turnover" spec="parameter.RealParameter" name="stateNode">$(turnover)</parameter>
 
         </state>
 
@@ -79,7 +92,8 @@
             <distribution id="prior" spec="CompoundDistribution">
 
                 <!-- <distribution id="FBDTreeWithStubs" spec="gammaspike.distribution.StumpedTreePrior" lambda="@lambda" r0="@r0" samplingProportion="@samplingProportion" rho="@rhoSampling" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree">  -->
-                <distribution id="FBDTreeWithStubs" spec="gammaspike.distribution.StumpedTreePrior" lambda="@lambda" turnover="@turnover" samplingProportion="@samplingProportion" rho="@rhoSampling" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
+                <!-- <distribution id="FBDTreeWithStubs" spec="gammaspike.distribution.StumpedTreePrior" lambda="@lambda" turnover="@turnover" samplingProportion="@samplingProportion" rho="@rhoSampling" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree">  -->
+                <distribution id="FBDTreeWithStubs" spec="gammaspike.distribution.StumpedTreePrior" netDiversificationRate="@netDiv" turnover="@turnover" samplingProportion="@samplingProportion" rho="@rhoSampling" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
                     <!-- <stubs id="FBDTreeWithStubs" spec="gammaspike.tree.Stubs" tree="@tree" branchNr="@stubBranchNumbers" time="@stubTimes" /> -->
                     <!-- <stubs id="FBDTreeWithStubs" spec="gammaspike.tree.Stubs" tree="@tree" stubsPerBranch="@stubsPerBranch" /> -->
                 </distribution>
@@ -88,8 +102,11 @@
                 <prior name="distribution" x="@netDiv">
                     <distr spec="beast.base.inference.distribution.Uniform" lower="3" upper="4"/>
                 </prior>
-                <prior name="distribution" x="@lambda">
+                <!-- <prior name="distribution" x="@lambda">
                     <distr spec="LogNormalDistributionModel" M="2" S="0.4" meanInRealSpace="true" offset="4"/>
+                </prior> -->
+                <prior name="distribution" x="@turnover">
+                    <distr spec="Beta" alpha="2" beta="5"/>
                 </prior>
                 <prior name="distribution" x="@samplingProportion">
                     <distr spec="Beta" alpha="2" beta="10"/>
@@ -172,6 +189,7 @@
         <operator id="YuleSkylineEpochTop.t:tree" spec="EpochFlexOperator" scaleFactor="0.1" tree="@tree" weight="5.0"/>
         <operator id="YuleSkylineEpochAll.t:tree" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@tree" weight="5.0"/>
         <operator id="YuleSkylineTreeFlex.t:tree" spec="TreeStretchOperator" scaleFactor="0.01" tree="@tree" weight="5.0"/>
+
         <operator id="SAWideFBD.tree" spec="sa.evolution.operators.SAExchange" isNarrow="false"  tree="@tree" weight="3.0"/>
         <operator id="SANarrowFBD.tree" spec="sa.evolution.operators.SAExchange"  tree="@tree" weight="20.0"/>
         <operator id="SAUniformOperatorFBD.tree" spec="sa.evolution.operators.SAUniform" tree="@tree" weight="30.0" />
@@ -206,17 +224,18 @@
         </operator>
 
         <!-- Tree prior operators -->
-        <operator id="netDiv.scale" spec="kernel.BactrianScaleOperator" parameter="@netDiv" scaleFactor="0.1" weight="0.5"/>
-        <operator id="lambda.scale" spec="kernel.BactrianScaleOperator" parameter="@lambda" scaleFactor="0.1" weight="0.5"/>
-        <!-- <operator id="turnover.scale" spec="kernel.BactrianScaleOperator" parameter="@turnover" scaleFactor="0.1" weight="0.5"/> -->
+        <operator id="netDiv.scale" spec="kernel.BactrianScaleOperator" parameter="@netDiv" scaleFactor="0.1" weight="1"/>
+        <!-- <operator id="lambda.scale" spec="kernel.BactrianScaleOperator" parameter="@lambda" scaleFactor="0.1" weight="0.5"/> -->
+        <operator id="turnover.scale" spec="kernel.BactrianScaleOperator" parameter="@turnover" scaleFactor="0.1" weight="1"/>
         <!-- <operator id="r0.scale" spec="kernel.BactrianScaleOperator" parameter="@r0" scaleFactor="0.1" weight="0.5"/> -->
-        <operator id="samplingProportion.scale" spec="kernel.BactrianScaleOperator" parameter="@samplingProportion" scaleFactor="0.1" weight="0.5"/>
-        <operator id="rhoSampling.scale" spec="kernel.BactrianScaleOperator" parameter="@rhoSampling" scaleFactor="0.1" weight="0.5"/>
+        <operator id="samplingProportion.scale" spec="kernel.BactrianScaleOperator" parameter="@samplingProportion" scaleFactor="0.1" weight="1"/>
+        <operator id="rhoSampling.scale" spec="kernel.BactrianScaleOperator" parameter="@rhoSampling" scaleFactor="0.1" weight="1"/>
         <operator id="AVMN.tree.prior" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
             <transformations spec="operator.kernel.Transform$LogTransform">
                 <f idref="netDiv"/>
-                <f idref="lambda"/>
+                <!-- <f idref="lambda"/> -->
                 <!-- <f idref="r0"/> -->
+                <f idref="turnover"/>
             </transformations>
             <transformations spec="operator.kernel.Transform$LogitTransform">
                 <f idref="samplingProportion"/>
@@ -226,12 +245,13 @@
         <!-- AVMN -->
         <operator id="AVMN" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="5.0">
             <transformations spec="operator.kernel.Transform$LogTransform">
-                <f idref="lambda"/>
+                <!-- <f idref="lambda"/> -->
                 <f idref="spikeShape"/>
                 <f idref="spikeMean"/>
                 <!-- <f idref="clockMean"/> -->
                 <!-- <f idref="r0"/> -->
                 <f idref="netDiv"/>
+                <f idref="turnover"/>
             </transformations>
         </operator> 
 
@@ -250,7 +270,7 @@
         <operator id="swapBranches" spec="gammaspike.operator.StubSwapOperator" parameter="@stubBranchNumbers" weight="1.0"/>  -->
 
 
-        <logger id="tracelog" spec="Logger" fileName="estimatedParameters.log" logEvery="50000" model="@posterior" sanitiseHeaders="true" sort="smart">
+        <logger id="tracelog" spec="Logger" fileName="estimatedParameters.log" logEvery="1000000" model="@posterior" sanitiseHeaders="true" sort="smart">
             <log idref="posterior"/>
             <log idref="treeLikelihood"/>
             <log idref="prior"/>
@@ -258,12 +278,26 @@
             <log id="nSampledAncestors" spec="sa.evolution.tree.SampledAncestorLogger" tree="@tree"/>
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
             <log idref="stubs"/>
-            <log idref="lambda"/>
-            <!-- <log idref="mu"/> -->
             <log idref="netDiv"/>
             <log idref="turnover"/>
             <log idref="samplingProportion"/>
             <log idref="rhoSampling"/>
+            <!-- <log idref="lambda"/>
+            <log idref="mu"/>
+            <log idref="psi"/> -->
+
+    <!-- <log id="mu" spec="feast.expressions.ExpCalculator" value="netDiv*turnover/(1-turnover)">
+        <arg idref="netDiv"/>
+        <arg idref="turnover"/>
+    </log>
+    <log id="lambda" spec="feast.expressions.ExpCalculator" value="netDiv+mu">
+        <arg idref="netDiv"/>
+        <arg idref="mu"/>
+    </log>
+    <log id="psi" spec="feast.expressions.ExpCalculator" value="samplingProportion*mu/(1-samplingProportion)">
+        <arg idref="mu"/>
+        <arg idref="samplingProportion"/>
+    </log> -->
 
             <log idref="kappa"/>
             <log idref="gammaShape"/>
@@ -274,33 +308,42 @@
             <log idref="spikeMean"/>
             <log idref="spikeShape"/>
 
-            <log idref="branchRates"/>
-             <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
+            <!-- <log idref="branchRates"/>
+            <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/> -->
 
         </logger>
 
+        <logger id="tracelog_branchRatesSpikes" spec="Logger" fileName="estimatedBranchRatesSpikes.log" logEvery="1000000" model="@posterior" sanitiseHeaders="true" sort="smart">
+            <log idref="branchRates"/>
+            <log id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
+        </logger>
 
-        <logger id="screenlog" spec="Logger" logEvery="500000">
+        <logger id="screenlog" spec="Logger" logEvery="1000000">
             <log idref="posterior"/>
             <log id="ESS.posterior" spec="util.ESS" arg="@posterior"/>
             <log idref="likelihood"/>
             <log idref="useSpikeModel"/>
-            <log idref="turnover"/>
+
             <log idref="netDiv"/>
-            <log idref="lambda"/>
+            <log idref="turnover"/>
             <log idref="samplingProportion"/>
+
+            <!-- <log idref="lambda"/>
+            <log idref="mu"/>
+            <log idref="psi"/> -->
+
             <log idref="rhoSampling"/>
             <!-- <log idref="spikeMean"/>
             <log idref="spikeShape"/> -->
         </logger>
 
 
-        <logger id="treelog_noMetadata" spec="Logger" fileName="estimatedTrees_noMetadata.trees" logEvery="500000" mode="tree">
+        <logger id="treelog_noMetadata" spec="Logger" fileName="estimatedTrees_noMetadata.trees" logEvery="1000000" mode="tree">
             <log idref="tree"/>
         </logger> 
 
 
-        <logger id="treelog" spec="Logger" fileName="estimatedTrees.trees" logEvery="500000" mode="tree">
+        <logger id="treelog" spec="Logger" fileName="estimatedTrees.trees" logEvery="1000000" mode="tree">
             <log id="TreeWithMetaDataLogger" spec="gammaspike.logger.StumpedTreeLogger" tree="@tree">
                 <stubs idref="stubs" />
                 <metadata idref="branchRates" />
@@ -313,5 +356,6 @@
 
 
     </run>
+
 
 </beast>

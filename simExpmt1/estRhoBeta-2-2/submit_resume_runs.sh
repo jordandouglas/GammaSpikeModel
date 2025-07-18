@@ -50,19 +50,20 @@ for ((i=1; i<=NSIMS; i++)); do
   cd "$rep_dir"
 
   # Create SLURM job script
-  job_script="job_rep${i}.sh"
+  job_script="resume_job_rep${i}.sh"
 
   cat > "$job_script" <<EOF
 #!/bin/bash
-#SBATCH --job-name=rep${i}
-#SBATCH --output=rep${i}.out
+#SBATCH --job-name=resume_rep${i}
+#SBATCH --output=resume_rep${i}-%j.out
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=2G
 #SBATCH --time=12:00:00
 
 cd "\$SLURM_SUBMIT_DIR/templates/$rep_dir"
-java -jar ~/beastMCMC/feastMCMC.jar -overwrite -df var.seq.json ../../run.xml
+java -jar ~/beastMCMC/feastMCMC.jar -resume -df var.seq.json -DFout run.out.xml ../../run.xml
+java -jar ~/beastMCMC/feastMCMC.jar -overwrite ../../compute_bdpsi.xml
 EOF
 
   chmod +x "$job_script"

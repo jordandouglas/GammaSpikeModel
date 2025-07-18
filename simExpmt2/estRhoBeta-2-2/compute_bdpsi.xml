@@ -1,0 +1,38 @@
+<beast version='2.0' namespace='feast.fileio.logfileiterator:beast.base.inference.parameter'>
+
+    <run spec="feast.fileio.logfileiterator.LogFileIterator">
+
+    <logFileState spec="TraceLogFileState" logFileName="estimatedParameters.log">
+      <logFileEntry spec="LogFileRealParameter" fieldName="netDiv">
+        <fieldParameter id="netDiv" spec="RealParameter" value="0.0"/>
+      </logFileEntry>
+      <logFileEntry spec="LogFileRealParameter" fieldName="turnover">
+        <fieldParameter id="turnover" spec="RealParameter" value="0.0"/>
+      </logFileEntry>
+      <logFileEntry spec="LogFileRealParameter" fieldName="samplingProportion">
+        <fieldParameter id="samplingProportion" spec="RealParameter" value="0.0"/>
+      </logFileEntry>
+    </logFileState>
+
+    <logger logEvery="1" fileName="estimatedParameters_bdpsi.log">
+    <!-- <logger logEvery="1"> -->
+        <!-- <log idref="netDiv"/>
+        <log idref="turnover"/>
+        <log idref="samplingProportion"/> -->
+        <log id="mu" spec="feast.expressions.ExpCalculator" value="netDiv*turnover/(1-turnover)">
+            <arg idref="netDiv"/>
+            <arg idref="turnover"/>
+        </log>
+        <log id="lambda" spec="feast.expressions.ExpCalculator" value="netDiv+mu">
+            <arg idref="netDiv"/>
+            <arg idref="mu"/>
+        </log>
+        <log id="psi" spec="feast.expressions.ExpCalculator" value="samplingProportion*mu/(1-samplingProportion)">
+            <arg idref="mu"/>
+            <arg idref="samplingProportion"/>
+        </log>
+    </logger>
+
+    </run>
+
+</beast>
