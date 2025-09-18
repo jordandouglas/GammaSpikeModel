@@ -375,6 +375,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		double treeHeight = tree.getRoot().getHeight(); // Height of the tree root
 		Node node = tree.getNode(branchNr); // The node corresponding to branch branchNr
 
+		// Check whether integrating over stubs (stub-free inference mode) is used
 		if (!stubs.estimateStubs()) return 0;
 
 		// Get the origin time h0 and end time h1 of branch branchNr
