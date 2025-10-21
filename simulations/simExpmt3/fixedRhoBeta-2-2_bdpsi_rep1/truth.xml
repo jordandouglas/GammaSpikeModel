@@ -1,0 +1,144 @@
+<!-- Basic birth-death simulation with two contemporanous uniform sampling events. -->
+
+<beast version="2.0" namespace="beast.base.inference.parameter:beast.base.inference.distribution:beast.base.inference:remaster">
+
+    <!-- <param id="netDiv" spec="feast.parameter.RandomRealParameter" value="4" lower="3">
+        <distr spec="Exponential" mean="1" offset="3"/>
+        <distr spec="LogNormalDistributionModel" M="0.1" S="0.5" meanInRealSpace="false"/>
+        <distr spec="Uniform" lower="5" upper="6"/>
+    </param> -->
+    <!-- <param id="turnover" spec="feast.parameter.RandomRealParameter" value="0.2" lower="0">
+        <distr spec="Beta" alpha="2" beta="5"/>
+    </param> -->
+    <param id="mu" spec="feast.parameter.RandomRealParameter" value="1.5" lower="0">
+        <distr spec="LogNormalDistributionModel" M="0.1" S="0.75" meanInRealSpace="false"/>
+    </param>
+    <param id="lambda" spec="feast.parameter.RandomRealParameter" value="4" lower="4">
+        <distr spec="LogNormalDistributionModel" M="2" S="0.4" meanInRealSpace="true" offset="4"/>
+    </param>
+    <!-- <param id="samplingProportion" spec="feast.parameter.RandomRealParameter" value="0.5" lower="0" upper="1">
+        <distr spec="Beta" alpha="2" beta="10"/>
+    </param> -->
+    <param id="psi" spec="feast.parameter.RandomRealParameter" value="0.667" lower="0">
+        <distr spec="Exponential" mean="1.5"/> 
+    </param>
+    <param id="rhoSampling" spec="feast.parameter.RandomRealParameter" value="0.5" lower="0" upper="1">
+        <distr spec="Beta" alpha="2" beta="2"/>
+        <!-- <distr spec="Uniform" lower="0" upper="1"/> -->
+    </param>
+
+    <param id="clockMean" spec="parameter.RealParameter" value="1" lower="0"/>
+    <param id="clockSD" spec="feast.parameter.RandomRealParameter" value="1" lower="0">
+        <distr spec="Gamma" alpha="5" beta="0.05"/>
+    </param>
+
+    <param id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">true</param>
+    <param id="spikeMean" spec="feast.parameter.RandomRealParameter" value="0.01" lower="0">
+        <distr spec="LogNormalDistributionModel" meanInRealSpace="true" M="0.05" S="0.8"/>
+    </param>
+    <param id="spikeShape" spec="feast.parameter.RandomRealParameter" value="1" lower="0.2">
+        <distr spec="LogNormalDistributionModel" meanInRealSpace="true" M="2" S="0.5"/>
+    </param>
+
+    <param id="gammaShape" spec="feast.parameter.RandomRealParameter" value="1" lower="0">
+        <distr spec="Exponential" mean="1"/>
+    </param>
+    <param id="kappa" spec="feast.parameter.RandomRealParameter" value="1" lower="0">
+        <distr spec="Exponential" mean="5"/>
+    </param>
+
+    <!-- <param id="netDiv" spec="RealParameter" value="2" lower="0"/> -->
+    <!-- <param id="turnover" spec="RealParameter" value="0.5" lower="0" upper="1"/>
+    <param id="samplingProportion" spec="RealParameter" value="0.1" lower="0" upper="1"/> -->
+    <!-- <param id="rhoSampling" spec="RealParameter" value="0.1" lower="0" upper="1"/> -->
+
+    <param id="origin" spec="RealParameter" value="1">
+    </param>
+
+
+
+    <param id="netDiv" spec="feast.expressions.ExpCalculator" value="lambda - mu">
+        <arg idref="lambda"/>
+        <arg idref="mu"/>
+    </param>
+    <param id="turnover" spec="feast.expressions.ExpCalculator" value="mu/lambda">
+        <arg idref="lambda"/>
+        <arg idref="mu"/>
+    </param>
+    <param id="samplingProportion" spec="feast.expressions.ExpCalculator" value="psi/(psi+mu)">
+        <arg idref="psi"/>
+        <arg idref="mu"/>
+    </param>
+
+    <!-- <param id="lambda" spec="feast.expressions.ExpCalculator" value="netDiv + mu">
+        <arg idref="netDiv"/>
+        <arg idref="mu"/>
+    </param> -->
+    <!-- <param id="mu" spec="feast.expressions.ExpCalculator" value="turnover * netDiv / (1 - turnover)">
+        <arg idref="turnover"/>
+        <arg idref="netDiv"/>
+    </param> -->
+    <!-- <param id="mu" spec="feast.expressions.ExpCalculator" value="lambda - netDiv">
+        <arg idref="lambda"/>
+        <arg idref="netDiv"/>
+    </param> -->
+    <!-- <param id="psi" spec="feast.expressions.ExpCalculator" value="(mu * samplingProportion)/(1 - samplingProportion)">
+        <arg idref="samplingProportion"/>
+        <arg idref="mu"/>
+    </param> -->
+
+
+    <run spec="Simulator" nSims="$(nSims)">
+
+        <simulate spec="SimulatedTree" id="tree" maxRetries="1">
+            <trajectory spec="StochasticTrajectory" id="traj" maxTime="@origin" mustHave="psiSample>=1 &amp;&amp; rhoSample>=1 &amp;&amp; psiSample+rhoSample&lt;=401">
+                <population spec="RealParameter" id="X" value="1"/>
+                <samplePopulation spec="RealParameter" id="psiSample" value="0"/> <!-- Psi samples -->
+                <samplePopulation spec="RealParameter" id="rhoSample" value="0"/> <!-- Rho samples -->
+
+                <reaction spec="Reaction" rate="@lambda"> X -> 2X </reaction> <!-- Birth -->
+                <reaction spec="Reaction" rate="@mu"> X -> 0 </reaction> <!-- Death -->
+                <reaction spec="Reaction" rate="@psi"> X -> X + psiSample </reaction> <!-- Psi sampling -->
+                <reaction spec="PunctualReaction" p="@rhoSampling" times="@origin"> X -> rhoSample </reaction> <!-- Rho sampling -->
+            </trajectory>
+        </simulate>
+
+        <!-- <logger spec="Logger" fileName="$(filebase).traj">
+            <log idref="traj"/>
+        </logger> -->
+
+        <logger spec="Logger" mode="tree" fileName="$(filebase).trees">
+            <!-- <log spec="TypedTreeLogger" tree="@tree"/> -->
+            <log idref="tree"/>
+        </logger>
+
+        <logger spec="Logger">
+            <log spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
+        </logger>
+
+        <logger spec="Logger" fileName="$(filebase)_param.log" logEvery="1" sort="smart">
+            <log id="ntaxa" spec="gammaspike.logger.TaxonCountLogger" tree="@tree"/>
+            <log id="nSampledAncestors" spec="sa.evolution.tree.SampledAncestorLogger" tree="@tree"/>
+            <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
+
+            <log idref="lambda"/>
+            <log idref="mu"/>
+            <log idref="psi"/>
+
+            <log idref="rhoSampling"/>
+            <log idref="netDiv"/>
+            <log idref="turnover"/>
+            <log idref="samplingProportion"/>
+
+            <log idref="clockMean"/>
+            <log idref="clockSD"/>
+            <log idref="useSpikeModel"/>
+            <log idref="spikeMean"/>
+            <log idref="spikeShape"/>
+
+            <log idref="gammaShape"/>
+            <log idref="kappa"/>
+        </logger>
+
+    </run>
+</beast>
