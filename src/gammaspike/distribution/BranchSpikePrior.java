@@ -32,7 +32,7 @@ public class BranchSpikePrior extends Distribution {
 	final public Input<RealParameter> meanInput = new Input<>("mean", "mean (=shape*scale) parameter for the gamma distribution of each spike.", Input.Validate.OPTIONAL); 
 	
 	final public Input<Tree> treeInput = new Input<>("tree", "tree required for setting the spike dimension (if direct sampling)", Input.Validate.OPTIONAL); 
-	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 of this is false", Input.Validate.OPTIONAL);
+	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 if this is false", Input.Validate.OPTIONAL);
 
 	
 	// If there are too many stubs on a branch (e.g., during mixing) then the gamma distribution shape is large, which causes instabilities
@@ -323,14 +323,12 @@ public class BranchSpikePrior extends Distribution {
 	 * @param h1
 	 * @return
 	 */
+	// The method is used by sampleNStubsOnBranch to sample the number of stubs for a branch
 	public double[] getCumulativeProbs(double mu, int nodeNr) {
-		
 		
 		List<Double> probs = new ArrayList<>();
 		
-		
-		
-		// Shape and scale of gamma 
+		// Shape and scale of gamma
 		double shape = shapeInput.get().getValue();
 		double mean = 1; //meanInput.get().getValue();
 		if (shape <= 0 || mean <= 0) {
@@ -345,7 +343,6 @@ public class BranchSpikePrior extends Distribution {
     	//}
 
 		
-		
 		int k = 0;
 		double poissonCumSum = 0;
 		
@@ -359,12 +356,10 @@ public class BranchSpikePrior extends Distribution {
 			for (int i = 2; i <= k; i ++) p += -Math.log(i);
 			double pReal = Math.exp(p);
 			
-			
-			
 			// Integrate across all possible values in poisson distribution
 			double alphaBranch = shape * (k + 1); // One spike for the branch, and one per stub
 			
-			
+			// If the use-spike indicator is true
 			if (indicatorInput.get() != null && indicatorInput.get().getValue()) {
 			
 				gamma = new GammaDistributionImpl(alphaBranch, scale);
@@ -372,23 +367,23 @@ public class BranchSpikePrior extends Distribution {
 				if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
 					if (poissonCumSum > 0) break;
 					branchP += 0;
-				}else {
+				} else {
 					branchP += Math.exp(p + gammaLogP);
 				}
 				
 				//Log.warning(mu + ": k=" + k + " -> " + gammaLogP);
 				//Log.warning("" + Math.exp(p + gammaLogP));
-				
-			}else {
+			// If the use-spike indicator is false or not provided
+			} else {
 				branchP += pReal;
 			}
-			
-			
+
 			poissonCumSum += pReal;
 			branchPSum += branchP;
 			probs.add(branchP);
 			
 			k++;
+
 		}
 		
 		

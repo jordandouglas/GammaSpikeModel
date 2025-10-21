@@ -31,7 +31,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	final public Input<IntegerParameter> nstubsPerBranchInput = new Input<>("nstubsPerBranch", "num stubs per branch.", Input.Validate.OPTIONAL);
 	
 	final public Input<RealParameter> spikeMeanInput = new Input<>("spikeMean", "mean spike size.", Input.Validate.REQUIRED);
-	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 of this is false", Input.Validate.OPTIONAL);
+	final public Input<BooleanParameter> indicatorInput = new Input<>("indicator", "burst size is 0 if this is false", Input.Validate.OPTIONAL);
 	final public Input<BooleanParameter> relaxedInput = new Input<>("relaxed", "if false then use strict clock", Input.Validate.OPTIONAL);
 	final public Input<RealParameter> ratesInput = new Input<>("rates", "the rates associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.OPTIONAL); 
 	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
@@ -189,7 +189,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	 */
 	public double getBurstSize(Node node) {
 		
-		
+		// If the use-spike indicator is false, burst size is zero
 		if (indicatorInput.get() != null && !indicatorInput.get().getValue()) {
 			return 0;
 		}
@@ -222,14 +222,14 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	public double getBranchRate(Node node) {
 		
 		if (ratesInput.get() == null) return 1;
-		
+
+		// If the use-relaxed-clock indicator is not provided or true
 		if (relaxedInput.get() == null || relaxedInput.get().getValue()) {
 			return ratesInput.get().getValue(node.getNr());
 		}
-		
+		// Otherwise, strict clock is used
 		return 1;
-		
-		
+
 	}
 	
 
