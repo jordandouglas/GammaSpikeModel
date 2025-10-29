@@ -23,6 +23,13 @@ import gammaspike.tree.Stubs;
 year = 2025, firstAuthorSurname = "Douglas")
 public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExpectation {
 
+	final public Input<RealParameter> originInput = new Input<>("origin", "the time when the process started", Validate.OPTIONAL);
+	// if the tree likelihood is condition on sampling at least one individual then set to true one of the inputs:
+	public Input<Boolean> conditionOnSamplingInput = new Input<Boolean>("conditionOnSampling", "the tree " +
+			"likelihood is conditioned on sampling at least one individual if condition on origin", false);
+	public Input<Boolean> conditionOnRhoSamplingInput = new Input<Boolean>("conditionOnRhoSampling", "the tree " +
+			"likelihood is conditioned on sampling at least one individual in present if condition on origin", false);
+
 	final public Input<Function> lambdaInput = new Input<>("lambda", "birth rate (lambda)");
 	final public Input<Function> netDiversificationRateInput = new Input<>("netDiversificationRate", "net diversification rate, lambda - mu", Input.Validate.XOR, lambdaInput);
 
@@ -33,7 +40,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 
 	final public Input<RealParameter> rhoInput = new Input<>("rho", "extant sampling probability (rho)", Validate.REQUIRED);
 
-	final public Input<Stubs> stubsInput = new Input<>("stubs", "the stubs of this tree", Input.Validate.OPTIONAL);
+	final public Input<Stubs> stubsInput = new Input<>("stubs", "the stubs of this tree, if the stub-free inference approach (integrating over the number of stubs) is used, this is ignored", Input.Validate.OPTIONAL);
 
 
 	final public Input<Boolean> ignoreTreePriorInput = new Input<>("ignoreTreePrior", "ignore tree prior (debugging)", false);
@@ -48,6 +55,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	int nExtantTaxa; // n
 
 	boolean initialising = true;
+	protected boolean originSpecified;
 
 
 	@Override
@@ -59,6 +67,18 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
     public void initAndValidate() {
         super.initAndValidate();
 
+		originSpecified = originInput.get() != null;
+
+//		if (originSpecified && !conditionOnSamplingInput.get() && !conditionOnRhoSamplingInput.get()) {
+//			throw new IllegalArgumentException("Either conditionOnSampling or conditionOnRhoSampling has to be set to \"true\" when an origin time is specified.");
+//		}
+		if (!originSpecified && (conditionOnSamplingInput.get() || conditionOnRhoSamplingInput.get())) {
+			throw new IllegalArgumentException("Cannot use conditionOnSampling or conditionOnRhoSampling without specifying an origin time.");
+		}
+		if (conditionOnSamplingInput.get() && conditionOnRhoSamplingInput.get()){
+			throw new IllegalArgumentException("Either set to \"true\" only one of conditionOnSampling and conditionOnRhoSampling inputs or don't specify both!");
+		}
+
        TreeInterface tree = treeInput.get();
         if (tree == null) {
             tree = treeIntervalsInput.get().treeInput.get();
@@ -68,44 +88,43 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
         nExtantTaxa = -1;
 
         // Ensure valid initial state
-        final int MAX_ATTEMPTS = 1000;
-		double lambda = this.getLambda();
-		double mu = this.getMu();
-		double psi = this.getPsi();
-		double rho = this.getRho();
+//        final int MAX_ATTEMPTS = 1000;
+//		double lambda = this.getLambda();
+//		double mu = this.getMu();
+//		double psi = this.getPsi();
+//		double rho = this.getRho();
 		//Log.warning("psi " + psi);
-		if (psi > 0 && (samplingProportionInput.get() instanceof RealParameter)) {
-            int attemptNr;
-            for (attemptNr = 0; attemptNr < MAX_ATTEMPTS; attemptNr++) {
-
-                double p = 0;
-                try {
-                    p = this.getBlueTreeLogPWithSampling((Tree) tree, lambda, mu, psi, rho);
-                    if (p == Double.NEGATIVE_INFINITY || p == Double.POSITIVE_INFINITY) throw new Exception();
-                } catch (Exception e) {
-                    double s = Randomizer.nextFloat();
-                    psi = s * mu / (1 - s);
-                    continue;
-                }
-
-                //Log.warning("nr " + attemptNr + " " + lambda + " " + mu + " " + psi + " p=" + p);
-                break;
-
-            }
-
-            if (attemptNr >= MAX_ATTEMPTS) {
-                throw new IllegalArgumentException("Cannot find valid initial state. Try tweaking lambda, mu, psi, and rho");
-            }
-
-            ((RealParameter) samplingProportionInput.get()).setValue(psi / (psi + mu));
-        }
+//		if (psi > 0 && (samplingProportionInput.get() instanceof RealParameter)) {
+//            int attemptNr;
+//            for (attemptNr = 0; attemptNr < MAX_ATTEMPTS; attemptNr++) {
+//
+//                double p = 0;
+//                try {
+//                    p = this.getBlueTreeLogPWithSampling((Tree) tree, lambda, mu, psi, rho);
+//                    if (p == Double.NEGATIVE_INFINITY || p == Double.POSITIVE_INFINITY) throw new Exception();
+//                } catch (Exception e) {
+//                    double s = Randomizer.nextFloat();
+//                    psi = s * mu / (1 - s);
+//                    continue;
+//                }
+//
+//                Log.warning("nr " + attemptNr + " " + lambda + " " + mu + " " + psi + " p=" + p);
+//                break;
+//
+//            }
+//
+//            if (attemptNr >= MAX_ATTEMPTS) {
+//                throw new IllegalArgumentException("Cannot find valid initial state. Try tweaking lambda, mu, psi, and rho");
+//            }
+//
+//            ((RealParameter) samplingProportionInput.get()).setValue(psi / (psi + mu));
+//        }
 
     }
 
 
 	@Override
     public double calculateTreeLogLikelihood(final TreeInterface treeInterface) {
-		double p = 0;
 		Tree tree = (Tree) treeInterface;
 		double lambda = this.getLambda();
 		double mu = this.getMu();
@@ -128,13 +147,13 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 				n++;
 			}
 		}
-
 		if (nExtantTaxa == -1) {
 			nExtantTaxa = n;
 		} else if (n != this.nExtantTaxa) {
 			return Double.NEGATIVE_INFINITY;
 		}
 
+		double logP = 0;
 		double blueLogP = 0; // Probability of observing tree T conditional on number of extant taxa n
 		double redLogP = 0; // Probability of observing B stubs at ages Z
 
@@ -147,17 +166,23 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 				if (Math.exp(psi) == Double.POSITIVE_INFINITY || Math.exp(-psi) == 0) {
 					return Double.NEGATIVE_INFINITY;
 				}
-				// Tree likelihood calculation when psi = 0 and rho = 1
-				if ((psi == 0) && (rho == 1)) {
-					blueLogP = getBlueTreeLogPWithoutSampling(tree, lambda, mu);
+				if (originSpecified) {
+					double x0 = origin();
+					blueLogP = getBlueTreeLogPConditionOnOrigin(tree, lambda, mu, psi, rho, x0);
 				}
-				// Tree likelihood calculation when psi = 0 and rho < 1
-				else if (psi == 0) {
-					blueLogP = getBlueTreeLogPWithoutSampling(tree, lambda, mu, rho);
-				}
-				// Tree likelihood calculation when psi > 0 and rho < 1
 				else {
-					blueLogP = getBlueTreeLogPWithSampling(tree, lambda, mu, psi, rho);
+					// Tree likelihood calculation when psi = 0 and rho = 1
+					if ((psi == 0) && (rho == 1)) {
+						blueLogP = getBlueTreeLogPWithoutSampling(tree, lambda, mu);
+					}
+					// Tree likelihood calculation when psi = 0 and rho < 1
+					else if (psi == 0) {
+						blueLogP = getBlueTreeLogPWithoutSampling(tree, lambda, mu, rho);
+					}
+					// Tree likelihood calculation when psi > 0 and rho < 1
+					else {
+						blueLogP = getBlueTreeLogPWithSampling(tree, lambda, mu, psi, rho);
+					}
 				}
 			}
 
@@ -220,13 +245,13 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 			Log.warning("Cannot initialise stumped tree prior because red p is negative infinity");
 		}
 
-		if (p == Double.POSITIVE_INFINITY) {
+		if (logP == Double.POSITIVE_INFINITY) {
 			return Double.NEGATIVE_INFINITY;
 		}
 
-		p = blueLogP + redLogP;
+		logP = blueLogP + redLogP;
 		initialising = false;
-		return p;
+		return logP;
 
     }
 
@@ -372,30 +397,77 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		return Math.log(lambda) + Math.log(1 - Math.exp(logQt)); // lambda * (1 - p0(t)) birth rate conditioned on survival to the present day
 	}
 
+	public double getBlueTreeLogPConditionOnOrigin(Tree tree, double lambda, double mu, double psi, double rho, double x0) {
+		double blueLogP;
+		int nodeCount = tree.getNodeCount();
+		double c1 = getC1(lambda, mu, psi);
+		double c2 = getC2(lambda, mu, psi, rho);
+
+		blueLogP = -Math.log(q(x0, c1, c2));
+		if (conditionOnSamplingInput.get()) {
+				blueLogP -= Math.log(1 - getP0(x0, lambda, mu, psi, c1, c2));
+		}
+		if (conditionOnRhoSamplingInput.get()) {
+				blueLogP -= Math.log(oneMinusP0Hat(x0, lambda, mu, rho));
+		}
+
+		int internalNodeCount = tree.getLeafNodeCount() - tree.getDirectAncestorNodeCount() - 1;
+
+		blueLogP += internalNodeCount*Math.log(2);
+
+		for (int i = 0; i < nodeCount; i++) {
+			if (tree.getNode(i).isLeaf()) {
+				if  (!tree.getNode(i).isDirectAncestor())  {
+					if (tree.getNode(i).getHeight() > 0.000000000005 || rho == 0.) {
+						blueLogP += Math.log(psi) + Math.log(q(tree.getNode(i).getHeight(), c1, c2)) + Math.log(getP0(tree.getNode(i).getHeight(), lambda, mu, psi, c1, c2));
+					} else {
+						blueLogP += Math.log(4*rho);
+					}
+				}
+			} else {
+				if (tree.getNode(i).isFake()) {
+					blueLogP += Math.log(psi); // removal probability assumed to be zero, log(1 - r) = 0
+				} else {
+					blueLogP += Math.log(lambda) - Math.log(q(tree.getNode(i).getHeight(), c1, c2));
+				}
+			}
+		}
+
+		return blueLogP;
+
+	}
+
+	protected double q(double t, double c1, double c2) {
+		return Math.exp(c1 * t) * (1 + c2) * (1 + c2) + Math.exp(-c1 * t) * (1 - c2) * (1 - c2) + 2 * (1 - c2 * c2);
+	}
+	protected double oneMinusP0Hat(double t, double lambda, double mu, double rho) {
+		return rho*(lambda-mu)/(lambda*rho + (lambda*(1-rho) - mu)* Math.exp((mu-lambda) * t)) ;
+	}
 
 	private double getC1(double lambda, double mu, double psi) {
-		return Math.sqrt(Math.abs(Math.pow(lambda - mu - psi, 2) + 4*lambda*psi));
+		return Math.sqrt(Math.abs(Math.pow(lambda - mu - psi, 2) + 4 * lambda * psi));
 	}
 
 	private double getC2(double lambda, double mu, double psi, double rho) {
-		double c1 = getC1(lambda, mu, psi);
-		return -(lambda-mu-2*lambda*rho-psi) / c1;
+//		double c1 = getC1(lambda, mu, psi);
+		return -(lambda - mu - 2 * lambda * rho - psi) / getC1(lambda, mu, psi);
 	}
 
 	// Equation 1 from
 	// Stadler, Tanja. "Sampling-through-time in birth–death trees." Journal of theoretical biology 267.3 (2010): 396-404.
-	private double getP0(double height, double lambda, double mu, double psi, double c1, double c2) throws Exception {
-		double a = lambda + mu + psi;
-		double exp = Math.exp(-c1*height)*(1-c2);
-		double b = 1+c2;
-		double top = a + c1*(exp - b)/(exp + b);
-		double bottom = 2*lambda;
-		double result = top/bottom;
-		if (Double.isNaN(result) || result <= 0) {
-			//Log.warning("c1=" + c1 + " c2=" + c2 + " lambda =" + lambda + " mu=" + mu + " psi=" + psi);
-			throw new Exception("Numerical error: p0 is non-positive " + top + "/" + bottom + "=" + result);
-		}
-		return result;
+	private double getP0(double height, double lambda, double mu, double psi, double c1, double c2) {
+		return (lambda + mu + psi - c1 * ((1 + c2) - Math.exp(-c1 * height) * (1 - c2)) / ((1 + c2) + Math.exp(-c1 * height) * (1 - c2))) / (2 * lambda);
+//		double a = lambda + mu + psi;
+//		double exp = Math.exp(-c1*height)*(1-c2);
+//		double b = 1+c2;
+//		double top = a + c1*(exp - b)/(exp + b);
+//		double bottom = 2*lambda;
+//		double result = top/bottom;
+//		if (Double.isNaN(result) || result <= 0) {
+//			Log.warning("c1=" + c1 + " c2=" + c2 + " lambda =" + lambda + " mu=" + mu + " psi=" + psi);
+//			throw new Exception("Numerical error: p0 is non-positive " + top + "/" + bottom + "=" + result);
+//		}
+//		return result;
 	}
 
 	// Equation 2 from
@@ -544,6 +616,10 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	}
 
 
+	private double origin() {
+		return originInput.get().getValue();
+	}
+
 	public double getLambda() {
 		if (this.lambdaInput.get() == null) {
 			double net = netDiversificationRateInput.get().getArrayValue();
@@ -556,7 +632,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 				double t = turnoverInput.get().getArrayValue();
 				return net / (1 - t);
 			}
-
 
 		} else {
 			return this.lambdaInput.get().getArrayValue();
@@ -600,7 +675,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		return (h0 - h1) * (lambda + mu + psi - c1) + 2 * Math.log(f);
 	}
 
-	// Fast calculation of the expected number of unobserved bifurcations on a branch between its origin time h0 and end time h1
+	// The expected number of unobserved bifurcations on a branch between its origin time h0 and end time h1
 	// when psi = 0 and rho = 1
 	private double getExpectedStubCountForBranch(double h1, double h0, double lambda, double mu) {
 		Tree tree = getTree();

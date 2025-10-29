@@ -1,0 +1,399 @@
+==> templates/rep100/rep100-47043851.out <==
+End likelihood: -209.32895972075795
+Done!
+
+==> templates/rep10/rep10-47043756.out <==
+       34400000     -1606.1363      1547.9        -1606.1363        79.2315      -675.0757      -763.9198      -246.3723            320            325            294         0.9457        60.5688         6.7653         1.4788         0.6641         0.4433 8m42s/Msamples
+slurmstepd: error: *** JOB 47043756 ON eu-g5-045-1 CANCELLED AT 2025-10-27T21:23:12 DUE TO TIME LIMIT ***
+
+==> templates/rep11/rep11-47043757.out <==
+End likelihood: -731.9637794824891
+Done!
+
+==> templates/rep12/rep12-47043758.out <==
+End likelihood: -452.8205772987996
+Done!
+
+==> templates/rep13/rep13-47043759.out <==
+End likelihood: -26.804482267702575
+Done!
+
+==> templates/rep14/rep14-47043760.out <==
+End likelihood: -513.1345503009425
+Done!
+
+==> templates/rep15/rep15-47043761.out <==
+End likelihood: -235.725129568427
+Done!
+
+==> templates/rep16/rep16-47043762.out <==
+End likelihood: -276.54426676223295
+Done!
+
+==> templates/rep17/rep17-47043763.out <==
+End likelihood: -243.94479584007365
+Done!
+
+==> templates/rep18/rep18-47043764.out <==
+End likelihood: -133.32040143972546
+Done!
+
+==> templates/rep19/rep19-47043765.out <==
+End likelihood: -1105.7943391387464
+Done!
+
+==> templates/rep1/rep1-47043746.out <==
+End likelihood: -263.7053567862601
+Done!
+
+==> templates/rep20/rep20-47043766.out <==
+End likelihood: -163.1925635538006
+Done!
+
+==> templates/rep21/rep21-47043767.out <==
+End likelihood: -115.55709527261897
+Done!
+
+==> templates/rep22/rep22-47043768.out <==
+End likelihood: -878.9465332469902
+Done!
+
+==> templates/rep23/rep23-47043769.out <==
+End likelihood: -245.121997757835
+Done!
+
+==> templates/rep24/rep24-47043771.out <==
+End likelihood: -229.21598504447252
+Done!
+
+==> templates/rep25/rep25-47043772.out <==
+End likelihood: -378.0992796723375
+Done!
+
+==> templates/rep26/rep26-47043773.out <==
+End likelihood: -82.80994276909401
+Done!
+
+==> templates/rep27/rep27-47043774.out <==
+End likelihood: -146.0958467622013
+Done!
+
+==> templates/rep28/rep28-47043775.out <==
+End likelihood: -596.5774503418456
+Done!
+
+==> templates/rep29/rep29-47043776.out <==
+End likelihood: -336.5755927152101
+Done!
+
+==> templates/rep2/rep2-47043747.out <==
+       45990000     -1324.6062      3503.0        -1324.6062       -22.7519      -478.1110      -564.7773      -258.9659            286            314            272         0.9791        50.2786         6.6983         0.5596         0.4789         0.2579 6m30s/Msamples
+slurmstepd: error: *** JOB 47043747 ON eu-g5-045-3 CANCELLED AT 2025-10-27T21:23:12 DUE TO TIME LIMIT ***
+
+==> templates/rep30/rep30-47043777.out <==
+End likelihood: -84.04552050491938
+Done!
+
+==> templates/rep31/rep31-47043778.out <==
+End likelihood: -1067.3557102013494
+Done!
+
+==> templates/rep32/rep32-47043779.out <==
+End likelihood: -408.1765600246203
+Done!
+
+==> templates/rep33/rep33-47043780.out <==
+End likelihood: -356.7846201834678
+Done!
+
+==> templates/rep34/rep34-47043781.out <==
+End likelihood: -80.90632169104384
+Done!
+
+==> templates/rep35/rep35-47043782.out <==
+End likelihood: -537.6318348865893
+Done!
+
+==> templates/rep36/rep36-47043783.out <==
+End likelihood: -55.404930024779375
+Done!
+
+==> templates/rep37/rep37-47043784.out <==
+End likelihood: -325.27730865875753
+Done!
+
+==> templates/rep38/rep38-47043785.out <==
+End likelihood: -876.8989340167934
+Done!
+
+==> templates/rep39/rep39-47043786.out <==
+End likelihood: -101.32016956131349
+Done!
+
+==> templates/rep3/rep3-47043748.out <==
+       49120000      -141.5168      1467.9         -141.5168       590.1656      -342.5793      -405.1754        16.0722            124            225            103         0.6798        39.6789         7.0475         0.4277         1.6297         0.6598 6m6s/Msamples
+slurmstepd: error: *** JOB 47043748 ON eu-g5-045-1 CANCELLED AT 2025-10-27T21:23:12 DUE TO TIME LIMIT ***
+
+==> templates/rep40/rep40-47043787.out <==
+End likelihood: -315.95192861091823
+Done!
+
+==> templates/rep41/rep41-47043788.out <==
+End likelihood: -154.45375019872802
+Done!
+
+==> templates/rep42/rep42-47043789.out <==
+End likelihood: -156.23445221473207
+Done!
+
+==> templates/rep43/rep43-47043790.out <==
+End likelihood: -129.50971713915015
+Done!
+
+==> templates/rep44/rep44-47043791.out <==
+End likelihood: -60.87983687531174
+Done!
+
+==> templates/rep45/rep45-47043792.out <==
+End likelihood: -376.11495046633814
+Done!
+
+==> templates/rep46/rep46-47043793.out <==
+End likelihood: -72.28634847174693
+Done!
+
+==> templates/rep47/rep47-47043794.out <==
+End likelihood: -105.8207088888139
+Done!
+
+==> templates/rep48/rep48-47043795.out <==
+End likelihood: -102.02028354532021
+Done!
+
+==> templates/rep49/rep49-47043796.out <==
+End likelihood: -55.7458465655032
+Done!
+
+==> templates/rep4/rep4-47043749.out <==
+End likelihood: -44.232173594205335
+Done!
+
+==> templates/rep50/rep50-47043797.out <==
+       40820000     -1953.5755      1598.4        -1953.5755      -282.3822      -715.6926      -787.5284      -167.9721            223            237            228         0.9308        63.0511         6.1226         1.0233         0.9142         0.5409 7m20s/Msamples
+slurmstepd: error: *** JOB 47043797 ON eu-g5-043-2 CANCELLED AT 2025-10-27T21:23:41 DUE TO TIME LIMIT ***
+
+==> templates/rep51/rep51-47043798.out <==
+End likelihood: -292.0450091515512
+Done!
+
+==> templates/rep52/rep52-47043800.out <==
+End likelihood: -235.08140544405467
+Done!
+
+==> templates/rep53/rep53-47043801.out <==
+End likelihood: -1114.0123762658286
+Done!
+
+==> templates/rep54/rep54-47043802.out <==
+End likelihood: -64.73806679425692
+Done!
+
+==> templates/rep55/rep55-47043803.out <==
+End likelihood: -554.7730589422763
+Done!
+
+==> templates/rep56/rep56-47043804.out <==
+End likelihood: -25.59334693093245
+Done!
+
+==> templates/rep57/rep57-47043805.out <==
+End likelihood: -1079.6330910295242
+Done!
+
+==> templates/rep58/rep58-47043806.out <==
+End likelihood: -551.9086123492598
+Done!
+
+==> templates/rep59/rep59-47043807.out <==
+End likelihood: -396.65780783413743
+Done!
+
+==> templates/rep5/rep5-47043750.out <==
+End likelihood: -439.9747192324199
+Done!
+
+==> templates/rep60/rep60-47043808.out <==
+End likelihood: -375.0057845906918
+Done!
+
+==> templates/rep61/rep61-47043809.out <==
+	at beastfx.app.beast.BeastMain.main(BeastMain.java:465)
+	at feast.app.FeastMain.main(FeastMain.java:92)
+
+==> templates/rep62/rep62-47043810.out <==
+End likelihood: -731.3810724191269
+Done!
+
+==> templates/rep63/rep63-47043811.out <==
+End likelihood: -908.017661924413
+Done!
+
+==> templates/rep64/rep64-47043812.out <==
+End likelihood: -186.36678570728907
+Done!
+
+==> templates/rep65/rep65-47043813.out <==
+End likelihood: -53.5892859076739
+Done!
+
+==> templates/rep66/rep66-47043814.out <==
+End likelihood: -298.65857916510106
+Done!
+
+==> templates/rep67/rep67-47043815.out <==
+End likelihood: -146.5486048418955
+Done!
+
+==> templates/rep68/rep68-47043816.out <==
+End likelihood: -721.5864731314981
+Done!
+
+==> templates/rep69/rep69-47043817.out <==
+End likelihood: -178.7086663740762
+Done!
+
+==> templates/rep6/rep6-47043751.out <==
+       27520000      -947.1920      1348.1         -947.1920       550.7052      -509.4874      -744.8987      -243.5110            338            337            346         0.9738        85.9674         6.0548         1.0625         0.1378         0.5153 10m53s/Msamples
+slurmstepd: error: *** JOB 47043751 ON eu-g5-045-1 CANCELLED AT 2025-10-27T21:23:12 DUE TO TIME LIMIT ***
+
+==> templates/rep70/rep70-47043818.out <==
+End likelihood: -43.40458093892316
+Done!
+
+==> templates/rep71/rep71-47043819.out <==
+End likelihood: -212.3496370313323
+Done!
+
+==> templates/rep72/rep72-47043820.out <==
+End likelihood: -244.78368890873475
+Done!
+
+==> templates/rep73/rep73-47043821.out <==
+End likelihood: -285.2686204893041
+Done!
+
+==> templates/rep74/rep74-47043822.out <==
+End likelihood: -35.28208922994625
+Done!
+
+==> templates/rep75/rep75-47043823.out <==
+End likelihood: -625.9503912967817
+Done!
+
+==> templates/rep76/rep76-47043824.out <==
+End likelihood: -80.98821563119148
+Done!
+
+==> templates/rep77/rep77-47043825.out <==
+End likelihood: -374.6355392067369
+Done!
+
+==> templates/rep78/rep78-47043826.out <==
+End likelihood: -75.34456397645155
+Done!
+
+==> templates/rep79/rep79-47043827.out <==
+End likelihood: -24.011028973837693
+Done!
+
+==> templates/rep7/rep7-47043752.out <==
+End likelihood: -455.0388992879736
+Done!
+
+==> templates/rep80/rep80-47043828.out <==
+End likelihood: -212.1671542231603
+Done!
+
+==> templates/rep81/rep81-47043829.out <==
+End likelihood: -50.64922614344112
+Done!
+
+==> templates/rep82/rep82-47043830.out <==
+End likelihood: -667.2787658830641
+Done!
+
+==> templates/rep83/rep83-47043832.out <==
+End likelihood: -117.81375305702946
+Done!
+
+==> templates/rep84/rep84-47043833.out <==
+End likelihood: -479.6366755160466
+Done!
+
+==> templates/rep85/rep85-47043834.out <==
+End likelihood: -45.683426372061206
+Done!
+
+==> templates/rep86/rep86-47043835.out <==
+End likelihood: -35.94602167175927
+Done!
+
+==> templates/rep87/rep87-47043836.out <==
+End likelihood: -185.89263869879676
+Done!
+
+==> templates/rep88/rep88-47043837.out <==
+End likelihood: -53.185558104749646
+Done!
+
+==> templates/rep89/rep89-47043838.out <==
+End likelihood: -48.360205228911695
+Done!
+
+==> templates/rep8/rep8-47043753.out <==
+End likelihood: -554.4260724937608
+Done!
+
+==> templates/rep90/rep90-47043840.out <==
+End likelihood: -574.8390264530622
+Done!
+
+==> templates/rep91/rep91-47043841.out <==
+End likelihood: -220.56415889045672
+Done!
+
+==> templates/rep92/rep92-47043842.out <==
+End likelihood: -337.12520896940487
+Done!
+
+==> templates/rep93/rep93-47043843.out <==
+End likelihood: -149.10476090822118
+Done!
+
+==> templates/rep94/rep94-47043844.out <==
+End likelihood: -95.48057714842682
+Done!
+
+==> templates/rep95/rep95-47043845.out <==
+End likelihood: -45.834600757841095
+Done!
+
+==> templates/rep96/rep96-47043846.out <==
+End likelihood: -148.9241798671294
+Done!
+
+==> templates/rep97/rep97-47043848.out <==
+End likelihood: -69.56037845188334
+Done!
+
+==> templates/rep98/rep98-47043849.out <==
+End likelihood: -138.41471943798626
+Done!
+
+==> templates/rep99/rep99-47043850.out <==
+End likelihood: -546.9968746920447
+Done!
+
+==> templates/rep9/rep9-47043754.out <==
+       43270000     -1121.7594      1624.5        -1121.7594       212.4234      -618.7314      -669.1503       -46.3011            122            196            134         0.9910        57.5096         5.8008         0.2231         1.0394         0.5809 6m55s/Msamples
+slurmstepd: error: *** JOB 47043754 ON eu-g5-045-1 CANCELLED AT 2025-10-27T21:23:12 DUE TO TIME LIMIT ***

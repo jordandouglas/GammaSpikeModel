@@ -77,7 +77,8 @@ public class BranchSpikePrior extends Distribution {
         	if (stubs == null || stubs.estimateStubs()) { // Either stubsInput is null or stubs are being estimated
         		
         		// Known value of stubs
-            	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr); // If stubsInput is null, nstubsOnBranch is zero; otherwise get the number of stubs on branch nodeNr
+				// If stubsInput is null, nstubsOnBranch is zero; otherwise get the number of stubs on branch nodeNr
+            	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr);
             	
             	// Number of spikes is nstubs + 1, unless the sibling is a sampled ancestor, in which case it is nstubs
             	Node node = treeInput.get().getNode(nodeNr);
@@ -209,8 +210,6 @@ public class BranchSpikePrior extends Distribution {
 		
 		return nstubs + 1;
 		
-		
-		
 	}
 	
 	@Override
@@ -232,27 +231,23 @@ public class BranchSpikePrior extends Distribution {
 	}
 
 	@Override
+	// Sample a new "spike" value for every node (or branch) in a tree
 	public void sample(State state, Random random) {
 		
 		if (treeInput.get() == null) {
 			throw new IllegalArgumentException("Please specify the tree");
 		}
 		
-		
-		
 		if (sampledFlag) return;
 		sampledFlag = true;
 
 		// Cause conditional parameters to be sampled
 		sampleConditions(state, random);
-		
-		
+
 		Tree tree = (Tree) treeInput.get();
 		int dimension = tree.getNodeCount();
 		spikesInput.get().setDimension(dimension);
 		//spikesInput.get().setValue(null);
-		
-	
 		
 	    // Check shape and scale are positive
         double shape = shapeInput.get().getValue();
@@ -267,12 +262,10 @@ public class BranchSpikePrior extends Distribution {
         Stubs stubs = stubsInput.get();
         for (int nodeNr = 0; nodeNr < spikesInput.get().getDimension(); nodeNr ++) {
         	
-        	
         	int nstubsOnBranch = 0;
         	if (nodeNr < nstubsInput.get().getDimension()) {
         		nstubsOnBranch = stubs == null ? nstubsInput.get().getNativeValue(nodeNr) : stubs.getNStubsOnBranch(nodeNr);
         	}
-        	
         	
         	Node node = treeInput.get().getNode(nodeNr);;
         	int nspikes = getNSpikes(node, nstubsOnBranch);
@@ -280,31 +273,23 @@ public class BranchSpikePrior extends Distribution {
         	if (nspikes == 0) {
         		double spikeOfBranch = 0;
         		spikesInput.get().setValue(nodeNr, spikeOfBranch);
-        	}
-        	
-        	else {
-        		
+        	} else {
         		double alphaBranch = shape * nspikes; // One spike for the branch, and one per stub
             	gamma = new GammaDistributionImpl(alphaBranch, scale);
-            	
             	try {
     				double spikeOfBranch = gamma.inverseCumulativeProbability(random.nextFloat());
     				spikesInput.get().setValue(nodeNr, spikeOfBranch);
-    				
     			} catch (MathException e) {
     				e.printStackTrace();
     				throw new IllegalArgumentException("Unexpected error when sampling from Gamma(" + shape + ", " + scale + ")");
     			}
         	}
-        	
-        	
-        	
+
         }
-		
-		
-		
-		
+
 	}
+
+
 	@Override
     protected boolean requiresRecalculation() {
         return super.requiresRecalculation() || 
@@ -319,30 +304,28 @@ public class BranchSpikePrior extends Distribution {
 	/**
 	 * Calculate cumulative probabilities of sampling a stub, conditional on the gamma distribution and tree prior (theta)
 	 * p(nstubs | spike size, theta) = p(spike size | nstubs, theta) x p (nstubs, theta) / p (spike size | theta)
-	 * @param h0
-	 * @param h1
+	 * @param mu (Poisson distribution mean)
+	 * @param nodeNr
 	 * @return
 	 */
-	// The method is used by sampleNStubsOnBranch to sample the number of stubs for a branch
+	// Calculates the cumulative posterior probability distribution for the number of "stubs" on a specific branch (nodeNr)
+	// "Given the spikeOfBranch value we observed, what is the probability that this branch has 0 stubs, ≤1 stub, ≤2 stubs, etc.?"
+	// The method is used by sampleNStubsOnBranch (in Stubs.java) to sample the number of stubs for a branch
 	public double[] getCumulativeProbs(double mu, int nodeNr) {
 		
 		List<Double> probs = new ArrayList<>();
 		
 		// Shape and scale of gamma
 		double shape = shapeInput.get().getValue();
-		double mean = 1; //meanInput.get().getValue();
-		if (shape <= 0 || mean <= 0) {
+		double mean = 1;
+		if (shape <= 0) {
 			throw new IllegalArgumentException("Cannot sample spikes because shape or mean are non-positive " + shape + "  " + mean);
 		}
 		double scale = mean / shape;
 		
-		// Spike size
+		// Non-weighted spike size (spike mean not taken into account)
 		double spikeOfBranch = spikesInput.get().getValue(nodeNr);
-		//if (meanGamma1Input.get()) {
-    		//scale = 1 / shape;
-    	//}
 
-		
 		int k = 0;
 		double poissonCumSum = 0;
 		
@@ -352,7 +335,7 @@ public class BranchSpikePrior extends Distribution {
 			double branchP = 0;
 			
 			// P(k observations) under a Poisson(mu)
-			double p = -mu + k*Math.log(mu);
+			double p = -mu + k * Math.log(mu);
 			for (int i = 2; i <= k; i ++) p += -Math.log(i);
 			double pReal = Math.exp(p);
 			
@@ -362,7 +345,7 @@ public class BranchSpikePrior extends Distribution {
 			// If the use-spike indicator is true
 			if (indicatorInput.get() != null && indicatorInput.get().getValue()) {
 			
-				gamma = new GammaDistributionImpl(alphaBranch, scale);
+				gamma = new GammaDistributionImpl(alphaBranch, scale); // Combined Gamma((k+1)⋅shape,scale) distribution.
 				double gammaLogP = gamma.logDensity(spikeOfBranch);
 				if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
 					if (poissonCumSum > 0) break;
@@ -371,9 +354,8 @@ public class BranchSpikePrior extends Distribution {
 					branchP += Math.exp(p + gammaLogP);
 				}
 				
-				//Log.warning(mu + ": k=" + k + " -> " + gammaLogP);
-				//Log.warning("" + Math.exp(p + gammaLogP));
 			// If the use-spike indicator is false or not provided
+			// It ignores the spikeOfBranch value completely and just uses the prior: branchP = P(K=k).
 			} else {
 				branchP += pReal;
 			}
