@@ -9,10 +9,8 @@ import beast.base.evolution.speciation.SpeciesTreeDistribution;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.evolution.tree.TreeInterface;
-import beast.base.evolution.tree.TreeUtils;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.inference.util.InputUtil;
-import beast.base.util.Randomizer;
 import gammaspike.tree.Stubs;
 
 
@@ -33,13 +31,15 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	public Input<Boolean> conditionOnRootInput = new Input<Boolean>("conditionOnRoot", "the tree " +
 			"likelihood is conditioned on the root height otherwise on the time of origin", false);
 
-	final public Input<Function> lambdaInput = new Input<>("lambda", "birth rate (lambda)");
-	final public Input<Function> netDiversificationRateInput = new Input<>("netDiversificationRate", "net diversification rate, lambda - mu", Input.Validate.XOR, lambdaInput);
+	final public Input<Function> lambdaInput = new Input<>("lambda", "Birth rate (lambda)", Validate.REQUIRED);
+	final public Input<Function> muInput = new Input<>("mu", "Death rate (mu)", Validate.REQUIRED);
+	final public Input<Function> psiInput = new Input<>("psi", "Sampling rate (psi)", Validate.REQUIRED);
 
-	final public Input<Function> r0Input = new Input<>("r0", "the ratio of birth (lambda) and death (mu) rates, lambda / mu");
-	final public Input<Function> turnoverInput = new Input<>("turnover", "the ratio of death (mu) and birth (lambda) rates, mu / lambda", Input.Validate.XOR, r0Input);
+	final public Input<Function> netDiversificationRateInput = new Input<>("netDiversificationRate", "net diversification rate, lambda - mu", Validate.XOR, lambdaInput);
+	final public Input<Function> turnoverInput = new Input<>("turnover", "the ratio of death (mu) and birth (lambda) rates, mu / lambda", Validate.XOR, muInput);
+	final public Input<Function> samplingProportionInput = new Input<>("samplingProportion", "sampling rate psi divided by (psi + mu)", Validate.XOR, psiInput);
 
-	final public Input<Function> samplingProportionInput = new Input<>("samplingProportion", "sampling rate psi divided by (psi + mu)", Input.Validate.OPTIONAL);
+//	final public Input<Function> r0Input = new Input<>("r0", "the ratio of birth (lambda) and death (mu) rates, lambda / mu");
 
 	final public Input<RealParameter> rhoInput = new Input<>("rho", "extant sampling probability (rho)", Validate.REQUIRED);
 
@@ -665,36 +665,52 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 
 	public double getLambda() {
 		if (this.lambdaInput.get() == null) {
-			double net = netDiversificationRateInput.get().getArrayValue();
+			double d = netDiversificationRateInput.get().getArrayValue();
+			double r = turnoverInput.get().getArrayValue();
+			return d / (1 - r);
 
 			// Calculate without calling getMu() or there will be a never ending loop
-			if (r0Input.get() != null) {
-				double r = r0Input.get().getArrayValue();
-				return net / (1 - 1/r);
-			} else {
-				double t = turnoverInput.get().getArrayValue();
-				return net / (1 - t);
-			}
+//			if (r0Input.get() != null) {
+//				double r = r0Input.get().getArrayValue();
+//				return net / (1 - 1/r);
+//			} else {
+//				double t = turnoverInput.get().getArrayValue();
+//				return net / (1 - t);
+//			}
 
 		} else {
 			return this.lambdaInput.get().getArrayValue();
 		}
 	}
 
-	public double getPsi() {
-		if (samplingProportionInput.get() == null) return 0.0;
-		double mu = this.getMu();
-		double samplingProportion = samplingProportionInput.get().getArrayValue();
-		return samplingProportion*mu / (1-samplingProportion);
+	public double getMu() {
+		if (this.muInput.get() == null) {
+			double lambda = this.getLambda();
+			double r = turnoverInput.get().getArrayValue();
+			return r * lambda;
+		} else {
+			return this.muInput.get().getArrayValue();
+		}
+//		double lambda = this.getLambda();
+//		if (r0Input.get() != null) {
+//			return lambda / r0Input.get().getArrayValue();
+//		} else {
+//			return turnoverInput.get().getArrayValue() * lambda;
+//		}
 	}
 
-	public double getMu() {
-		double lambda = this.getLambda();
-		if (r0Input.get() != null) {
-			return lambda / r0Input.get().getArrayValue();
+	public double getPsi() {
+		if (psiInput.get() == null) {
+			double mu = this.getMu();
+			double s = samplingProportionInput.get().getArrayValue();
+			return s * mu / (1 - s);
 		} else {
-			return turnoverInput.get().getArrayValue() * lambda;
+			return this.psiInput.get().getArrayValue();
 		}
+//		if (samplingProportionInput.get() == null) return 0.0;
+//		double mu = this.getMu();
+//		double samplingProportion = samplingProportionInput.get().getArrayValue();
+//		return samplingProportion*mu / (1-samplingProportion);
 	}
 
 	public double getRho() {
@@ -806,7 +822,9 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 
         return super.requiresRecalculation() ||
         		InputUtil.isDirty(lambdaInput) ||
-        		InputUtil.isDirty(r0Input) ||
+				InputUtil.isDirty(muInput) ||
+				InputUtil.isDirty(psiInput) ||
+//        		InputUtil.isDirty(r0Input) ||
         		InputUtil.isDirty(netDiversificationRateInput) ||
         		InputUtil.isDirty(turnoverInput) ||
         		InputUtil.isDirty(samplingProportionInput) ||
