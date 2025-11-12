@@ -78,9 +78,9 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 //		if (!originSpecified && (conditionOnSamplingInput.get() || conditionOnRhoSamplingInput.get())) {
 //			throw new IllegalArgumentException("Cannot use conditionOnSampling or conditionOnRhoSampling without specifying an origin time.");
 //		}
-		if (!originSpecified && !conditionOnRootInput.get()) {
-			throw new IllegalArgumentException("Specify origin or set conditionOnRoot input to \"true\"");
-		}
+//		if (!originSpecified && !conditionOnRootInput.get()) {
+//			throw new IllegalArgumentException("Specify origin or set conditionOnRoot input to \"true\"");
+//		}
 		if (originSpecified && conditionOnRootInput.get()) {
 			throw new RuntimeException("Remove origin or set conditionOnRoot input to \"false\"");
 		}

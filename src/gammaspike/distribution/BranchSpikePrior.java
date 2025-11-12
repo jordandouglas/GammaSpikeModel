@@ -303,7 +303,7 @@ public class BranchSpikePrior extends Distribution {
 	
 	/**
 	 * Calculate cumulative probabilities of sampling a stub, conditional on the gamma distribution and tree prior (theta)
-	 * p(nstubs | spike size, theta) = p(spike size | nstubs, theta) x p (nstubs, theta) / p (spike size | theta)
+	 * p(nstubs | spike size, theta) = p(spike size | nstubs, theta) x p (nstubs | theta) / p (spike size | theta)
 	 * @param mu (Poisson distribution mean)
 	 * @param nodeNr
 	 * @return
