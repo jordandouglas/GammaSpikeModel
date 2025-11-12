@@ -158,19 +158,6 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 			return Double.NEGATIVE_INFINITY;
 		}
 
-		// This distribution is conditional on the number of extant taxa n, so ensure the number does not change
-        int n = 0;
-		for (Node leaf : tree.getNodesAsArray()) {
-			if (leaf.isLeaf() && !leaf.isDirectAncestor() && leaf.getHeight() <= HEIGHT_THRESHOLD_OF_LEAF) {
-				n++;
-			}
-		}
-		if (nExtantTaxa == -1) {
-			nExtantTaxa = n;
-		} else if (n != this.nExtantTaxa) {
-			return Double.NEGATIVE_INFINITY;
-		}
-
 		double logP = 0;
 		double treeLogP = 0; // Probability of observing tree T conditional on number of extant taxa n
 		double stubLogP = 0; // Probability of observing B stubs at ages Z
@@ -193,6 +180,20 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 					treeLogP = getTreeLogPConditionOnOriginOrRoot(tree, lambda, mu, psi, rho, x0, x1);
 				}
 				else {
+
+					// This distribution is conditional on the number of extant taxa n, so ensure the number does not change
+					int n = 0;
+					for (Node leaf : tree.getNodesAsArray()) {
+						if (leaf.isLeaf() && !leaf.isDirectAncestor() && leaf.getHeight() <= HEIGHT_THRESHOLD_OF_LEAF) {
+							n++;
+						}
+					}
+					if (nExtantTaxa == -1) {
+						nExtantTaxa = n;
+					} else if (n != this.nExtantTaxa) {
+						return Double.NEGATIVE_INFINITY;
+					}
+
 					// Tree likelihood calculation when psi = 0 and rho = 1
 					if ((psi == 0) && (rho == 1)) {
 						treeLogP = getTreeLogPWithoutPsiSamplingCompleteRho(tree, lambda, mu);
@@ -515,7 +516,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	// Equation 2 from
 	// Stadler, Tanja. "Sampling-through-time in birth–death trees." Journal of theoretical biology 267.3 (2010): 396-404.
 	private double getP1(double height, double rho, double c1, double c2) throws Exception {
-		return (4 * rho) / 2 * (1 - c2 * c2) + Math.exp(-c1 * height) * (1 - c2) * (1 - c2) + Math.exp(c1 * height) * (1 + c2) * (1 + c2);
+		return (4 * rho) / (2 * (1 - c2 * c2) + Math.exp(-c1 * height) * (1 - c2) * (1 - c2) + Math.exp(c1 * height) * (1 + c2) * (1 + c2));
 //		double top = 4*rho;
 //		double bottom = 2*(1-c2*c2) + Math.exp(-c1*height)*(1-c2)*(1-c2) + Math.exp(c1*height)*(1+c2)*(1+c2);
 //		double result = top/bottom;
