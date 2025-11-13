@@ -245,7 +245,8 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		}
 
 	}
-	
+
+
 	public void setBranchSpikePrior(BranchSpikePrior prior) {
 		this.spikePrior = prior;
 	}
@@ -314,7 +315,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		
 	}
 
-	// getNStubs() and getNStubsOnBranch used when the number and/or placement of stubs is estimated
+	// getNStubs and getNStubsOnBranch used when the number and/or placement of stubs is estimated
 	public int getNStubs() {
 
 		switch (this.stubMode) {
@@ -378,12 +379,13 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		return nstubs;
 	}
 
+
+	// sampleNStubs and sampleNStubsOnBranch used when integrating over stubs
 	/**
 	 * Sample all nodes on the tree, for logging
 	 * @param sampleNr
 	 * @return
 	 */
-	// sampleNStubs used when integrating over stubs
 	public int sampleNStubs(long sampleNr) {
 		
 		if (this.estimateStubs()) return -1;
@@ -404,7 +406,6 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	 * @param sampleNr
 	 * @return
 	 */
-	// sampleNStubsOnBranch used when integrating over stubs
 	// Use a Poisson distribution to sample the number of stubs for a branch
 	public int sampleNStubsOnBranch(int nodeNr, long sampleNr) {
 		
@@ -685,14 +686,14 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	}
 
 
-	public boolean stubIsAncestral(int stubNr) {
-		if (!this.hasIndicatorLabels()) return true;
-		int indicator = this.getLabelIndicators().getValue(stubNr);
-		if (indicator == -1 || indicator == 0) {
-			return true;
-		}
-		return false;
-	}
+//	public boolean stubIsAncestral(int stubNr) {
+//		if (!this.hasIndicatorLabels()) return true;
+//		int indicator = this.getLabelIndicators().getValue(stubNr);
+//		if (indicator == -1 || indicator == 0) {
+//			return true;
+//		}
+//		return false;
+//	}
 
 
 	/**
@@ -735,15 +736,11 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	}
 
 
-	public boolean hasIndicators() {
-		return this.labelIndicatorInput.get() != null;
-	}
+//	public boolean hasIndicators() {
+//		return this.labelIndicatorInput.get() != null;
+//	}
 
 
-
-	
-	
-	
 	/**
 	 * Cache all branch lengths before a tree proposal
 	 * Call this before getLogJacobian()
@@ -759,8 +756,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		}
 		return cachedBranchLengths;
 	}
-	
-	
+
 	/**
 	 * Calculate Jacobian - make sure to call prepareJacobian before making a tree proposal
 	 * Applicable only if tree topolgy or lengths change, but stub parameters are not changed
@@ -801,9 +797,5 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		return this.stubExpectation.getMeanStubNumber(h0, h1);
 	}
 
-
-
-
-	
 
 }

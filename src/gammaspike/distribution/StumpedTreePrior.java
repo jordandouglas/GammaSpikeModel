@@ -821,16 +821,18 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 //			return true;
 //		}
 
-        return super.requiresRecalculation() ||
-        		InputUtil.isDirty(lambdaInput) ||
-				InputUtil.isDirty(muInput) ||
-				InputUtil.isDirty(psiInput) ||
+		return true;
+//        return super.requiresRecalculation() ||
+//        		InputUtil.isDirty(lambdaInput) ||
+//				InputUtil.isDirty(muInput) ||
+//				InputUtil.isDirty(psiInput) ||
 //        		InputUtil.isDirty(r0Input) ||
-        		InputUtil.isDirty(netDiversificationRateInput) ||
-        		InputUtil.isDirty(turnoverInput) ||
-        		InputUtil.isDirty(samplingProportionInput) ||
-				InputUtil.isDirty(rhoInput) ||
-        		InputUtil.isDirty(stubsInput);
+//        		InputUtil.isDirty(netDiversificationRateInput) ||
+//        		InputUtil.isDirty(turnoverInput) ||
+//        		InputUtil.isDirty(samplingProportionInput) ||
+//				InputUtil.isDirty(rhoInput) ||
+//        		InputUtil.isDirty(stubsInput) ||
+//				InputUtil.isDirty(originInput);
     }
 
 
