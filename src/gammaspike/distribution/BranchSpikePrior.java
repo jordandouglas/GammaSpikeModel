@@ -292,11 +292,12 @@ public class BranchSpikePrior extends Distribution {
 
 	@Override
     protected boolean requiresRecalculation() {
-        return super.requiresRecalculation() || 
-        		InputUtil.isDirty(stubsInput) || 
-        		InputUtil.isDirty(spikesInput) || 
-        		InputUtil.isDirty(shapeInput) || 
-        		InputUtil.isDirty(meanInput);
+		return true;
+//        return super.requiresRecalculation() ||
+//        		InputUtil.isDirty(stubsInput) ||
+//        		InputUtil.isDirty(spikesInput) ||
+//        		InputUtil.isDirty(shapeInput) ||
+//        		InputUtil.isDirty(meanInput);
     }
 
 	
