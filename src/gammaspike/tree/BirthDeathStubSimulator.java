@@ -1,5 +1,7 @@
 package gammaspike.tree;
 
+
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,36 +46,29 @@ public class BirthDeathStubSimulator extends YuleModel {
         fullTree = new Tree();
         reducedTree = new Tree();
 	}
-	
+
 	
 	/**
 	 * Sample the tree
 	 */
 	private void sampleTree(State state, Random random) {
 		
-		
-		// Standard Yule process
+		// If no r0 is provided, use the standard Yule process
 		if (r0Input.get() == null) {
         	super.sample(state, random);
         	return;
         }
-        
-		 
+
         // Get parameters and tree
         Tree tree = (Tree) treeInput.get();
         double birthRate = birthDiffRateParameterInput.get().getValue();
         double deathRate = birthRate / r0Input.get().getValue();
         double samplingProportion = samplingProportionInput.get().getValue();
-        double samplingRate = samplingProportion*deathRate / (1 - samplingProportion);
-        double pbirth = birthRate / (birthRate + deathRate);
-        
-        
+        double samplingRate = samplingProportion * deathRate / (1 - samplingProportion);
+        double probBirth = birthRate / (birthRate + deathRate);
 
-        
         while (true) {
         	
-        	
-            
             // Sample until we have ntaxa
             int targetN = ntaxaInput.get();
             Node root = new Node();
@@ -84,11 +79,9 @@ public class BirthDeathStubSimulator extends YuleModel {
             List<Node> allNodes = new ArrayList<>();
             livingLeaves.add(root);
             allNodes.add(root);
-	        
+
+
 	        while (livingLeaves.size() < targetN) {
-	        	
-	        	
-	        	
 	        	
 	        	// Extinct - try again
 	        	if (livingLeaves.isEmpty()) {
@@ -98,11 +91,8 @@ public class BirthDeathStubSimulator extends YuleModel {
 	        	
 	        	// Total rate
 	        	double rate = livingLeaves.size() * (birthRate + deathRate);
-	        	
-	        	
 	        	// Increment time
 	        	double dt = Randomizer.nextExponential(rate);
-	        	
 	        	
 	        	// Make sure all living leaves have the new time
 	        	for (Node leaf : livingLeaves) {
@@ -110,16 +100,15 @@ public class BirthDeathStubSimulator extends YuleModel {
 	        	}
 	        	
 	        	// Birth or death?
-	        	boolean birth = Randomizer.nextFloat() < pbirth;
-	        	if (birth) {
-	
+	        	boolean birth = Randomizer.nextFloat() < probBirth;
+	        	if (birth) { // Node splits into two children
+
 	        		// Add 2 new nodes
 	        		Node child1 = new Node();
 	        		Node child2 = new Node();
 	        		child1.setHeight(time + dt);
 	        		child2.setHeight(time + dt);
-	        		
-	        		
+
 	        		// Sample their parent
 	        		int parentNr = Randomizer.nextInt(livingLeaves.size());
 	        		Node parent = livingLeaves.get(parentNr);
@@ -133,11 +122,9 @@ public class BirthDeathStubSimulator extends YuleModel {
 	        		
 	        		allNodes.add(child1);
 	        		allNodes.add(child2);
-	        		
-	        		
-	        		
-	        	}else {
-	        		
+
+	        	} else { // Node dies
+
 	        		// Remove a node from leaf list
 	        		int deceasedNr = Randomizer.nextInt(livingLeaves.size());
 	        		Node deceased = livingLeaves.get(deceasedNr);
@@ -146,24 +133,19 @@ public class BirthDeathStubSimulator extends YuleModel {
 	        		
 	        	}
 	        	
-	        	
-	        	
 	        	time = time + dt;
-	        	
 	        	//Log.warning("time " + time + " dt " + dt);
 	        	
-	        	
 	        }
-	        
-	        
-	        // Try again
+
+
+	        // Restart the simulation if all lineages have gone extinct
 	        if (livingLeaves.isEmpty()) {
 	        	continue;
 	        }
-	        
 
-	        
-	        // Add a little more onto each leaf
+
+	        // Add a little more time onto each leaf node
 	        double rate = livingLeaves.size() * (birthRate + deathRate);
         	double dt = Randomizer.nextExponential(rate);
         	time += dt;
@@ -172,129 +154,85 @@ public class BirthDeathStubSimulator extends YuleModel {
 	        }
 	        
 	        
-	
 	        // Reverse time
 	        for (Node node : allNodes) {
 	        	node.setHeight(time - node.getHeight());
 	        }
 	        
-	        
-	
-	        // Number extant leaves 1-N
+
+	        // Number extant leaves
 	        int count = 0;
 	        for (Node node : livingLeaves) {
 	    		node.setNr(count);
 	    		//node.setID("taxon" + (count+1));
 	    		count ++;
 	        }
-	        
-	        // Number extinct leaves next
+	        // Number extinct leaves
 	        for (Node node : extinctLeaves) {
 	    		node.setNr(count);
 	    		//node.setID("taxon" + (count+1));
 	    		count ++;
 	        }
-	        
-	        
-	        // Internal nodes next
+	        // Number internal nodes
 	        for (Node node : allNodes) {
 	        	if (!node.isLeaf() && !node.isRoot()) {
 	        		node.setNr(count);
 	        		count ++;
 	        	}
 	        }
-	        
-	        
-	        // Root last
+	        // Number root node
 	        root.setNr(count);
 	        
 	        
-	        
-	        // If one of the two root children are extinct, try again
+			// Restart the simulation if one of the two root children has no sampled descendants
 	        if (allDescendantsAreUnsampled(root.getLeft()) || allDescendantsAreUnsampled(root.getRight())) {
 	        	//Log.warning("bad root");
 	        	continue;
 	        }
 	        
 	        
-	        
-	        // Add samples onto old part of tree
+			// Simulate sampling through time
 	        numberOfAncestralSamples = 0;
 	        this.sampleAncestralLineages(root, samplingRate);
 	        
 	        
-	        
-
 	        // Remove unsampled lineages
         	Tree prunedTree = this.removeStubs(root.copy());
         	
-        	
-        	 // Temp: set all sampled ancestors to standard extinct leaves
-//	        for (Node node : prunedTree.getNodesAsArray()) {
-//	        	if (node.isDirectAncestor()) {
-//	        		double h = node.getHeight();
-//	        		node.setHeight(h * 0.95);
-//	        	}
-//	        }
-	        
-        	
-        	
-        	//Log.warning("total nleaves after pruning unsampled lineages: " + prunedTree.getRoot().getLeafNodeCount());
-        	reducedTree.assignFrom(prunedTree);
+
+        	reducedTree.assignFrom(prunedTree); // reducedTree: Pruned tree with only sampled lineages
         	Tree newTree = new Tree(root);
-	        fullTree.assignFrom(newTree);
-	        
-	        
-	        
-	       
-	        
+	        fullTree.assignFrom(newTree); // fullTree: Tree with all sampled and unsampled nodes
 	        
 	        
 	        if (removeStubsInput.get()) {
-	        	
-	        	// Remove extinct lineages
+	        	// Remove unsampled lineages
 	        	tree.assignFrom(prunedTree);     
-	        	
-	        }else {
-	        	
-	        	// Keep extinct lineages
+	        } else {
+	        	// Keep unsampled lineages
 		        tree.assignFrom(newTree);
 	        }
 	        
-	        
-	        // New number of leaves
-	        int nleaves = tree.getLeafNodeCount();
 
-	        
-	        
-	        // Assign names
-	        //for (Node node : prunedTree.getRoot().getAllChildNodesAndSelf()) {
-	        	//if (node.isLeaf()) {
-	        		//node.setID("ataxon" + node.getNr());
-	        	//}
-	       // }
-	        
-
-	        
 	        // Stub counting
 	        if (stubsPerBranchInput.get() != null) {
 	        	stubsPerBranchInput.get().setDimension(prunedTree.getNodeCount());
 	        }
 	        numberOfStubsPerBranch = new int[prunedTree.getNodeCount()];
+			// Loop over each node in the pruned tree
 	        for (int i = 0; i < numberOfStubsPerBranch.length;  i++) {
-	        	
+				// Retrieves the stub count stored as metadata (NSTUBS_STR) and stores it in the array
 	        	int nstubs = (int)(prunedTree.getNode(i).getMetaData(NSTUBS_STR));
 	        	numberOfStubsPerBranch[i] = nstubs; 
 	        	if (stubsPerBranchInput.get() != null) {
 	        		stubsPerBranchInput.get().setValue(i, nstubs);
 	        	}
-	        	
-	        	
 	        }
 	        
 	        
 	        //Log.warning("Success." + tree);
 	        return;
+
         }
         
 	}
@@ -302,105 +240,86 @@ public class BirthDeathStubSimulator extends YuleModel {
 	
 	/**
 	 * Add sampled ancestors onto branches (i.e., leaves with branch length 0)
+	 * If sampled ancestors have no sampled descendants, they become sampled tips through time
 	 * @param node
 	 * @param samplingRate
 	 */
 	private void sampleAncestralLineages(Node node, double samplingRate) {
-		
-		
+
+		// If the sampling rate is 0 or negative, do nothing (i.e., no ancestral samples).
 		if (samplingRate <= 0) return;
-		
-		// Take the children now before they change
+
+		// Save the children of the current node before the tree structure is modified
 		Node leftChild = null, rightChild = null;
 		if (!node.isLeaf()) {
 			leftChild = node.getChild(0);
 			rightChild = node.getChild(1);
 		}
-		
-		
+
+		// Sample along branch
 		if (!node.isRoot()) {
 			
-			// How many samples on this branch?
-			double length = node.getLength();
-			double height = node.getHeight();
-			double poissonRate = length*samplingRate;
-			int numberOfSamples = (int)Randomizer.nextPoisson(poissonRate);
-			
-			
-			
+			// Calculate number of ancestral samples
+			double length = node.getLength(); // Branch length
+			double height = node.getHeight(); // Node height
+			double poissonRate = length * samplingRate;
+			int numberOfSamples = (int)Randomizer.nextPoisson(poissonRate); // Ancestor sampling is Poisson-distributed along the branch
 			
 			numberOfAncestralSamples += numberOfSamples;
-			//Log.warning("Adding " + numberOfSamples + " samples ");
+
 			if (numberOfSamples > 0) {
-				
-				
-				// Sample times
+
+				// Sample each sampled ancestor at a random time along the branch
 				List<Double> timesOfSamples = new ArrayList<>();
 				for (int i = 0; i < numberOfSamples; i++) {
-					double time = Randomizer.nextDouble()*length + height;
+					double time = Randomizer.nextDouble() * length + height;
 					timesOfSamples.add(time);
 				}
 				Collections.sort(timesOfSamples);
 				
-				// Create new node - going up the branch from young to old
+				// Insert a new sampled ancestor at each sampled time
 				for (int i = 0; i < numberOfSamples; i++) {
-					
-					
 					double time = timesOfSamples.get(i);
 					
 					if (time < node.getHeight()) {
 						throw new IllegalArgumentException("Dev error 3535: negative branch length detected");
 					}
 					
-					// Make leaf
+					// Create a new leaf node at the sampled time
 					Node sampledLeaf = new Node();
 					sampledLeaf.setHeight(time);
 					
-
-					
-					// Make new internal node
+					// Create a new internal node at the sampled time, act as a branching point between the sampled leaf and the tree
 					Node internal = new Node();
 					internal.setHeight(time);
 					internal.addChild(sampledLeaf);
-					
-					
-					// Add to the branch
-					Node parent = node.getParent();
-					//Log.warning("nleaves before " + parent.getLeafNodeCount() + " time " + time);
-					
-					
-					// Set parent
-					parent.removeChild(node);
+
+					// Insert the sampled ancestor to the tree
+					Node parent = node.getParent(); // Get the parent node of the current node
+					parent.removeChild(node); // Temporarily detach the current node
 					node.setParent(null);
-					internal.addChild(node);
-					parent.addChild(internal);
-					node = internal;
-					//Log.warning("nleaves after " + parent.getLeafNodeCount());
-					
+					internal.addChild(node); // Make the current node a child of the internal node
+					parent.addChild(internal); // Make the internal node a child of the original parent node: parent → internal → node
+					node = internal; // Reassign node to the new internal node
+
 					if (node.getLength() < 0) {
 						throw new IllegalArgumentException("Dev error 3536: negative branch length detected");
 					}
 					
-					
 				}
 				
-				
-				
 			}
-			
-			
+
 		}
-		
-		
+
+		// Recursively applies the same sampling process down both subtrees.
 		if (leftChild != null) {
 			sampleAncestralLineages(leftChild, samplingRate);
 			sampleAncestralLineages(rightChild, samplingRate);
 		}
-		
-		
+
+		// Renumber nodes
 		if (node.isRoot()) {
-			
-			// Renumber
 			int nodeNr = 0;
 			for (Node leaf : node.getAllLeafNodes()) {
 				leaf.setNr(nodeNr);
@@ -412,11 +331,7 @@ public class BirthDeathStubSimulator extends YuleModel {
 				nodeNr++;
 			}
 			node.setNr(nodeNr);
-			
 		}
-		
-		
-		
 		
 	}
 	
@@ -424,31 +339,30 @@ public class BirthDeathStubSimulator extends YuleModel {
 	// Create a new tree with stubs removed
 	private Tree removeStubs(Node root) {
 		
-		//System.out.println("nc1=" + root.getNodeCount());
-		// Set the root such that both children are extant
+		// Set the root such that both child nodes are extant/have sampled descendants
 		while (true) {
 			
 			if (root.isLeaf()) break;
 		
 			Node left = root.getChild(0);
 			Node right = root.getChild(1);
+			// Throws an error if both child branches are unsampled
 			if (allDescendantsAreUnsampled(left) && allDescendantsAreUnsampled(right)) {
 				throw new IllegalArgumentException("Unexpected error: all children are extinct");
 			}
-			
 			if (allDescendantsAreUnsampled(left)) {
 				root = right;
-			}else if (allDescendantsAreUnsampled(right)) {
+			} else if (allDescendantsAreUnsampled(right)) {
 				root = left;
-			}else {
+			} else {
 				break;
 			}
-		
+
 		}
+
 		root.setParent(null);
-		//System.out.println("nc2=" + root.getNodeCount());
 		removeStubsRecursive(root, 0);
-		
+
 		// Renumber
 		int nodeNr = 0;
 		for (Node leaf : root.getAllLeafNodes()) {
@@ -461,11 +375,13 @@ public class BirthDeathStubSimulator extends YuleModel {
 			nodeNr++;
 		}
 		root.setNr(nodeNr);
-		
+
 		Tree reducedTree = new Tree(root);
 		return reducedTree;
+
 	}
-	
+
+
 	public void removeStubsRecursive(Node node, int nStubsOnBranch) {
 		
 		if (node.isLeaf()) {
@@ -476,58 +392,79 @@ public class BirthDeathStubSimulator extends YuleModel {
 		Node parent = node.getParent();
 		Node left = node.getChild(0);
 		Node right = node.getChild(1);
-		
-		
-		// Should never happen by the design of this recursion
+
+		// Throws an error if both child branches have no sampled descendant
 		if (allDescendantsAreUnsampled(left) && allDescendantsAreUnsampled(right)) {
 			throw new IllegalArgumentException("Unexpected error: all children are extinct");
 		}
-		
-		
-		// Append the right child to this parent, and remove this node
+		// If left child has no sampled descendant
 		if (allDescendantsAreUnsampled(left)) {
 			parent.removeChild(node);
 			node.setParent(null);
-			parent.addChild(right);
+			parent.addChild(right); // Replace with the sampled right child
 			removeStubsRecursive(right, nStubsOnBranch+1);
 		}
-		
-		// Append the left child to this parent, and remove this node
+		// If right child has no sampled descendant
 		else if (allDescendantsAreUnsampled(right)) {
 			parent.removeChild(node);
 			node.setParent(null);
-			parent.addChild(left);
+			parent.addChild(left); // Replace with the sampled left child
 			removeStubsRecursive(left, nStubsOnBranch+1);
 		}
-		
-		
-		// Recurse along both children
+		// If neither child is unsampled, store the number of stubs, recurse down both children
 		else {
-			
 			node.setMetaData(NSTUBS_STR, nStubsOnBranch);
 			removeStubsRecursive(left, 0);
 			removeStubsRecursive(right, 0);
 		}
-		
+
 	}
+
+
+	/**
+	 * A node is unsampled if
+	 * a) it is not extant (height > 0), and
+	 * b) it has branch length > 0
+	 * or, c) all children are extinct without samples
+	 * @param node
+	 * @return
+	 */
+	private boolean allDescendantsAreUnsampled(Node node) {
+
+		if (node.isLeaf()) {
+			if (node.getHeight() > 0 && node.getLength() > 1e-16) return true;
+			return false;
+		}
+
+		boolean allChildrenExtinct = true;
+		// Loop over all children
+		for (Node child : node.getChildren()) {
+			// If any child has sampled descendants
+			if (!allDescendantsAreUnsampled(child)){
+				allChildrenExtinct = false;
+				break;
+			}
+		}
+		return allChildrenExtinct;
+
+	}
+
 
 
 	@Override
     public void sample(State state, Random random) {
 
         if (sampledFlag) return;
-        
-        
+
         // Sample the tree
         sampleConditions(state, random);
         sampleTree(state, random);
         sampledFlag = true;
-       
-        
+
 	}
-	
-	
-	
+
+
+
 	@Override
     public void init(final PrintStream out) {
 		out.print("nancestors\t");
@@ -539,24 +476,21 @@ public class BirthDeathStubSimulator extends YuleModel {
 
     @Override
     public void log(final long sample, final PrintStream out) {
-    	
+
     	// Number of ancestral samples
     	out.print(numberOfAncestralSamples + "\t");
-        
+
         // Number of stubs
         out.print(getNstubs() + "\t");
 
-        
         // Number of bursts per branch
         for (int i = 0; i < ntaxaInput.get()*2-1; i ++) {
         	out.print(numberOfStubsPerBranch[i] + "\t");
         }
-        
+
     }
-    
-    
+
     public int getNstubs() {
-    	
     	Tree tree = fullTree;
     	Node root = tree.getRoot();
     	if (!countOriginStubsInput.get()) {
@@ -566,91 +500,51 @@ public class BirthDeathStubSimulator extends YuleModel {
 		return nstubs;
 	}
 
-    
-    
     /**
      * Find the oldest node in the tree such that both child lineages are non-extinct
      * @param node
      * @return
      */
     private Node getEmpiricalRoot(Node node) {
-    	
-    	
+
     	if (node.isLeaf()) return node;
-    	
+
     	Node left = node.getChild(0);
 		Node right = node.getChild(1);
-		
-		
+
 		// Found the root
 		if (!allDescendantsAreUnsampled(left) && !allDescendantsAreUnsampled(right)) {
 			return node;
 		}
-		
-		
 		// Left is extinct, so root is on right side
 		if (allDescendantsAreUnsampled(left)) {
 			return getEmpiricalRoot(right);
 		}
-		
 		// Right is extinct, so root is on left side
 		else if (allDescendantsAreUnsampled(right)) {
 			return getEmpiricalRoot(left);
 		}
-		
-		
+
 		throw new IllegalArgumentException("Unexpected error: all children are extinct");
-    	
-    	
+
     }
 
 	private int countStubs(Node node, int nstubs) {
-		
-		
+
 		if (allDescendantsAreUnsampled(node)) {
 			return nstubs + 1;
 		}
-		
 		if (node.isLeaf()) {
 			return nstubs;
 		}
-		
-		
 		for (Node child : node.getChildren()) {
 			nstubs = countStubs(child, nstubs);
 		}
-		
-		
+
 		return nstubs;
+
 	}
 
-
-	
-	/**
-	 * A node is unsampled if a) it is not extant (height>0), and b) it has branch length > 0 
-	 * @param node
-	 * @return
-	 */
-	private boolean allDescendantsAreUnsampled(Node node) {
-		
-		
-		if (node.isLeaf()) {
-			if (node.getHeight() > 0 && node.getLength() > 1e-16) return true;
-			return false;
-		}
-		
-		
-		boolean allChildrenExtinct = true;
-		for (Node child : node.getChildren()) {
-			if (!allDescendantsAreUnsampled(child)){
-				allChildrenExtinct = false;
-				break;
-			}
-		}
-		
-		return allChildrenExtinct;
-		
-	}
 
 
 	@Override
@@ -666,6 +560,3 @@ public class BirthDeathStubSimulator extends YuleModel {
 	
 
 }
-
-
-

@@ -18,7 +18,7 @@ import beast.base.util.Randomizer;
 public class SpikeAndSampledAncestorNeighbourJump extends TreeOperator {
 
 	final public Input<RealParameter> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
-	final public Input<Double> spikeMeanInput = new Input<>("spikeMean", "mean of the exponential distribuution for making spikes.", 0.001); 
+	final public Input<Double> spikeMeanInput = new Input<>("spikeMean", "mean of the exponential distribution for making spikes.", 0.001);
 	
 	
     @Override
@@ -35,7 +35,7 @@ public class SpikeAndSampledAncestorNeighbourJump extends TreeOperator {
         int leafNodeCount = tree.getLeafNodeCount();
 
         
-        // What leaf
+        // Randomly select a leaf node
         Node leaf = tree.getNode(Randomizer.nextInt(leafNodeCount));
         Node parent = leaf.getParent();
         

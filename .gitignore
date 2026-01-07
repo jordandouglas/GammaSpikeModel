@@ -3,3 +3,5 @@
 /release/
 .classpath
 .project
+.DS_Store
+*.iml
