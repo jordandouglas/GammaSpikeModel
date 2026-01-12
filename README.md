@@ -58,12 +58,12 @@ This package requires BEAST 2.7.7. or newer.
 - `Birth Death Model With Stubs` (BDWS) is the standard birth-death model when tip dates are not used. Parameters:
     - Birth rate `BDWSBirthRate` .
     - Reproduction number `BDWSReproductionNumber`, which is assumed to be greater than 1.
-    - Rho: the proportion of extant taxa that have been sampled (default 1). Note that this term is fixed and is not estimated during MCMC.
+    - Rho `BDWSRho`, the proportion of extant taxa that have been sampled (by default this is fixed to 1, but it can be estimated).
 - `Fossilised Birth Death Model With Stubs` (FBDWS) is the [fossilised birth-death](https://www.beast2.org/divergence-dating-with-sampled-ancestors-fbd-model/) tree prior with serially sampled tip dates, sampled ancestors estimated, and the following parameters
 	- Birth rate `FBDWSBirthRate` .
 	- Reproduction number `FBDWSReproductionNumber`, which is assumed to be greater than 1. 
 	- Sampling proportion `FBDWSsamplingProportion`.
-	- Rho: the proportion of extant taxa that have been sampled (default 1). Note that this term is fixed and is not estimated during MCMC.
+	- Rho `FBDWSRho`, the proportion of extant taxa that have been sampled (by default this is fixed to 1, but it can be estimated).
    
 By using one of these priors, the number of stubs on each branch will be logged and inform the clock model spike sizes. If a stumped tree prior is not selected, the clock model will assume there are no stubs on any branch. Currently, stubs are only available for these two tree priors (and not coalescent or skyline for instance).
 
@@ -147,11 +147,6 @@ The `examples` directory contains:
 - `nrStubs.xml`: number of stubs on each lineage is estimated using MCMC, but their times are integrated out.
 - `stochasticStubs.xml`: the number of stubs on each lineage is sampled at the time of logging during MCMC, i.e., not as part of the state. This is the default setting, but less versatile than the other two. This is the fastest at mixing. Limitation: note that the number of stubs per-lineage is sampled at the time of logging. The number of stubs reported by the tree logger might not sum to the same value of `nstubs` reported by the trace logger. Both of these numbers are valid, but as the algorithm is stochastic, they will not be the same.
 
-
-
-## Rho-sampling
-
-rho is the proportion of extant taxa that have been included in the sample. In BEAUti, this term defaults to 1.0 (which can be changed in the ```Priors``` tab), and the term is fixed to this value during MCMC. Estimating this term currently requires editing the XML file.
 
 
 ## Origin

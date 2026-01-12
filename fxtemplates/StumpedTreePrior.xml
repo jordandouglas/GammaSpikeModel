@@ -50,6 +50,7 @@
             
             	<parameter id="BDWSBirthRate.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
             	<parameter id="BDWSReproductionNumber.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
+               <parameter id="BDWSRho.t:$(n)" name="stateNode" estimate="false" spec="parameter.RealParameter" lower="0" upper="1">1.0</parameter> 
 
                  <distribution id="BDWSstubs.t:$(n)" spec="gammaspike.tree.Stubs" tree="@Tree.t:$(n)" prior="@BirthDeathModelWithStubs.t:$(n)"/>
                  
@@ -57,8 +58,9 @@
                  	r0="@BDWSReproductionNumber.t:$(n)" 
                  	lambda="@BDWSBirthRate.t:$(n)" 
                  	ignoreTreePrior="false" 
-                 	tree="@Tree.t:$(n)">
-                     <rho id="BDWSRho.t:$(n)" spec="parameter.RealParameter" lower="0" upper="1">1.0</rho> 
+                 	tree="@Tree.t:$(n)"
+                  rho="@BDWSRho.t:$(n)">
+                    
                  </distribution>
                 
                  <prior id="BDWSBirthRatePrior.t:$(n)" name="distribution" x="@BDWSBirthRate.t:$(n)">
@@ -67,12 +69,20 @@
 
                  <prior id="BDWSReproductionNumberPrior.t:$(n)" name="distribution" x="@BDWSReproductionNumber.t:$(n)">
                     <Exponential name="distr" mean="5" offset="1"/>
+                 </prior>
+
+                 <prior id="BDWSRhoPrior.t:$(n)" name="distribution" x="@BDWSRho.t:$(n)">
+                    <Uniform name="distr" lower="0" upper="1"/>
                  </prior> 
 
                  
 		        <!-- Tree prior operators -->
         		<operator id="BDWSbirthRateScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@BDWSBirthRate.t:$(n)" scaleFactor="0.1" weight="1"/>
 		        <operator id="BDWSReproductionNumberScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@BDWSReproductionNumber.t:$(n)" scaleFactor="0.1" weight="1"/>
+              <operator id="BDWSRhoIntervalOperator.t:$(n)" spec="beast.base.inference.operator.kernel.BactrianIntervalOperator" parameter="@BDWSRho.t:$(n)" scaleFactor="0.1" weight="1"/>
+              <operator id="BDWSRhoUniformOperator.t:$(n)" spec="UniformOperator" parameter="@BDWSRho.t:$(n)" weight="1"/>
+
+              
 
 				<operator id="BDWSAVMNTreePrior.t:$(n)" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
             		<transformations id="BDWSAVMNTreePriorLog.t:$(n)" spec="operator.kernel.Transform$LogTransform">
@@ -89,7 +99,8 @@
                      if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSBirthRate.t:$(n)/estimate=true'/>
             <connect srcID='BDWSReproductionNumber.t:$(n)' targetID='state' inputName='stateNode'
                      if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSReproductionNumber.t:$(n)/estimate=true'/>
-         
+             <connect srcID='BDWSRho.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSRho.t:$(n)/estimate=true'/>
 
             <connect srcID='BDWSBirthRatePrior.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSBirthRate.t:$(n)/estimate=true'>Stumped tree prior birth rate of partition t:$(n)
@@ -97,11 +108,15 @@
             <connect srcID='BDWSReproductionNumberPrior.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSReproductionNumber.t:$(n)/estimate=true'>Stumped tree prior ReproductionNumber of partition t:$(n)
             </connect>
+            <connect srcID='BDWSRhoPrior.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSRho.t:$(n)/estimate=true'>Stumped tree prior rho sampling probability of partition t:$(n)
+            </connect>
            
             
 			<connect srcID='BirthDeathModelWithStubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(BirthDeathModelWithStubs.t:$(n))'/>
             <connect srcID='BDWSBirthRate.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSBirthRate.t:$(n)/estimate=true'/>
             <connect srcID='BDWSReproductionNumber.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSReproductionNumber.t:$(n)/estimate=true'/>
+            <connect srcID='BDWSRho.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSRho.t:$(n)/estimate=true'/>
             
 
             <connect srcID='BDWSstubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(BirthDeathModelWithStubs.t:$(n))'/>
@@ -123,6 +138,16 @@
             		if='inposterior(BirthDeathModelWithStubs.t:$(n))'>
                      AVMN for parameters of stumped tree prior of partition t:$(n)
             </connect>
+            <connect srcID='BDWSRhoIntervalOperator.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSRho.t:$(n)/estimate=true'>
+                     Interval operator of rho of stumped tree prior of partition t:$(n)
+            </connect>
+            <connect srcID='BDWSRhoUniformOperator.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSRho.t:$(n)/estimate=true'>
+                     Uniform operator of rho of stumped tree prior of partition t:$(n)
+            </connect>
+
+            
         </subtemplate>
 
 
@@ -172,6 +197,7 @@
                <parameter id="FBDWSBirthRate.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
                <parameter id="FBDWSReproductionNumber.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
                <parameter id="FBDWSsamplingProportion.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.02</parameter>
+               <parameter id="FBDWSRho.t:$(n)" name="stateNode" estimate="false" spec="parameter.RealParameter" lower="0" upper="1">1.0</parameter> 
 
                  <distribution id="FBDWSstubs.t:$(n)" spec="gammaspike.tree.Stubs" tree="@Tree.t:$(n)" prior="@FossilisedBirthDeathModelWithStubs.t:$(n)"/>
                  
@@ -180,8 +206,8 @@
                   lambda="@FBDWSBirthRate.t:$(n)" 
                   ignoreTreePrior="false" 
                   samplingProportion="@FBDWSsamplingProportion.t:$(n)"
+                  rho="@FBDWSRho.t:$(n)"
                   tree="@Tree.t:$(n)">
-                     <rho id="FBDWSRho.t:$(n)" spec="parameter.RealParameter" lower="0" upper="1">1.0</rho>  
                  </distribution>
                 
                  <prior id="FBDWSBirthRatePrior.t:$(n)" name="distribution" x="@FBDWSBirthRate.t:$(n)">
@@ -195,6 +221,10 @@
                  <prior id="FBDWSsamplingProportionPrior.t:$(n)" name="distribution" x="@FBDWSsamplingProportion.t:$(n)">
                     <Beta name="distr" alpha="1" beta="5"/>
                  </prior>
+
+                 <prior id="FBDWSRhoPrior.t:$(n)" name="distribution" x="@FBDWSRho.t:$(n)">
+                    <Uniform name="distr" lower="0" upper="1"/>
+                 </prior> 
 
 
           <log id="FBDWSsampledAncestorCount.t:$(n)" spec="sa.evolution.tree.SampledAncestorLogger" tree="@Tree.t:$(n)"/>
@@ -222,6 +252,9 @@
               <operator id="FBDWSReproductionNumberScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@FBDWSReproductionNumber.t:$(n)" scaleFactor="0.1" weight="1"/>
               <operator id="FBDWSsamplingProportionScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@FBDWSsamplingProportion.t:$(n)" scaleFactor="0.1" weight="0.5"/>
 
+              <operator id="FBDWSRhoIntervalOperator.t:$(n)" spec="beast.base.inference.operator.kernel.BactrianIntervalOperator" parameter="@FBDWSRho.t:$(n)" scaleFactor="0.1" weight="1"/>
+              <operator id="FBDWSRhoUniformOperator.t:$(n)" spec="UniformOperator" parameter="@FBDWSRho.t:$(n)" weight="1"/>
+
             <operator id="FBDWSAVMNTreePrior.t:$(n)" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
                   <transformations id="FBDWSAVMNTreePriorLog.t:$(n)" spec="operator.kernel.Transform$LogTransform">
                   <f idref="FBDWSBirthRate.t:$(n)"/>
@@ -242,6 +275,8 @@
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSReproductionNumber.t:$(n)/estimate=true'/>
             <connect srcID='FBDWSsamplingProportion.t:$(n)' targetID='state' inputName='stateNode'
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'/>
+            <connect srcID='FBDWSRho.t:$(n)' targetID='state' inputName='stateNode'
+                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSRho.t:$(n)/estimate=true'/>
 
             <connect srcID='FBDWSBirthRatePrior.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSBirthRate.t:$(n)/estimate=true'>Stumped tree prior birth rate of partition t:$(n)
@@ -252,6 +287,9 @@
             <connect srcID='FBDWSsamplingProportionPrior.t:$(n)' targetID='prior' inputName='distribution'
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'>Stumped tree prior sampling proportion of partition t:$(n)
             </connect>
+            <connect srcID='FBDWSRhoPrior.t:$(n)' targetID='prior' inputName='distribution'
+                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSRho.t:$(n)/estimate=true'>Stumped tree prior rho sampling probability of partition t:$(n)
+            </connect>
             
 
 
@@ -260,6 +298,9 @@
             <connect srcID='FBDWSBirthRate.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSBirthRate.t:$(n)/estimate=true'/>
             <connect srcID='FBDWSReproductionNumber.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSReproductionNumber.t:$(n)/estimate=true'/>
             <connect srcID='FBDWSsamplingProportion.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'/>
+            <connect srcID='FBDWSRho.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSRho.t:$(n)/estimate=true'/>
+
+
 
             <connect srcID='FBDWSstubs.t:$(n)' targetID='tracelog' inputName='log' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
             <connect srcID='FBDWSstubs.t:$(n)' targetID='TreeWithMetaDataLogger.t:$(n)' inputName='metadata' if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'/>
@@ -287,6 +328,15 @@
             <connect srcID='FBDWSAVMNTreePrior.t:$(n)' targetID='mcmc' inputName='operator' 
                   if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'>
                      AVMN for parameters of stumped tree prior of partition t:$(n)
+            </connect>
+
+            <connect srcID='FBDWSRhoIntervalOperator.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSRho.t:$(n)/estimate=true'>
+                     Interval operator of rho of stumped tree prior of partition t:$(n)
+            </connect>
+            <connect srcID='FBDWSRhoUniformOperator.t:$(n)' targetID='mcmc' inputName='operator'
+                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSRho.t:$(n)/estimate=true'>
+                     Uniform operator of rho of stumped tree prior of partition t:$(n)
             </connect>
 
 
