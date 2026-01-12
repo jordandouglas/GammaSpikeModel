@@ -32,16 +32,16 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 			"likelihood is conditioned on the root height otherwise on the time of origin", false);
 
 	final public Input<Function> lambdaInput = new Input<>("lambda", "Birth rate (lambda)", Validate.REQUIRED);
-	final public Input<Function> muInput = new Input<>("mu", "Death rate (mu)", Validate.REQUIRED);
-	final public Input<Function> psiInput = new Input<>("psi", "Sampling rate (psi)", Validate.REQUIRED);
+	final public Input<Function> r0Input = new Input<>("r0", "reproduction number, or lambda / mu", Validate.REQUIRED);
+	final public Input<Function> psiInput = new Input<>("psi", "Sampling rate (psi)", Validate.OPTIONAL);
 
 	final public Input<Function> netDiversificationRateInput = new Input<>("netDiversificationRate", "net diversification rate, lambda - mu", Validate.XOR, lambdaInput);
-	final public Input<Function> turnoverInput = new Input<>("turnover", "the ratio of death (mu) and birth (lambda) rates, mu / lambda", Validate.XOR, muInput);
-	final public Input<Function> samplingProportionInput = new Input<>("samplingProportion", "sampling rate psi divided by (psi + mu)", Validate.XOR, psiInput);
+	final public Input<Function> turnoverInput = new Input<>("turnover", "the ratio of death (mu) and birth (lambda) rates, mu / lambda", Validate.XOR, r0Input);
+	final public Input<Function> samplingProportionInput = new Input<>("samplingProportion", "sampling rate psi divided by (psi + mu)", Validate.OPTIONAL);
 
 //	final public Input<Function> r0Input = new Input<>("r0", "the ratio of birth (lambda) and death (mu) rates, lambda / mu");
 
-	final public Input<RealParameter> rhoInput = new Input<>("rho", "extant sampling probability (rho)", Validate.REQUIRED);
+	final public Input<RealParameter> rhoInput = new Input<>("rho", "extant sampling probability (rho)", Validate.OPTIONAL);
 
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "the stubs of this tree, if the stub-free inference approach (integrating over the number of stubs) is used, this is ignored", Input.Validate.OPTIONAL);
 
@@ -81,6 +81,11 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 //		if (!originSpecified && !conditionOnRootInput.get()) {
 //			throw new IllegalArgumentException("Specify origin or set conditionOnRoot input to \"true\"");
 //		}
+		
+		if (psiInput.get() != null && samplingProportionInput.get() != null) {
+			throw new RuntimeException("Please specifiy either psi or samplingProportion or neither, but not both");
+		}
+		
 		if (originSpecified && conditionOnRootInput.get()) {
 			throw new RuntimeException("Remove origin or set conditionOnRoot input to \"false\"");
 		}
@@ -685,12 +690,14 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	}
 
 	public double getMu() {
-		if (this.muInput.get() == null) {
+		if (this.r0Input.get() == null) {
 			double lambda = this.getLambda();
-			double r = turnoverInput.get().getArrayValue();
-			return r * lambda;
+			double t = turnoverInput.get().getArrayValue();
+			return t * lambda;
 		} else {
-			return this.muInput.get().getArrayValue();
+			double lambda = this.getLambda();
+			double r = r0Input.get().getArrayValue();
+			return lambda / r;
 		}
 //		double lambda = this.getLambda();
 //		if (r0Input.get() != null) {
@@ -701,6 +708,12 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	}
 
 	public double getPsi() {
+		
+		// Default
+		if (psiInput.get() == null && samplingProportionInput.get() == null) {
+			return 0.0;
+		}
+		
 		if (psiInput.get() == null) {
 			double mu = this.getMu();
 			double s = samplingProportionInput.get().getArrayValue();
@@ -715,6 +728,11 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 	}
 
 	public double getRho() {
+		
+		// Default
+		if (rhoInput.get() == null) {
+			return 1.0;
+		}
 		return rhoInput.get().getValue();
 	}
 

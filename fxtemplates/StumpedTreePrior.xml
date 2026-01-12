@@ -2,7 +2,9 @@
        namespace='beast.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.math.distributions:orc.operators:orc.ner'>
 
 
-    <!-- Clock models -->
+
+
+    <!-- Teee models -->
     <mergewith point='treePriorTemplates'>
 
        <!-- Birth-death model with stubs (no sampled ancestors) -->
@@ -16,7 +18,15 @@
 					 gammaspike.distribution.StumpedTreePrior.p,
 					 gammaspike.distribution.StumpedTreePrior.perBranchSpike,
 					 gammaspike.distribution.StumpedTreePrior.ignoreTreePrior,
-					 gammaspike.distribution.StumpedTreePrior.ignoreStubPrior
+					 gammaspike.distribution.StumpedTreePrior.ignoreStubPrior,
+                gammaspike.distribution.StumpedTreePrior.psi,
+                gammaspike.distribution.StumpedTreePrior.turnover,
+                gammaspike.distribution.StumpedTreePrior.samplingProportion,
+                gammaspike.distribution.StumpedTreePrior.netDiversificationRate,
+                gammaspike.distribution.StumpedTreePrior.origin,
+                gammaspike.distribution.StumpedTreePrior.conditionOnSampling,
+                gammaspike.distribution.StumpedTreePrior.conditionOnRhoSampling,
+                gammaspike.distribution.StumpedTreePrior.conditionOnRoot
 					 '
             hmc='StumpedTreePrior/origin/=StrictClock/clock.rate,
                  StumpedTreePrior/lambda/=Priors/ClockPrior/,
@@ -47,7 +57,8 @@
                  	r0="@BDWSReproductionNumber.t:$(n)" 
                  	lambda="@BDWSBirthRate.t:$(n)" 
                  	ignoreTreePrior="false" 
-                 	tree="@Tree.t:$(n)"> 
+                 	tree="@Tree.t:$(n)">
+                     <rho id="BDWSRho.t:$(n)" spec="parameter.RealParameter" lower="0" upper="1">1.0</rho> 
                  </distribution>
                 
                  <prior id="BDWSBirthRatePrior.t:$(n)" name="distribution" x="@BDWSBirthRate.t:$(n)">
@@ -129,7 +140,14 @@
                 gammaspike.distribution.StumpedTreePrior.p,
                 gammaspike.distribution.StumpedTreePrior.perBranchSpike,
                 gammaspike.distribution.StumpedTreePrior.ignoreTreePrior,
-                gammaspike.distribution.StumpedTreePrior.ignoreStubPrior
+                gammaspike.distribution.StumpedTreePrior.ignoreStubPrior,
+                gammaspike.distribution.StumpedTreePrior.psi,
+                gammaspike.distribution.StumpedTreePrior.turnover,
+                gammaspike.distribution.StumpedTreePrior.netDiversificationRate,
+                gammaspike.distribution.StumpedTreePrior.origin,
+                gammaspike.distribution.StumpedTreePrior.conditionOnSampling,
+                gammaspike.distribution.StumpedTreePrior.conditionOnRhoSampling,
+                gammaspike.distribution.StumpedTreePrior.conditionOnRoot
                 '
             hmc='StumpedTreePrior/origin/=StrictClock/clock.rate,
                  StumpedTreePrior/lambda/=Priors/ClockPrior/,
@@ -162,7 +180,8 @@
                   lambda="@FBDWSBirthRate.t:$(n)" 
                   ignoreTreePrior="false" 
                   samplingProportion="@FBDWSsamplingProportion.t:$(n)"
-                  tree="@Tree.t:$(n)"> 
+                  tree="@Tree.t:$(n)">
+                     <rho id="FBDWSRho.t:$(n)" spec="parameter.RealParameter" lower="0" upper="1">1.0</rho>  
                  </distribution>
                 
                  <prior id="FBDWSBirthRatePrior.t:$(n)" name="distribution" x="@FBDWSBirthRate.t:$(n)">
