@@ -1,7 +1,6 @@
 /bin/
-/build/
-/release/
 .classpath
 .project
-.DS_Store
-*.iml
+/release/
+/target/
+*.zip
