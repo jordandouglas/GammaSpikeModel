@@ -1,9 +1,10 @@
 package gammaspike.clockmodel;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import beast.base.core.Description;
-import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Loggable;
 import beast.base.core.Input.Validate;
@@ -11,10 +12,11 @@ import beast.base.inference.CalculationNode;
 import beast.base.spec.domain.NonNegativeReal;
 import beast.base.spec.inference.parameter.RealScalarParam;
 import beast.base.spec.inference.parameter.RealVectorParam;
+import beast.base.spec.type.RealVector;
 
 
 @Description("multiplies each spike (with mean 1) by the mean spike size")
-public class SpikeSize extends CalculationNode implements Function, Loggable {
+public class SpikeSize extends CalculationNode implements RealVector<NonNegativeReal>, Loggable {
     final public Input<RealVectorParam<NonNegativeReal>> spikesInput = new Input<>("spikes", "argument to be summed", Validate.REQUIRED);
     final public Input<RealScalarParam<NonNegativeReal>> spikeMeanInput = new Input<>("spikeMean", "mean spike size", Validate.REQUIRED);
     
@@ -28,28 +30,8 @@ public class SpikeSize extends CalculationNode implements Function, Loggable {
 
     }
 
-    @Override
     public int getDimension() {
         return spikesInput.get().size();
-    }
-
-    @Override
-    public double getArrayValue() {
-        return getArrayValue(0);
-    }
-
-   
-
-    @Override
-    public double getArrayValue(int dim) {
-    	
-    	if (clockModelInput.get() != null) {
-    		return clockModelInput.get().getBurstSize(dim);
-    	}else {
-    		return spikesInput.get().get(dim) * spikeMeanInput.get().get();
-    	}
-    	
-    	
     }
 
    
@@ -69,7 +51,7 @@ public class SpikeSize extends CalculationNode implements Function, Loggable {
     @Override
     public void log(long sampleNr, PrintStream out) {
     	for (int i = 0; i < this.getDimension(); i ++) {
-    		out.print(this.getArrayValue(i) + "\t");
+    		out.print(this.get(i) + "\t");
     	}
     }
 
@@ -78,4 +60,27 @@ public class SpikeSize extends CalculationNode implements Function, Loggable {
         // nothing to do
     }
 
-} // class Sum
+	@Override
+	public List<Double> getElements() {
+		List<Double> elements = new ArrayList<>();
+		for (int i = 0; i < spikesInput.get().size(); i ++) {
+			elements.add(get(i));
+		}
+		return elements;
+	}
+
+	@Override
+	public NonNegativeReal getDomain() {
+		return NonNegativeReal.INSTANCE;
+	}
+
+	@Override
+	public double get(int i) {
+		if (clockModelInput.get() != null) {
+    		return clockModelInput.get().getBurstSize(i);
+    	}else {
+    		return spikesInput.get().get(i) * spikeMeanInput.get().get();
+    	}
+	}
+
+} 

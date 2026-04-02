@@ -7,12 +7,13 @@ import beast.base.core.Citation;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Log;
-import beast.base.evolution.branchratemodel.BranchRateModel;
+
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.inference.util.InputUtil;
 import beast.base.spec.domain.NonNegativeInt;
 import beast.base.spec.domain.NonNegativeReal;
+import beast.base.spec.evolution.branchratemodel.Base;
 import beast.base.spec.inference.distribution.ScalarDistribution;
 import beast.base.spec.inference.parameter.BoolScalarParam;
 import beast.base.spec.inference.parameter.IntVectorParam;
@@ -28,15 +29,15 @@ import gammaspike.tree.Stubs;
 @Citation(value =
 "Douglas, J., Bouckaert, R., Harris, S.C., Carter Jr, C.W., Wills, P.R. (2025) Evolution is coupled with branching across many granularities of life. Proceedings of the Royal Society Series B 29220250182", DOI = "http://doi.org/10.1098/rspb.2025.0182",
 year = 2025, firstAuthorSurname = "Douglas")
-public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements SpikeModel {
+public class PunctuatedRelaxedClockModel extends Base implements SpikeModel {
 	
 	final public Input<Tree> treeInput = new Input<>("tree", "the tree this relaxed clock is associated with.", Input.Validate.REQUIRED);
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs of the tree", Input.Validate.OPTIONAL);
-	final public Input<IntVectorParam<NonNegativeInt>> nstubsPerBranchInput = new Input<>("nstubsPerBranch", "num stubs per branch.", Input.Validate.OPTIONAL);
+	final public Input<IntVectorParam<? extends NonNegativeInt>> nstubsPerBranchInput = new Input<>("nstubsPerBranch", "num stubs per branch.", Input.Validate.OPTIONAL);
 	
-	final public Input<RealScalarParam<NonNegativeReal>> spikeMeanInput = new Input<>("spikeMean", "mean spike size.", Input.Validate.REQUIRED);
+	final public Input<RealScalarParam<? extends NonNegativeReal>> spikeMeanInput = new Input<>("spikeMean", "mean spike size.", Input.Validate.REQUIRED);
 	final public Input<BoolScalarParam> indicatorInput = new Input<>("indicator", "burst size is 0 if this is false", Input.Validate.OPTIONAL);
-	final public Input<BoolScalarParam> relaxedInput = new Input<>("relaxed", "if false then use strict clock", Input.Validate.OPTIONAL);
+	final public Input<Boolean> relaxedInput = new Input<>("relaxed", "if false then use strict clock for gradual change", Input.Validate.OPTIONAL);
 	final public Input<RealVectorParam<? extends NonNegativeReal>> ratesInput = new Input<>("rates", "the rates associated with nodes in the tree for sampling of individual rates among branches.", Input.Validate.OPTIONAL); 
 	final public Input<RealVectorParam<? extends NonNegativeReal>> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
 	final public Input<Boolean> parseFromTreeInput = new Input<>("parseFromTree", "Set to true if initial values are to be loaded from tree metadata.", false); 
@@ -214,7 +215,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 		if (ratesInput.get() == null) return 1;
 
 		// If the use-relaxed-clock indicator is not provided or true, relaxed clock is used
-		if (relaxedInput.get() == null || relaxedInput.get().get()) {
+		if (relaxedInput.get() == null || relaxedInput.get()) {
 			return ratesInput.get().get(node.getNr());
 		}
 		// Otherwise, strict clock is used
@@ -226,7 +227,7 @@ public class PunctuatedRelaxedClockModel extends BranchRateModel.Base implements
 	public double getRateForBranch(Node node) {
 		
 		// Root has average rate
-		double baseRate = meanRateInput.get().getArrayValue();
+		double baseRate = meanRateInput.get().get();
 		if (node.getLength() <= 0 || node.isDirectAncestor() || node.isRoot()) return baseRate;
 		
 		double burstSize = getBurstSize(node);

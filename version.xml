@@ -2,6 +2,7 @@
 	<depends on='BEAST.base' atleast='2.8.0'/>
     <depends on='BEAST.app' atleast='2.8.0'/>
     <depends on='SA' atleast='2.3.0'/>
+    <depends on='ORC' atleast='1.3.0'/>
 
 
     <service type="beast.base.core.BEASTInterface">
@@ -13,7 +14,6 @@
         <provider classname="gammaspike.distribution.StumpedTreePrior"/>
         <provider classname="gammaspike.distribution.TreeFlabelLikelihood"/>
         <provider classname="gammaspike.distribution.BranchSpikePrior"/>
-        <provider classname="gammaspike.distribution.BranchRatePrior"/>
         <provider classname="gammaspike.distribution.BinomialPrior"/>
 
 

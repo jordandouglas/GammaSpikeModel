@@ -1,5 +1,5 @@
 <beast version='2.0'
-       namespace='beast.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.math.distributions:orc.operators:orc.ner'>
+       namespace='beastfx.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.inference.distribution'>
 
 
 
@@ -48,10 +48,14 @@
                  '>
             <![CDATA[
             
-            	<parameter id="BDWSBirthRate.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
-            	<parameter id="BDWSReproductionNumber.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
-               <parameter id="BDWSRho.t:$(n)" name="stateNode" estimate="false" spec="parameter.RealParameter" lower="0" upper="1">1.0</parameter> 
 
+
+               <parameter id="BDWSBirthRate.t:$(n)" name="stateNode" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="PositiveReal">1</parameter>
+               <parameter id="BDWSReproductionNumber.t:$(n)" name="stateNode" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="PositiveReal">2</parameter>
+               <parameter id="BDWSRho.t:$(n)" name="stateNode" estimate="false" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="UnitInterval">1.0</parameter>
+
+
+   
                  <distribution id="BDWSstubs.t:$(n)" spec="gammaspike.tree.Stubs" tree="@Tree.t:$(n)" prior="@BirthDeathModelWithStubs.t:$(n)"/>
                  
                  <distribution id="BirthDeathModelWithStubs.t:$(n)" spec="gammaspike.distribution.StumpedTreePrior" 
@@ -62,34 +66,40 @@
                   rho="@BDWSRho.t:$(n)">
                     
                  </distribution>
-                
-                 <prior id="BDWSBirthRatePrior.t:$(n)" name="distribution" x="@BDWSBirthRate.t:$(n)">
-                    <LogNormal name="distr" meanInRealSpace="false" M="0" S="2"/>
-                 </prior>
 
-                 <prior id="BDWSReproductionNumberPrior.t:$(n)" name="distribution" x="@BDWSReproductionNumber.t:$(n)">
-                    <Exponential name="distr" mean="5" offset="1"/>
-                 </prior>
 
-                 <prior id="BDWSRhoPrior.t:$(n)" name="distribution" x="@BDWSRho.t:$(n)">
-                    <Uniform name="distr" lower="0" upper="1"/>
-                 </prior> 
+                 <distribution id="BDWSBirthRatePrior.t:$(n)" spec="beast.base.spec.inference.distribution.LogNormal" param="@BDWSBirthRate.t:$(n)" meanInRealSpace="false">
+                     <M spec="beast.base.spec.inference.parameter.RealScalarParam" domain="NonNegativeReal" value="0" estimate='false'/> 
+                     <S  spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="2" estimate='false'/> 
+                  </distribution>
+
+
+                  <distribution id="BDWSReproductionNumberPrior.t:$(n)" spec="beast.base.spec.inference.distribution.Exponential" param="@BDWSReproductionNumber.t:$(n)">
+                     <mean spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="5" estimate='false'/> 
+                  </distribution>
+
+
+                  <distribution id="BDWSRhoPrior.t:$(n)" spec="beast.base.spec.inference.distribution.Beta" param="@BDWSRho.t:$(n)">
+                     <alpha spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1" estimate='false'/> 
+                     <beta spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1" estimate='false'/>
+                  </distribution>
+
 
                  
 		        <!-- Tree prior operators -->
-        		<operator id="BDWSbirthRateScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@BDWSBirthRate.t:$(n)" scaleFactor="0.1" weight="1"/>
-		        <operator id="BDWSReproductionNumberScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@BDWSReproductionNumber.t:$(n)" scaleFactor="0.1" weight="1"/>
-              <operator id="BDWSRhoIntervalOperator.t:$(n)" spec="beast.base.inference.operator.kernel.BactrianIntervalOperator" parameter="@BDWSRho.t:$(n)" scaleFactor="0.1" weight="1"/>
-              <operator id="BDWSRhoUniformOperator.t:$(n)" spec="UniformOperator" parameter="@BDWSRho.t:$(n)" weight="1"/>
+        		<operator id="BDWSbirthRateScaler.t:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@BDWSBirthRate.t:$(n)" scaleFactor="0.1" weight="1"/>
+		        <operator id="BDWSReproductionNumberScaler.t:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@BDWSReproductionNumber.t:$(n)" scaleFactor="0.1" weight="1"/>
+              <operator id="BDWSRhoIntervalOperator.t:$(n)" spec="beast.base.spec.inference.operator.uniform.IntervalOperator" parameter="@BDWSRho.t:$(n)" scaleFactor="0.1" weight="1"/>
+              
 
               
 
-				<operator id="BDWSAVMNTreePrior.t:$(n)" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
-            		<transformations id="BDWSAVMNTreePriorLog.t:$(n)" spec="operator.kernel.Transform$LogTransform">
+				<operator id="BDWSAVMNTreePrior.t:$(n)" spec="beast.base.spec.evolution.operator.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
+            		<transformations id="BDWSAVMNTreePriorLog.t:$(n)" spec="beast.base.spec.inference.operator.Transform$LogTransform">
                  	<f idref="BDWSBirthRate.t:$(n)"/>
                  	<f idref="BDWSReproductionNumber.t:$(n)"/>
 	            </transformations>
-        </operator> 
+            </operator> 
 
 			]]>
 
@@ -142,10 +152,7 @@
                      if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSRho.t:$(n)/estimate=true'>
                      Interval operator of rho of stumped tree prior of partition t:$(n)
             </connect>
-            <connect srcID='BDWSRhoUniformOperator.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(BirthDeathModelWithStubs.t:$(n)) and BDWSRho.t:$(n)/estimate=true'>
-                     Uniform operator of rho of stumped tree prior of partition t:$(n)
-            </connect>
+ 
 
             
         </subtemplate>
@@ -193,11 +200,14 @@
              DeathRatePrior/index/=Priors/DeathRatePrior/                 
                  '>
             <![CDATA[
+
+
+               <parameter id="FBDWSBirthRate.t:$(n)" name="stateNode" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="PositiveReal">1</parameter>
+               <parameter id="FBDWSReproductionNumber.t:$(n)" name="stateNode" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="PositiveReal">2</parameter>
+               <parameter id="FBDWSRho.t:$(n)" name="stateNode" estimate="false" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="UnitInterval">1.0</parameter>
+               <parameter id="FBDWSsamplingProportion.t:$(n)" name="stateNode" estimate="true" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="UnitInterval">0.1</parameter>
             
-               <parameter id="FBDWSBirthRate.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">1e-3</parameter>
-               <parameter id="FBDWSReproductionNumber.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
-               <parameter id="FBDWSsamplingProportion.t:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.02</parameter>
-               <parameter id="FBDWSRho.t:$(n)" name="stateNode" estimate="false" spec="parameter.RealParameter" lower="0" upper="1">1.0</parameter> 
+
 
                  <distribution id="FBDWSstubs.t:$(n)" spec="gammaspike.tree.Stubs" tree="@Tree.t:$(n)" prior="@FossilisedBirthDeathModelWithStubs.t:$(n)"/>
                  
@@ -210,30 +220,41 @@
                   tree="@Tree.t:$(n)">
                  </distribution>
                 
-                 <prior id="FBDWSBirthRatePrior.t:$(n)" name="distribution" x="@FBDWSBirthRate.t:$(n)">
-                    <LogNormal name="distr" meanInRealSpace="false" M="0" S="2"/>
-                 </prior>
 
-                 <prior id="FBDWSReproductionNumberPrior.t:$(n)" name="distribution" x="@FBDWSReproductionNumber.t:$(n)">
-                    <Exponential name="distr" mean="5" offset="1"/>
-                 </prior> 
 
-                 <prior id="FBDWSsamplingProportionPrior.t:$(n)" name="distribution" x="@FBDWSsamplingProportion.t:$(n)">
-                    <Beta name="distr" alpha="1" beta="5"/>
-                 </prior>
 
-                 <prior id="FBDWSRhoPrior.t:$(n)" name="distribution" x="@FBDWSRho.t:$(n)">
-                    <Uniform name="distr" lower="0" upper="1"/>
-                 </prior> 
+                   <distribution id="FBDWSBirthRatePrior.t:$(n)" spec="beast.base.spec.inference.distribution.LogNormal" param="@FBDWSBirthRate.t:$(n)" meanInRealSpace="false">
+                     <M spec="beast.base.spec.inference.parameter.RealScalarParam" domain="Real" value="0" estimate='false'/> 
+                     <S  spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="2" estimate='false'/> 
+                  </distribution>
+
+
+                  <distribution id="FBDWSReproductionNumberPrior.t:$(n)" spec="beast.base.spec.inference.distribution.Exponential" param="@FBDWSReproductionNumber.t:$(n)">
+                     <mean spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="5" estimate='false'/> 
+                  </distribution>
+
+
+                  <distribution id="FBDWSRhoPrior.t:$(n)" spec="beast.base.spec.inference.distribution.Beta" param="@FBDWSRho.t:$(n)">
+                     <alpha spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1" estimate='false'/> 
+                     <beta spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1" estimate='false'/>
+                  </distribution>
+
+
+                   <distribution id="FBDWSsamplingProportionPrior.t:$(n)" spec="beast.base.spec.inference.distribution.Beta" param="@FBDWSsamplingProportion.t:$(n)">
+                     <alpha spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1" estimate='false'/> 
+                     <beta spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="5" estimate='false'/>
+                  </distribution>
+
+
 
 
           <log id="FBDWSsampledAncestorCount.t:$(n)" spec="sa.evolution.tree.SampledAncestorLogger" tree="@Tree.t:$(n)"/>
 
 
            <!-- Tree operators -->
-           <operator id="FBDWSEpochTop.t:$(n)" spec="EpochFlexOperator" scaleFactor="0.1" tree="@Tree.t:$(n)" weight="5.0"/>
-           <operator id="FBDWSEpochAll.t:$(n)" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@Tree.t:$(n)" weight="5.0"/>
-           <operator id="FBDWSTreeFlex.t:$(n)" spec="TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:$(n)" weight="5.0"/>
+           <operator id="FBDWSIntervalScaleOperator.t:$(n)" spec="beast.base.spec.evolution.operator.IntervalScaleOperator" scaleFactor="0.1" tree="@Tree.t:$(n)" weight="15.0"/>
+           
+
            <operator id="FBDWSWideSA.t:$(n)" spec="sa.evolution.operators.SAExchange" isNarrow="false"  tree="@Tree.t:$(n)" weight="3.0"/>
            <operator id="FBDWSNarrowSA.t:$(n)" spec="sa.evolution.operators.SAExchange"  tree="@Tree.t:$(n)" weight="20.0"/>
            <operator id="FBDWSUniformOperatorSA.t:$(n)" spec="sa.evolution.operators.SAUniform" tree="@Tree.t:$(n)" weight="30.0" />
@@ -248,19 +269,19 @@
 
                     
               <!-- Tree prior operators -->
-            <operator id="FBDWSbirthRateScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@FBDWSBirthRate.t:$(n)" scaleFactor="0.1" weight="1"/>
-              <operator id="FBDWSReproductionNumberScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@FBDWSReproductionNumber.t:$(n)" scaleFactor="0.1" weight="1"/>
-              <operator id="FBDWSsamplingProportionScaler.t:$(n)" spec="kernel.BactrianScaleOperator" parameter="@FBDWSsamplingProportion.t:$(n)" scaleFactor="0.1" weight="0.5"/>
+            <operator id="FBDWSbirthRateScaler.t:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@FBDWSBirthRate.t:$(n)" scaleFactor="0.1" weight="1"/>
+              <operator id="FBDWSReproductionNumberScaler.t:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@FBDWSReproductionNumber.t:$(n)" scaleFactor="0.1" weight="1"/>
+              <operator id="FBDWSsamplingProportionInterval.t:$(n)" spec="beast.base.spec.inference.operator.uniform.IntervalOperator" parameter="@FBDWSsamplingProportion.t:$(n)" scaleFactor="0.1" weight="1"/>
 
-              <operator id="FBDWSRhoIntervalOperator.t:$(n)" spec="beast.base.inference.operator.kernel.BactrianIntervalOperator" parameter="@FBDWSRho.t:$(n)" scaleFactor="0.1" weight="1"/>
-              <operator id="FBDWSRhoUniformOperator.t:$(n)" spec="UniformOperator" parameter="@FBDWSRho.t:$(n)" weight="1"/>
+              <operator id="FBDWSRhoIntervalOperator.t:$(n)" spec="beast.base.spec.inference.operator.uniform.IntervalOperator" parameter="@FBDWSRho.t:$(n)" scaleFactor="0.1" weight="1"/>
 
-            <operator id="FBDWSAVMNTreePrior.t:$(n)" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
-                  <transformations id="FBDWSAVMNTreePriorLog.t:$(n)" spec="operator.kernel.Transform$LogTransform">
+
+            <operator id="FBDWSAVMNTreePrior.t:$(n)" spec="beast.base.spec.evolution.operator.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1">
+                  <transformations id="FBDWSAVMNTreePriorLog.t:$(n)" spec="beast.base.spec.inference.operator.Transform$LogTransform">
                   <f idref="FBDWSBirthRate.t:$(n)"/>
                   <f idref="FBDWSReproductionNumber.t:$(n)"/>
                </transformations>
-             <transformations  id="FBDWSAVMNTreePriorLogit.t:$(n)" spec="operator.kernel.Transform$LogitTransform">
+             <transformations  id="FBDWSAVMNTreePriorLogit.t:$(n)" spec="beast.base.spec.inference.operator.Transform$LogitTransform">
                  <f idref="FBDWSsamplingProportion.t:$(n)"/>
             </transformations>
         </operator> 
@@ -321,9 +342,9 @@
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSReproductionNumber.t:$(n)/estimate=true'>
                      Scale ReproductionNumber of stumped tree prior of partition t:$(n)
             </connect>
-            <connect srcID='FBDWSsamplingProportionScaler.t:$(n)' targetID='mcmc' inputName='operator'
+            <connect srcID='FBDWSsamplingProportionInterval.t:$(n)' targetID='mcmc' inputName='operator'
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSsamplingProportion.t:$(n)/estimate=true'>
-                     Scale sampling proportion of stumped tree prior of partition t:$(n)
+                     Interval operator for sampling proportion of stumped tree prior of partition t:$(n)
             </connect>
             <connect srcID='FBDWSAVMNTreePrior.t:$(n)' targetID='mcmc' inputName='operator' 
                   if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n))'>
@@ -334,22 +355,10 @@
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSRho.t:$(n)/estimate=true'>
                      Interval operator of rho of stumped tree prior of partition t:$(n)
             </connect>
-            <connect srcID='FBDWSRhoUniformOperator.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and FBDWSRho.t:$(n)/estimate=true'>
-                     Uniform operator of rho of stumped tree prior of partition t:$(n)
-            </connect>
 
 
             <!-- Connect sampled ancestor tree operators -->
-            <connect srcID='FBDWSEpochTop.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and Tree.t:$(n)/estimate=true'>
-                     Scales all internal nodes for tree t:$(n), accounting for sampled ancestors
-            </connect>
-            <connect srcID='FBDWSEpochAll.t:$(n)' targetID='mcmc' inputName='operator'
-                     if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and Tree.t:$(n)/estimate=true'>
-                     Scales all internal nodes for tree t:$(n), accounting for sampled ancestors
-            </connect>
-            <connect srcID='FBDWSTreeFlex.t:$(n)' targetID='mcmc' inputName='operator'
+            <connect srcID='FBDWSIntervalScaleOperator.t:$(n)' targetID='mcmc' inputName='operator'
                      if='inposterior(FossilisedBirthDeathModelWithStubs.t:$(n)) and Tree.t:$(n)/estimate=true'>
                      Scales all internal nodes for tree t:$(n), accounting for sampled ancestors
             </connect>

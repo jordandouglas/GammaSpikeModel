@@ -1,7 +1,8 @@
 open module gammaspike {
     requires beast.base;
-    requires beast.fx;
-    requires sampled.ancestors;
+    requires static beast.fx;
+    requires static sampled.ancestors;
+    requires org.apache.commons.statistics.distribution;
 
 
     exports gammaspike.clockmodel;
@@ -19,7 +20,6 @@ open module gammaspike {
         gammaspike.clockmodel.SpikeSize,
         gammaspike.distribution.StumpedTreePrior,
         gammaspike.distribution.BranchSpikePrior,
-        gammaspike.distribution.BranchRatePrior,
         gammaspike.distribution.BinomialPrior,
         gammaspike.logger.StumpedTreeLogger,
         gammaspike.logger.TaxonCountLogger,

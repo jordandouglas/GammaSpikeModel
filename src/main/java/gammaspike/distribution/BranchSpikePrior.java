@@ -1,36 +1,39 @@
 package gammaspike.distribution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-
+import org.apache.commons.statistics.distribution.GammaDistribution;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
-import beast.base.core.Log;
 import beast.base.evolution.tree.Node;
 import beast.base.evolution.tree.Tree;
 import beast.base.inference.Distribution;
 import beast.base.inference.State;
-import beast.base.inference.util.InputUtil;
 import beast.base.spec.domain.NonNegativeInt;
 import beast.base.spec.domain.NonNegativeReal;
 import beast.base.spec.domain.PositiveReal;
-import beast.base.spec.inference.distribution.Gamma;
+import beast.base.spec.inference.distribution.TensorDistribution;
 import beast.base.spec.inference.parameter.BoolScalarParam;
 import beast.base.spec.inference.parameter.IntVectorParam;
 import beast.base.spec.inference.parameter.RealScalarParam;
 import beast.base.spec.inference.parameter.RealVectorParam;
+import beast.base.spec.type.RealVector;
 import gammaspike.tree.Stubs;
+import beast.base.util.Randomizer;
+
+
+
 
 
 @Description("A sum of gamma distributions, one for each spike on a branch")
-public class BranchSpikePrior extends Distribution {
+public class BranchSpikePrior extends TensorDistribution<RealVector<NonNegativeReal>, Double> {
 	
 	final public Input<Stubs> stubsInput = new Input<>("stubs", "stubs of the tree", Input.Validate.OPTIONAL);
 	final public Input<IntVectorParam<? extends NonNegativeInt>> nstubsInput = new Input<>("nstubs", "num stubs per branch", Input.Validate.OPTIONAL);
-	final public Input<RealVectorParam<? extends NonNegativeReal>> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
 	final public Input<RealScalarParam<? extends PositiveReal>> shapeInput = new Input<>("shape", "shape parameter for the gamma distribution of each spike.", Input.Validate.REQUIRED);
 	final public Input<RealScalarParam<? extends PositiveReal>> meanInput = new Input<>("mean", "mean (=shape*scale) parameter for the gamma distribution of each spike.", Input.Validate.OPTIONAL); 
 	
@@ -41,7 +44,7 @@ public class BranchSpikePrior extends Distribution {
 	// If there are too many stubs on a branch (e.g., during mixing) then the gamma distribution shape is large, which causes instabilities
 	final double MAX_CUM_SUM = 0.999;
 	
-	Gamma gamma = new Gamma();
+	
 	
 	@Override
     public void initAndValidate() {
@@ -54,141 +57,14 @@ public class BranchSpikePrior extends Distribution {
 	
 	@Override
 	public double calculateLogP() {
-        
-		logP = 0;
+		
+		
+		RealVector<NonNegativeReal> branchRates = paramInput.get();
+		logP = calcLogP(branchRates.getElements());
+		return logP;
+		
+		
        
-        // Check spike shape and scale are positive
-        double shape = shapeInput.get().get();
-        double mean = 1; // meanInput.get().getValue();
-        if (shape <= 0 || mean <= 0) {
-    		logP = Double.NEGATIVE_INFINITY;
-    		return logP;
-    	}
-        double scale = mean / shape;
-        
-        // Calculate density of the total spike size of each branch, assuming that each node or stub has an iid spike drawn from a Gamma(alpha, beta)
-        // This approach integrates across all stub spike sizes, so we don't need to estimate them individually
-        Stubs stubs = stubsInput.get();
-        for (int nodeNr = 0; nodeNr < spikesInput.get().size(); nodeNr ++) {
-        	
-        	double spikeOfBranch = spikesInput.get().get(nodeNr);
-        	if (spikeOfBranch < 0) {
-        		logP = Double.NEGATIVE_INFINITY;
-        		return logP;
-        	}
-
-        	if (stubs == null || stubs.estimateStubs()) { // Either stubsInput is null or stubs are being estimated
-        		
-        		// Known value of stubs
-				// If stubsInput is null, nstubsOnBranch is zero; otherwise get the number of stubs on branch nodeNr
-            	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr);
-            	
-            	// Number of spikes is nstubs + 1, unless the sibling is a sampled ancestor, in which case it is nstubs
-            	Node node = treeInput.get().getNode(nodeNr);
-				int spikeSum = getNSpikes(node, nstubsOnBranch);
-				if (spikeSum == 0) {
-					// Delta function
-					double logprob = 0 ;
-					if (spikeOfBranch != 0) {
-						logprob = Double.NEGATIVE_INFINITY;
-					} else {
-						logprob = 0;
-					}
-					logP += logprob;
-				}
-				else {
-	            	double alphaBranch = shape * spikeSum;
-	            	gamma = new Gamma();
-	            	gamma.initByName("alpha", alphaBranch, "theta", scale);
-	            	logP += gamma.logDensity(spikeOfBranch);
-				}
-        		
-        	} else { // Integrating over stubs (Stub-free inference)
-        		
-        		// Unknown value - integrate across all possible values
-        		Node node = treeInput.get().getNode(nodeNr);
-        		double h0 = node.getHeight();
-        		double h1 = node.isRoot() ? h0 : node.getParent().getHeight();
-        		double mu = stubs.getMeanNumberOfStubs(h0, h1);
-        		
-        		//Log.warning("no est -> " + mu);
-
-        		if (mu > 0) {
-        			
-        			double branchP = 0;
-        			int k = 0;
-        			double cumsum = 0;
-        			while (cumsum < MAX_CUM_SUM) {
-        				
-        				// P(k observations) under a Poisson(mu)
-        				double p = -mu + k*Math.log(mu);
-        				for (int i = 2; i <= k; i ++) p += -Math.log(i); // Integrating over all possible values
-        				double pReal = Math.exp(p);
-
-        				cumsum += pReal;
-        				
-        				// Number of spikes is nstubs + 1, unless the sibling is a sampled ancestor, in which case it is nstubs
-        				int spikeSum = getNSpikes(node, k);
-        				if (spikeSum == 0) {
-        					// Delta function
-        					if (spikeOfBranch != 0) {
-        						branchP += 0;
-        					} else {
-        						branchP += Math.exp(p);
-        					}
-        				}
-        				else {
-	        				double alphaBranch = shape * spikeSum;
-	        				gamma = new Gamma();
-	    	            	gamma.initByName("alpha", alphaBranch, "theta", scale);
-	        				double gammaLogP = gamma.logDensity(spikeOfBranch);
-	        				if (spikeOfBranch == 0|| gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
-	        					branchP += 0;
-	        				} else {
-	        					branchP += Math.exp(p + gammaLogP);
-	        				}
-        				}
-
-        				k++;
-        				
-        			}
-        			
-        			logP += Math.log(branchP);
-        			
-        		}
-        		
-        		else {
-        			
-        			int spikeSum = getNSpikes(node, 0);
-    				if (spikeSum == 0) {
-	        			// Delta function
-						if (spikeOfBranch != 0) {
-							logP += Double.NEGATIVE_INFINITY;
-						} else {
-							logP += 0;
-						}
-    				} else {
-    					gamma = new Gamma();
-    	            	gamma.initByName("alpha", shape, "theta", scale);
-    					logP += gamma.logDensity(spikeOfBranch);
-    				}
-        			
-        		}
-
-        	}
-
-        }
-        
-        // Numerical issue
-        if (logP == Double.POSITIVE_INFINITY) {
-        	logP = Double.NEGATIVE_INFINITY;
-        }
-        
-        if (logP == Double.NEGATIVE_INFINITY) {
-        	//Log.warning("Ninf");
-        }
-        
-        return logP;
 
     }
 	
@@ -232,28 +108,25 @@ public class BranchSpikePrior extends Distribution {
 	@Override
 	public List<String> getArguments() {
 		List<String> args = new ArrayList<>();
-		args.add(spikesInput.get().getID());
+		//args.add(paramInput.get().getID());
 		return args;
 	}
-
+	
+	
 	@Override
-	// Sample a new "spike" value for every node (or branch) in a tree
-	public void sample(State state, Random random) {
+	public List<Double> sample() {
 		
+
 		if (treeInput.get() == null) {
 			throw new IllegalArgumentException("Please specify the tree");
 		}
 		
-		if (sampledFlag) return;
-		sampledFlag = true;
-
-		// Cause conditional parameters to be sampled
-		sampleConditions(state, random);
+		
+		List<Double> vals = new ArrayList<>();
 
 		Tree tree = (Tree) treeInput.get();
 		int dimension = tree.getNodeCount();
-		spikesInput.get().setDimension(dimension);
-		//spikesInput.get().setValue(null);
+		
 		
 	    // Check shape and scale are positive
         double shape = shapeInput.get().get();
@@ -266,7 +139,7 @@ public class BranchSpikePrior extends Distribution {
         // Calculate density of the total spike size of each branch, assuming that each node or stub has an iid spike drawn from a Gamma(alpha, beta)
         // This approach integrates across all stub spike sizes, so we don't need to estimate them individually
         Stubs stubs = stubsInput.get();
-        for (int nodeNr = 0; nodeNr < spikesInput.get().size(); nodeNr ++) {
+        for (int nodeNr = 0; nodeNr < dimension; nodeNr ++) {
         	
         	int nstubsOnBranch = 0;
         	if (nodeNr < nstubsInput.get().size()) {
@@ -278,14 +151,14 @@ public class BranchSpikePrior extends Distribution {
         	
         	if (nspikes == 0) {
         		double spikeOfBranch = 0;
-        		spikesInput.get().set(nodeNr, spikeOfBranch);
+        		vals.add(spikeOfBranch);
         	} else {
         		double alphaBranch = shape * nspikes; // One spike for the branch, and one per stub
-            	gamma = new Gamma();
-            	gamma.initByName("alpha", alphaBranch, "theta", scale);
+        		
+        		GammaDistribution gamma = GammaDistribution.of(alphaBranch, scale);
             	try {
-    				double spikeOfBranch = gamma.inverseCumulativeProbability(random.nextFloat());
-    				spikesInput.get().set(nodeNr, spikeOfBranch);
+    				double spikeOfBranch = gamma.inverseCumulativeProbability(Randomizer.nextFloat());
+    				vals.add(spikeOfBranch);
     			} catch (Exception e) {
     				e.printStackTrace();
     				throw new IllegalArgumentException("Unexpected error when sampling from Gamma(" + shape + ", " + scale + ")");
@@ -293,8 +166,73 @@ public class BranchSpikePrior extends Distribution {
         	}
 
         }
-
+        
+        return vals;
+		
+		
 	}
+	
+	
+//
+//	@Override
+//	// Sample a new "spike" value for every node (or branch) in a tree
+//	public void sample(State state, Random random) {
+//		
+//		if (treeInput.get() == null) {
+//			throw new IllegalArgumentException("Please specify the tree");
+//		}
+//		
+//		if (sampledFlag) return;
+//		sampledFlag = true;
+//
+//		// Cause conditional parameters to be sampled
+//		sampleConditions(state, random);
+//
+//		Tree tree = (Tree) treeInput.get();
+//		int dimension = tree.getNodeCount();
+//		spikesInput.get().setDimension(dimension);
+//		//spikesInput.get().setValue(null);
+//		
+//	    // Check shape and scale are positive
+//        double shape = shapeInput.get().get();
+//        double mean = 1; //meanInput.get().getValue();
+//        if (shape <= 0 || mean <= 0) {
+//        	throw new IllegalArgumentException("Cannot sample spikes because shape or mean are non-positive " + shape + "  " + mean);
+//    	}
+//        double scale = mean / shape;
+//        
+//        // Calculate density of the total spike size of each branch, assuming that each node or stub has an iid spike drawn from a Gamma(alpha, beta)
+//        // This approach integrates across all stub spike sizes, so we don't need to estimate them individually
+//        Stubs stubs = stubsInput.get();
+//        for (int nodeNr = 0; nodeNr < spikesInput.get().size(); nodeNr ++) {
+//        	
+//        	int nstubsOnBranch = 0;
+//        	if (nodeNr < nstubsInput.get().size()) {
+//        		nstubsOnBranch = stubs == null ? nstubsInput.get().get(nodeNr) : stubs.getNStubsOnBranch(nodeNr);
+//        	}
+//        	
+//        	Node node = treeInput.get().getNode(nodeNr);;
+//        	int nspikes = getNSpikes(node, nstubsOnBranch);
+//        	
+//        	if (nspikes == 0) {
+//        		double spikeOfBranch = 0;
+//        		spikesInput.get().set(nodeNr, spikeOfBranch);
+//        	} else {
+//        		double alphaBranch = shape * nspikes; // One spike for the branch, and one per stub
+//        		
+//        		GammaDistribution gamma = GammaDistribution.of(alphaBranch, scale);
+//            	try {
+//    				double spikeOfBranch = gamma.inverseCumulativeProbability(random.nextFloat());
+//    				spikesInput.get().set(nodeNr, spikeOfBranch);
+//    			} catch (Exception e) {
+//    				e.printStackTrace();
+//    				throw new IllegalArgumentException("Unexpected error when sampling from Gamma(" + shape + ", " + scale + ")");
+//    			}
+//        	}
+//
+//        }
+//
+//	}
 
 
 	@Override
@@ -332,7 +270,7 @@ public class BranchSpikePrior extends Distribution {
 		double scale = mean / shape;
 		
 		// Non-weighted spike size (spike mean not taken into account)
-		double spikeOfBranch = spikesInput.get().get(nodeNr);
+		double spikeOfBranch = paramInput.get().get(nodeNr);
 
 		int k = 0;
 		double poissonCumSum = 0;
@@ -353,8 +291,9 @@ public class BranchSpikePrior extends Distribution {
 			// If the use-spike indicator is true
 			if (indicatorInput.get() != null && indicatorInput.get().get()) {
 			
-				gamma = new Gamma();
-            	gamma.initByName("alpha", alphaBranch, "theta", scale);
+				GammaDistribution gamma = GammaDistribution.of(alphaBranch, scale);
+				//gamma = new Gamma();
+            	//gamma.initByName("alpha", alphaBranch, "theta", scale);
 				double gammaLogP = gamma.logDensity(spikeOfBranch);
 				if (gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
 					if (poissonCumSum > 0) break;
@@ -395,6 +334,163 @@ public class BranchSpikePrior extends Distribution {
 		}
 		return array;
 	}
+
+	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Double getLowerBoundOfParameter() {
+		return 0.0;
+	}
+
+	@Override
+	public Double getUpperBoundOfParameter() {
+		return Double.POSITIVE_INFINITY;
+	}
+
+	@Override
+	protected double calcLogP(Double... value) {
+		return this.calcLogP(Arrays.asList(value));
+	}
+	
+	
+    private double calcLogP(List<Double> branchRates) {
+    	
+    	
+    	double logp = 0;
+    	
+    	
+        // Check spike shape and scale are positive
+        double shape = shapeInput.get().get();
+        double mean = 1; // meanInput.get().getValue();
+        if (shape <= 0 || mean <= 0) {
+    		return Double.NEGATIVE_INFINITY;
+    	}
+        double scale = mean / shape;
+        
+        // Calculate density of the total spike size of each branch, assuming that each node or stub has an iid spike drawn from a Gamma(alpha, beta)
+        // This approach integrates across all stub spike sizes, so we don't need to estimate them individually
+        Stubs stubs = stubsInput.get();
+        for (int nodeNr = 0; nodeNr < paramInput.get().size(); nodeNr ++) {
+        	
+        	double spikeOfBranch = paramInput.get().get(nodeNr);
+        	if (spikeOfBranch < 0) {
+        		return Double.NEGATIVE_INFINITY;
+        	}
+
+        	if (stubs == null || stubs.estimateStubs()) { // Either stubsInput is null or stubs are being estimated
+        		
+        		// Known value of stubs
+				// If stubsInput is null, nstubsOnBranch is zero; otherwise get the number of stubs on branch nodeNr
+            	int nstubsOnBranch = stubs == null ? 0 : stubs.getNStubsOnBranch(nodeNr);
+            	
+            	// Number of spikes is nstubs + 1, unless the sibling is a sampled ancestor, in which case it is nstubs
+            	Node node = treeInput.get().getNode(nodeNr);
+				int spikeSum = getNSpikes(node, nstubsOnBranch);
+				if (spikeSum == 0) {
+					// Delta function
+					double logprob = 0 ;
+					if (spikeOfBranch != 0) {
+						logprob = Double.NEGATIVE_INFINITY;
+					} else {
+						logprob = 0;
+					}
+					logp += logprob;
+				}
+				else {
+	            	double alphaBranch = shape * spikeSum;
+	            	GammaDistribution gamma = GammaDistribution.of(alphaBranch, scale);
+	            	logp += gamma.logDensity(spikeOfBranch);
+				}
+        		
+        	} else { // Integrating over stubs (Stub-free inference)
+        		
+        		// Unknown value - integrate across all possible values
+        		Node node = treeInput.get().getNode(nodeNr);
+        		double h0 = node.getHeight();
+        		double h1 = node.isRoot() ? h0 : node.getParent().getHeight();
+        		double mu = stubs.getMeanNumberOfStubs(h0, h1);
+        		
+        		//Log.warning("no est -> " + mu);
+
+        		if (mu > 0) {
+        			
+        			double branchP = 0;
+        			int k = 0;
+        			double cumsum = 0;
+        			while (cumsum < MAX_CUM_SUM) {
+        				
+        				// P(k observations) under a Poisson(mu)
+        				double p = -mu + k*Math.log(mu);
+        				for (int i = 2; i <= k; i ++) p += -Math.log(i); // Integrating over all possible values
+        				double pReal = Math.exp(p);
+
+        				cumsum += pReal;
+        				
+        				// Number of spikes is nstubs + 1, unless the sibling is a sampled ancestor, in which case it is nstubs
+        				int spikeSum = getNSpikes(node, k);
+        				if (spikeSum == 0) {
+        					// Delta function
+        					if (spikeOfBranch != 0) {
+        						branchP += 0;
+        					} else {
+        						branchP += Math.exp(p);
+        					}
+        				}
+        				else {
+	        				double alphaBranch = shape * spikeSum;
+	        				GammaDistribution gamma = GammaDistribution.of(alphaBranch, scale);
+	        				double gammaLogP = gamma.logDensity(spikeOfBranch);
+	        				if (spikeOfBranch == 0|| gammaLogP == Double.NEGATIVE_INFINITY || Double.isNaN(gammaLogP)) {
+	        					branchP += 0;
+	        				} else {
+	        					branchP += Math.exp(p + gammaLogP);
+	        				}
+        				}
+
+        				k++;
+        				
+        			}
+        			
+        			logp += Math.log(branchP);
+        			
+        		}
+        		
+        		else {
+        			
+        			int spikeSum = getNSpikes(node, 0);
+    				if (spikeSum == 0) {
+	        			// Delta function
+						if (spikeOfBranch != 0) {
+							logp += Double.NEGATIVE_INFINITY;
+						} else {
+							logp += 0;
+						}
+    				} else {
+    					GammaDistribution gamma = GammaDistribution.of(shape, scale);
+    					logp += gamma.logDensity(spikeOfBranch);
+    				}
+        			
+        		}
+
+        	}
+
+        }
+        
+        // Numerical issue
+        if (logp == Double.POSITIVE_INFINITY) {
+        	logp = Double.NEGATIVE_INFINITY;
+        }
+
+        
+        return logp;
+    	
+    	
+    	
+    }
 	
 
 }

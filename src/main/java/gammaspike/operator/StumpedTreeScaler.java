@@ -28,12 +28,12 @@ public class StumpedTreeScaler extends UpDownOperator {
     	
     	// Cache branch lengths before making proposal
 		Stubs stubs = stubsInput.get();
-        double[] cachedBranchLengths = stubs.prepareJacobian();
+        double[] cachedBranchLengths = stubs == null ? null : stubs.prepareJacobian();
 		
 		double HR = super.proposal();
 		
 		// Jacobian. Relative stub heights stay the same but absolute heights change
-        double logJacobian = stubs.getLogJacobian(cachedBranchLengths);
+        double logJacobian = stubs == null ? 0 : stubs.getLogJacobian(cachedBranchLengths);
         
         return HR + logJacobian;
 

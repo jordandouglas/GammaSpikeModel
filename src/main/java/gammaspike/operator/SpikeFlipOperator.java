@@ -16,7 +16,7 @@ import beast.base.util.Randomizer;
 public class SpikeFlipOperator extends Operator {
 	
 	final public Input<RealVectorParam<NonNegativeReal>> spikesInput = new Input<>("spikes", "one spike size per branch.", Input.Validate.REQUIRED); 
-	final public Input<Double> spikeMeanInput = new Input<>("spikeMean", "mean of the exponential distribuution for making spikes.", 0.005); 
+	final public Input<Double> spikeMeanInput = new Input<>("spikeMean", "mean of the exponential distribution for making spikes.", 0.005); 
 	
 
 	@Override

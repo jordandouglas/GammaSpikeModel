@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="BEAST.base v2.7.7:gammaspike v0.0.1" version="2.7">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="BEAST.base v2.8.0:gammaspike v1.3.0:ORC v1.3.0" version="2.8">
 
     <data
 id="DS3"
@@ -62,24 +62,24 @@ name="alignment">
 
     <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
 
-    <run id="mcmc" spec="MCMC" chainLength="100000000">
+    <run id="mcmc" spec="MCMC" chainLength="10000000">
         <state id="state" spec="State" storeEvery="5000">
             <tree id="Tree.t:DS3" spec="beast.base.evolution.tree.Tree" name="stateNode">
                 <taxonset id="TaxonSet.DS3" spec="TaxonSet">
                     <alignment idref="DS3"/>
                 </taxonset>
             </tree>
-            <parameter id="kappa.s:DS3" spec="parameter.RealParameter" lower="0.0" name="stateNode">2.0</parameter>
-            <parameter id="freqParameter.s:DS3" spec="parameter.RealParameter" dimension="4" lower="0.0" name="stateNode" upper="1.0">0.25</parameter>
-            <parameter id="gammaShape.s:DS3" spec="parameter.RealParameter" lower="0.1" name="stateNode">1.0</parameter>
-            <parameter id="GSMbranchRates.c:DS3" spec="parameter.RealParameter" dimension="70" lower="0.0" name="stateNode">1.0</parameter>
-            <parameter id="GSMspikes.c:DS3" spec="parameter.RealParameter" dimension="70" lower="0.0" name="stateNode">1.0</parameter>
-            <parameter id="GSMspikeMean.c:DS3" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.01</parameter>
-            <stateNode id="GSMuseSpikeModel.c:DS3" spec="parameter.BooleanParameter">false</stateNode>
-            <parameter id="GSMclockSD.c:DS3" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.5</parameter>
-            <parameter id="GSMspikeShape.c:DS3" spec="parameter.RealParameter" lower="0.2" name="stateNode">2.0</parameter>
-            <parameter id="BDWSBirthRate.t:DS3" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.001</parameter>
-            <parameter id="BDWSReproductionNumber.t:DS3" spec="parameter.RealParameter" lower="1.0" name="stateNode">2.0</parameter>
+            <stateNode id="kappa.s:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="2.0"/>
+            <stateNode id="freqParameter.s:DS3" spec="beast.base.spec.inference.parameter.SimplexParam" dimension="4" domain="UnitInterval">0.25 0.25 0.25 0.25</stateNode>
+            <stateNode id="GSMbranchRates.c:DS3" spec="beast.base.spec.inference.parameter.RealVectorParam" dimension="71" domain="PositiveReal">1.0</stateNode>
+            <stateNode id="GSMspikes.c:DS3" spec="beast.base.spec.inference.parameter.RealVectorParam" dimension="71" domain="NonNegativeReal">1.0</stateNode>
+            <stateNode id="GSMspikeMean.c:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="0.001"/>
+            <stateNode id="GSMuseSpikeModel.c:DS3" spec="beast.base.spec.inference.parameter.BoolScalarParam"/>
+            <stateNode id="GSMclockSD.c:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="0.5"/>
+            <stateNode id="GSMspikeShape.c:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="2.0"/>
+            <stateNode id="BDWSBirthRate.t:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1.0"/>
+            <stateNode id="BDWSReproductionNumber.t:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="2.0"/>
+            <stateNode id="gammaShape.s:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1.0"/>
         </state>
         <init id="RandomTree.t:DS3" spec="RandomTree" estimate="false" initial="@Tree.t:DS3" taxa="@DS3">
             <populationModel id="ConstantPopulation0.t:DS3" spec="ConstantPopulation">
@@ -88,141 +88,124 @@ name="alignment">
         </init>
         <distribution id="posterior" spec="CompoundDistribution">
             <distribution id="prior" spec="CompoundDistribution">
-                <distribution id="BirthDeathModelWithStubs.t:DS3" spec="gammaspike.distribution.StumpedTreePrior" lambda="@BDWSBirthRate.t:DS3" r0="@BDWSReproductionNumber.t:DS3" tree="@Tree.t:DS3"/>
-                <prior id="BDWSBirthRatePrior.t:DS3" name="distribution" x="@BDWSBirthRate.t:DS3">
-                    <LogNormal id="LogNormalDistributionModel.5" meanInRealSpace="true" name="distr">
-                        <M id="Function$Constant.11" spec="Function$Constant" value="30.0"/>
-                        <S id="Function$Constant.12" spec="Function$Constant" value="1.0"/>
-                    </LogNormal>
-                </prior>
-                <prior id="BDWSReproductionNumberPrior.t:DS3" name="distribution" x="@BDWSReproductionNumber.t:DS3">
-                    <Exponential id="Exponential.1" name="distr" offset="1.0">
-                        <mean id="Function$Constant.13" spec="Function$Constant" value="5.0"/>
-                    </Exponential>
-                </prior>
-                <prior id="GSMbranchRatePrior.c:DS3" name="distribution" x="@GSMbranchRates.c:DS3">
-                    <LogNormal id="LogNormalDistributionModel.2" S="@GSMclockSD.c:DS3" meanInRealSpace="true" name="distr">
-                        <M id="Function$Constant.6" spec="Function$Constant" value="1.0"/>
-                    </LogNormal>
-                </prior>
-                <distribution id="GSMbranchSpikePrior.c:DS3" stubs="@BDWSstubs.t:DS3" spec="gammaspike.distribution.BranchSpikePrior" indicator="@GSMuseSpikeModel.c:DS3" shape="@GSMspikeShape.c:DS3" spikes="@GSMspikes.c:DS3" tree="@Tree.t:DS3"/>
-                <prior id="GSMclockSDPrior.c:DS3" name="distribution" x="@GSMclockSD.c:DS3">
-                    <Gamma id="Gamma.3" name="distr">
-                        <alpha id="Function$Constant.4" spec="Function$Constant" value="5.0"/>
-                        <beta id="Function$Constant.5" spec="Function$Constant" value="0.05"/>
-                    </Gamma>
-                </prior>
-                <prior id="GSMspikeMeanPrior.c:DS3" name="distribution" x="@GSMspikeMean.c:DS3">
-                    <LogNormal id="LogNormalDistributionModel.3" meanInRealSpace="true" name="distr">
-                        <M id="Function$Constant.7" spec="Function$Constant" value="0.01"/>
-                        <S id="Function$Constant.8" spec="Function$Constant" value="1.2"/>
-                    </LogNormal>
-                </prior>
-                <prior id="GSMspikeShapePrior.c:DS3" name="distribution" x="@GSMspikeShape.c:DS3">
-                    <LogNormal id="LogNormalDistributionModel.4" meanInRealSpace="true" name="distr">
-                        <M id="Function$Constant.9" spec="Function$Constant" value="2.0"/>
-                        <S id="Function$Constant.10" spec="Function$Constant" value="0.5"/>
-                    </LogNormal>
-                </prior>
-                <prior id="FrequenciesPrior.s:DS3" name="distribution" x="@freqParameter.s:DS3">
-                    <distr id="Dirichlet.0" spec="distribution.Dirichlet">
-                        <parameter id="RealParameter.7" spec="parameter.RealParameter" dimension="4" estimate="false" name="alpha">4.0 4.0 4.0 4.0</parameter>
-                    </distr>
-                </prior>
-                <prior id="GammaShapePrior.s:DS3" name="distribution" x="@gammaShape.s:DS3">
-                    <Exponential id="Exponential.0" name="distr">
-                        <parameter id="RealParameter.0" spec="parameter.RealParameter" estimate="false" name="mean">1.0</parameter>
-                    </Exponential>
-                </prior>
-                <prior id="KappaPrior.s:DS3" name="distribution" x="@kappa.s:DS3">
-                    <LogNormal id="LogNormalDistributionModel.1" name="distr">
-                        <parameter id="RealParameter.5" spec="parameter.RealParameter" estimate="false" name="M">1.0</parameter>
-                        <parameter id="RealParameter.6" spec="parameter.RealParameter" estimate="false" name="S">1.25</parameter>
-                    </LogNormal>
-                </prior>
+                <distribution id="BirthDeathModelWithStubs.t:DS3" spec="gammaspike.distribution.StumpedTreePrior" lambda="@BDWSBirthRate.t:DS3" r0="@BDWSReproductionNumber.t:DS3" tree="@Tree.t:DS3">
+                    <rho id="BDWSRho.t:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="UnitInterval" estimate="false" value="1.0"/>
+                </distribution>
+                <distribution id="BDWSBirthRatePrior.t:DS3" spec="beast.base.spec.inference.distribution.LogNormal" meanInRealSpace="true" param="@BDWSBirthRate.t:DS3">
+                    <M id="RealScalarParam.21" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="NonNegativeReal" estimate="false" value="30.0"/>
+                    <S id="RealScalarParam.22" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="1.0"/>
+                </distribution>
+                <distribution id="BDWSReproductionNumberPrior.t:DS3" spec="beast.base.spec.inference.distribution.Exponential" param="@BDWSReproductionNumber.t:DS3">
+                    <mean id="RealScalarParam.23" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="5.0"/>
+                </distribution>
+                <distribution id="FrequenciesPrior.s:DS3" spec="beast.base.spec.inference.distribution.Dirichlet" param="@freqParameter.s:DS3">
+                    <alpha id="RealVectorParam.0" spec="beast.base.spec.inference.parameter.RealVectorParam" dimension="4" domain="PositiveReal" estimate="false">4.0 4.0 4.0 4.0</alpha>
+                </distribution>
+                <distribution id="GSMbranchRatePrior.c:DS3" spec="orc.distribution.BranchRatePrior" param="@GSMbranchRates.c:DS3" sigma="@GSMclockSD.c:DS3" tree="@Tree.t:DS3"/>
+                <distribution id="GSMbranchSpikePrior.c:DS3" spec="gammaspike.distribution.BranchSpikePrior" indicator="@GSMuseSpikeModel.c:DS3" param="@GSMspikes.c:DS3" shape="@GSMspikeShape.c:DS3" tree="@Tree.t:DS3">
+                    <stubs id="BDWSstubs.t:DS3" spec="gammaspike.tree.Stubs" prior="@BirthDeathModelWithStubs.t:DS3" tree="@Tree.t:DS3"/>
+                </distribution>
+                <distribution id="GSMclockSDPrior.c:DS3" spec="beast.base.spec.inference.distribution.Gamma" param="@GSMclockSD.c:DS3">
+                    <alpha id="RealScalarParam.10" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="5.0"/>
+                    <theta id="RealScalarParam.11" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="0.05"/>
+                </distribution>
+                <distribution id="GSMspikeMeanPrior.c:DS3" spec="beast.base.spec.inference.distribution.LogNormal" meanInRealSpace="true" param="@GSMspikeMean.c:DS3">
+                    <M id="RealScalarParam.14" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="0.01"/>
+                    <S id="RealScalarParam.15" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="1.2"/>
+                </distribution>
+                <distribution id="GSMspikeShapePrior.c:DS3" spec="beast.base.spec.inference.distribution.LogNormal" meanInRealSpace="true" param="@GSMspikeShape.c:DS3">
+                    <M id="RealScalarParam.16" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="2.0"/>
+                    <S id="RealScalarParam.17" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="0.5"/>
+                </distribution>
+                <distribution id="GSMuseSpikeModelPrior.c:DS3" spec="beast.base.spec.inference.distribution.Bernoulli" param="@GSMuseSpikeModel.c:DS3">
+                    <p id="RealScalarParam.18" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="UnitInterval" value="0.5"/>
+                </distribution>
+                <distribution id="KappaPrior.s:DS3" spec="beast.base.spec.inference.distribution.LogNormal" param="@kappa.s:DS3">
+                    <M id="RealScalarParam.19" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="Real" estimate="false" value="1.0"/>
+                    <S id="RealScalarParam.20" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="1.25"/>
+                </distribution>
+                <distribution id="GammaShapePrior.s:DS3" spec="beast.base.spec.inference.distribution.TruncatedReal" param="@gammaShape.s:DS3">
+                    <distribution id="Exponential.0" spec="beast.base.spec.inference.distribution.Exponential">
+                        <mean id="RealScalarParam.6" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="1.0"/>
+                    </distribution>
+                    <lower id="RealScalarParam.7" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="Real" estimate="false" value="0.1"/>
+                </distribution>
             </distribution>
             <distribution id="likelihood" spec="CompoundDistribution" useThreads="true">
-                <distribution id="treeLikelihood.DS3" spec="ThreadedTreeLikelihood" data="@DS3" tree="@Tree.t:DS3">
-                    <siteModel id="SiteModel.s:DS3" spec="SiteModel" gammaCategoryCount="4" shape="@gammaShape.s:DS3">
-                        <parameter id="mutationRate.s:DS3" spec="parameter.RealParameter" estimate="false" lower="0.0" name="mutationRate">1.0</parameter>
-                        <parameter id="proportionInvariant.s:DS3" spec="parameter.RealParameter" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
-                        <substModel id="hky.s:DS3" spec="HKY" kappa="@kappa.s:DS3">
-                            <frequencies id="estimatedFreqs.s:DS3" spec="Frequencies" frequencies="@freqParameter.s:DS3"/>
+                <distribution id="treeLikelihood.DS3" spec="beast.base.spec.evolution.likelihood.ThreadedTreeLikelihood" data="@DS3" tree="@Tree.t:DS3">
+                    <siteModel id="SiteModel.s:DS3" spec="beast.base.spec.evolution.sitemodel.SiteModel" gammaCategoryCount="4" shape="@gammaShape.s:DS3">
+                        <mutationRate id="mutationRate.s:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="1.0"/>
+                        <proportionInvariant id="proportionInvariant.s:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="UnitInterval" estimate="false"/>
+                        <substModel id="hky.s:DS3" spec="beast.base.spec.evolution.substitutionmodel.HKY" kappa="@kappa.s:DS3">
+                            <frequencies id="estimatedFreqs.s:DS3" spec="beast.base.spec.evolution.substitutionmodel.Frequencies" frequencies="@freqParameter.s:DS3"/>
                         </substModel>
                     </siteModel>
-                    <branchRateModel id="GammaSpikeRelaxedClock.c:DS3" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@GSMuseSpikeModel.c:DS3" rates="@GSMbranchRates.c:DS3" spikeMean="@GSMspikeMean.c:DS3" spikes="@GSMspikes.c:DS3" tree="@Tree.t:DS3">
-                        <stubs id="BDWSstubs.t:DS3" spec="gammaspike.tree.Stubs" prior="@BirthDeathModelWithStubs.t:DS3" tree="@Tree.t:DS3"/>
-                        <relaxed id="BooleanParameter.0" spec="parameter.BooleanParameter">true</relaxed>
-                        <parameter id="GSMclockRate.c:DS3" spec="parameter.RealParameter" estimate="false" lower="0.0" name="clock.rate">1.0</parameter>
+                    <branchRateModel id="GammaSpikeRelaxedClock.c:DS3" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" indicator="@GSMuseSpikeModel.c:DS3" rates="@GSMbranchRates.c:DS3" relaxed="true" spikeMean="@GSMspikeMean.c:DS3" spikes="@GSMspikes.c:DS3" stubs="@BDWSstubs.t:DS3" tree="@Tree.t:DS3">
+                        <clock.rate id="GSMclockRate.c:DS3" spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" estimate="false" value="1.0"/>
                     </branchRateModel>
                 </distribution>
             </distribution>
-            <distribution id="fossilCalibrations" spec="CompoundDistribution"/>
         </distribution>
-        <operator id="KappaScaler.s:DS3" spec="AdaptableOperatorSampler" weight="0.05">
+        <operator id="KappaScaler.s:DS3" spec="beast.base.spec.evolution.operator.AdaptableOperatorSampler" weight="0.05">
             <parameter idref="kappa.s:DS3"/>
-            <operator id="AVMNOperator.DS3" spec="kernel.AdaptableVarianceMultivariateNormalOperator" allowNonsense="true" beta="0.05" burnin="400" initial="800" weight="0.1">
-                <transformations id="AVMNSumTransform.DS3" spec="operator.kernel.Transform$LogConstrainedSumTransform">
+            <operator id="AVMNOperator.DS3" spec="beast.base.spec.evolution.operator.AdaptableVarianceMultivariateNormalOperator" allowNonsense="true" beta="0.05" burnin="400" initial="800" weight="0.1">
+                <transformations id="AVMNSumTransform.DS3" spec="beast.base.spec.inference.operator.Transform$LogConstrainedSumTransform">
                     <f idref="freqParameter.s:DS3"/>
                 </transformations>
-                <transformations id="AVMNLogTransform.DS3" spec="operator.kernel.Transform$LogTransform">
+                <transformations id="AVMNLogTransform.DS3" spec="beast.base.spec.inference.operator.Transform$LogTransform">
                     <f idref="kappa.s:DS3"/>
                     <f idref="gammaShape.s:DS3"/>
                 </transformations>
-                <transformations id="AVMNNoTransform.DS3" spec="operator.kernel.Transform$NoTransform">
-                    <f idref="Tree.t:DS3"/>
-                </transformations>
+                <transformations id="AVMNNoTransform.DS3" spec="beast.base.spec.inference.operator.Transform$NoTransform"/>
             </operator>
-            <operator id="KappaScalerX.s:DS3" spec="kernel.BactrianScaleOperator" parameter="@kappa.s:DS3" scaleFactor="0.1" upper="10.0" weight="0.1"/>
+            <operator id="KappaScalerX.s:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@kappa.s:DS3" scaleFactor="0.1" upper="10.0" weight="0.1"/>
         </operator>
-        <operator id="FrequenciesExchanger.s:DS3" spec="AdaptableOperatorSampler" weight="0.05">
+        <operator id="FrequenciesExchanger.s:DS3" spec="beast.base.spec.evolution.operator.AdaptableOperatorSampler" weight="0.05">
             <parameter idref="freqParameter.s:DS3"/>
             <operator idref="AVMNOperator.DS3"/>
-            <operator id="FrequenciesExchangerX.s:DS3" spec="operator.kernel.BactrianDeltaExchangeOperator" delta="0.01" weight="0.1">
+            <operator id="FrequenciesExchangerX.s:DS3" spec="beast.base.spec.inference.operator.DeltaExchangeOperator" delta="0.01" weight="0.1">
                 <parameter idref="freqParameter.s:DS3"/>
             </operator>
         </operator>
-        <operator id="gammaShapeScaler.s:DS3" spec="AdaptableOperatorSampler" weight="0.05">
-            <parameter idref="gammaShape.s:DS3"/>
-            <operator idref="AVMNOperator.DS3"/>
-            <operator id="gammaShapeScalerX.s:DS3" spec="kernel.BactrianScaleOperator" parameter="@gammaShape.s:DS3" scaleFactor="0.5" upper="10.0" weight="0.1"/>
-        </operator>
         <operator id="GSMSpikeUpRateDown.c:DS3" spec="gammaspike.operator.SpikeUpRateDown" parameter="@GSMbranchRates.c:DS3" scaleFactor="0.1" spikes="@GSMspikes.c:DS3" upper="10.0" weight="5.0"/>
-        <operator id="GSMUpDownSpikeTree.c:DS3" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.1" tree="@Tree.t:DS3" weight="5.0">
+        <operator id="GSMUpDownSpikeTree.c:DS3" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.1" weight="10.0">
+            <up idref="Tree.t:DS3"/>
             <down idref="GSMspikeMean.c:DS3"/>
         </operator>
-        <operator id="GSMBitFlipOperator.c:DS3" spec="operator.BitFlipOperator" parameter="@GSMuseSpikeModel.c:DS3" weight="1.0"/>
-        <operator id="GSMspikeMeanScale.c:DS3" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeMean.c:DS3" scaleFactor="0.1" upper="10.0" weight="20.0"/>
-        <operator id="GSMspikesScale.c:DS3" spec="kernel.BactrianScaleOperator" parameter="@GSMspikes.c:DS3" scaleFactor="0.1" upper="10.0" weight="30.0"/>
-        <operator id="GSMAdaptableOperatorSamplerRatesInternal.c:DS3" spec="AdaptableOperatorSampler" weight="20.0">
+        <operator id="GSMBitFlipOperator.c:DS3" spec="beast.base.spec.inference.operator.BitFlipOperator" parameter="@GSMuseSpikeModel.c:DS3" weight="1.0"/>
+        <operator id="GSMspikeMeanScale.c:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMspikeMean.c:DS3" scaleFactor="0.1" upper="10.0" weight="3.0"/>
+        <operator id="GSMspikesScale.c:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMspikes.c:DS3" scaleFactor="0.1" upper="10.0" weight="30.0"/>
+        <operator id="GSMSpikeFlipOperator.c:DS3" spec="gammaspike.operator.SpikeFlipOperator" spikes="@GSMspikes.c:DS3" weight="3.0"/>
+        <operator id="GSMAdaptableOperatorSamplerRatesInternal.c:DS3" spec="beast.base.spec.evolution.operator.AdaptableOperatorSampler" weight="20.0">
             <parameter idref="GSMbranchRates.c:DS3"/>
             <tree idref="Tree.t:DS3"/>
             <operator id="GSMStumpedTreeConstantDistanceOperator.c:DS3" spec="gammaspike.operator.StumpedTreeConstantDistanceOperator" rates="@GSMbranchRates.c:DS3" stubs="@BDWSstubs.t:DS3" tree="@Tree.t:DS3" twindowSize="0.005" weight="10.0"/>
-            <operator id="GSMORCRatesRandomWalk.c:tree.c:DS3" spec="operator.kernel.BactrianRandomWalkOperator" parameter="@GSMbranchRates.c:DS3" scaleFactor="0.1" weight="1.0">
-                <kernelDistribution id="KernelDistribution$Bactrian.24" spec="operator.kernel.KernelDistribution$Bactrian"/>
-            </operator>
-            <operator id="GSMORCRatesScale.c:tree.c:DS3" spec="kernel.BactrianScaleOperator" parameter="@GSMbranchRates.c:DS3" scaleFactor="0.5" upper="10.0" weight="1.0">
-                <kernelDistribution id="KernelDistribution$Bactrian.25" spec="operator.kernel.KernelDistribution$Bactrian"/>
-            </operator>
+            <operator id="GSMORCRatesRandomWalk.c:tree.c:DS3" spec="beast.base.spec.inference.operator.RealRandomWalkOperator" parameter="@GSMbranchRates.c:DS3" scaleFactor="0.1" weight="1.0"/>
+            <operator id="GSMORCRatesScale.c:tree.c:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMbranchRates.c:DS3" scaleFactor="0.5" upper="10.0" weight="1.0"/>
         </operator>
-        <operator id="GSMclockSDScale.c:DS3" spec="kernel.BactrianScaleOperator" parameter="@GSMclockSD.c:DS3" scaleFactor="0.1" upper="10.0" weight="5.0"/>
-        <operator id="GSMspikeShapeScale.c:DS3" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeShape.c:DS3" scaleFactor="0.1" upper="10.0" weight="1.0"/>
-        <operator id="BirthDeathModelWithStubsBICEPSEpochTop.t:DS3" spec="EpochFlexOperator" scaleFactor="0.1" tree="@Tree.t:DS3" weight="2.0"/>
-        <operator id="BirthDeathModelWithStubsBICEPSEpochAll.t:DS3" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@Tree.t:DS3" weight="2.0"/>
-        <operator id="BirthDeathModelWithStubsBICEPSTreeFlex.t:DS3" spec="TreeStretchOperator" scaleFactor="0.01" tree="@Tree.t:DS3" weight="2.0"/>
+        <operator id="GSMclockSDScale.c:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMclockSD.c:DS3" scaleFactor="0.1" upper="10.0" weight="5.0"/>
+        <operator id="GSMspikeShapeScale.c:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMspikeShape.c:DS3" scaleFactor="0.1" upper="10.0" weight="1.0"/>
+        <operator id="BirthDeathModelWithStubsTreeScaler.t:DS3" spec="beast.base.spec.evolution.operator.UpDownOperator" scaleFactor="0.1" weight="4.0">
+            <up idref="Tree.t:DS3"/>
+        </operator>
         <operator id="BirthDeathModelWithStubsTreeRootScaler.t:DS3" spec="kernel.BactrianScaleOperator" rootOnly="true" scaleFactor="0.1" tree="@Tree.t:DS3" upper="10.0" weight="3.0"/>
         <operator id="BirthDeathModelWithStubsUniformOperator.t:DS3" spec="kernel.BactrianNodeOperator" tree="@Tree.t:DS3" weight="30.0"/>
         <operator id="BirthDeathModelWithStubsSubtreeSlide.t:DS3" spec="kernel.BactrianSubtreeSlide" tree="@Tree.t:DS3" weight="15.0"/>
         <operator id="BirthDeathModelWithStubsNarrow.t:DS3" spec="Exchange" tree="@Tree.t:DS3" weight="15.0"/>
         <operator id="BirthDeathModelWithStubsWide.t:DS3" spec="Exchange" isNarrow="false" tree="@Tree.t:DS3" weight="3.0"/>
         <operator id="BirthDeathModelWithStubsWilsonBalding.t:DS3" spec="WilsonBalding" tree="@Tree.t:DS3" weight="3.0"/>
-        <operator id="BDWSbirthRateScaler.t:DS3" spec="kernel.BactrianScaleOperator" parameter="@BDWSBirthRate.t:DS3" scaleFactor="0.1" upper="10.0" weight="1.0"/>
-        <operator id="BDWSReproductionNumberScaler.t:DS3" spec="kernel.BactrianScaleOperator" parameter="@BDWSReproductionNumber.t:DS3" scaleFactor="0.1" upper="10.0" weight="1.0"/>
-        <operator id="BDWSAVMNTreePrior.t:DS3" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1.0">
-            <transformations id="BDWSAVMNTreePriorLog.t:DS3" spec="operator.kernel.Transform$LogTransform">
+        <operator id="BDWSbirthRateScaler.t:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@BDWSBirthRate.t:DS3" scaleFactor="0.1" upper="10.0" weight="1.0"/>
+        <operator id="BDWSReproductionNumberScaler.t:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@BDWSReproductionNumber.t:DS3" scaleFactor="0.1" upper="10.0" weight="1.0"/>
+        <operator id="BDWSAVMNTreePrior.t:DS3" spec="beast.base.spec.evolution.operator.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="2000" initial="2000" weight="1.0">
+            <transformations id="BDWSAVMNTreePriorLog.t:DS3" spec="beast.base.spec.inference.operator.Transform$LogTransform">
                 <f idref="BDWSBirthRate.t:DS3"/>
                 <f idref="BDWSReproductionNumber.t:DS3"/>
             </transformations>
+        </operator>
+        <operator id="gammaShapeScaler.s:DS3" spec="beast.base.spec.evolution.operator.AdaptableOperatorSampler" weight="0.05">
+            <parameter idref="gammaShape.s:DS3"/>
+            <operator idref="AVMNOperator.DS3"/>
+            <operator id="gammaShapeScalerX.s:DS3" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@gammaShape.s:DS3" scaleFactor="0.5" upper="10.0" weight="0.1"/>
         </operator>
         <logger id="tracelog" spec="Logger" fileName="$(filebase).log" logEvery="1000" model="@posterior" sanitiseHeaders="true" sort="smart">
             <log idref="posterior"/>
@@ -232,17 +215,17 @@ name="alignment">
             <log id="TreeHeight.t:DS3" spec="beast.base.evolution.tree.TreeStatLogger" tree="@Tree.t:DS3"/>
             <log idref="kappa.s:DS3"/>
             <log idref="freqParameter.s:DS3"/>
-            <log idref="gammaShape.s:DS3"/>
             <log idref="GSMuseSpikeModel.c:DS3"/>
             <log idref="GSMspikeMean.c:DS3"/>
             <log id="GSMrateStat.c:DS3" spec="beast.base.evolution.RateStatistic" branchratemodel="@GammaSpikeRelaxedClock.c:DS3" tree="@Tree.t:DS3"/>
+            <log id="GSMSaltativeProportionLogger.c:DS3" spec="gammaspike.logger.SaltativeProportionLogger" clock="@GammaSpikeRelaxedClock.c:DS3" tree="@Tree.t:DS3"/>
             <log idref="GSMclockSD.c:DS3"/>
             <log idref="GSMspikeShape.c:DS3"/>
             <log idref="BirthDeathModelWithStubs.t:DS3"/>
             <log idref="BDWSBirthRate.t:DS3"/>
             <log idref="BDWSReproductionNumber.t:DS3"/>
             <log idref="BDWSstubs.t:DS3"/>
-            <log id="SaltativeProportionLogger" spec="gammaspike.logger.SaltativeProportionLogger" tree="@Tree.t:DS3" clock="@GammaSpikeRelaxedClock.c:DS3"/>
+            <log idref="gammaShape.s:DS3"/>
         </logger>
         <logger id="screenlog" spec="Logger" logEvery="1000">
             <log idref="posterior"/>
@@ -250,10 +233,10 @@ name="alignment">
             <log idref="prior"/>
         </logger>
         <logger id="treelog.t:DS3" spec="Logger" fileName="$(filebase)-$(tree).trees" logEvery="1000" mode="tree">
-            <log id="TreeWithMetaDataLogger.t:DS3" spec="beast.base.evolution.TreeWithMetaDataLogger" branchratemodel="@GammaSpikeRelaxedClock.c:DS3" tree="@Tree.t:DS3">
+            <log id="TreeWithMetaDataLogger.t:DS3" spec="beast.base.spec.evolution.TreeWithMetaDataLogger" branchratemodel="@GammaSpikeRelaxedClock.c:DS3" tree="@Tree.t:DS3">
                 <metadata id="GSMweightedSpikes.c:DS3" spec="gammaspike.clockmodel.SpikeSize" clockModel="@GammaSpikeRelaxedClock.c:DS3" spikeMean="@GSMspikeMean.c:DS3" spikes="@GSMspikes.c:DS3"/>
-                <metadata idref="BDWSstubs.t:DS3"/>
                 <metadata idref="GSMbranchRates.c:DS3"/>
+                <metadata idref="BDWSstubs.t:DS3"/>
             </log>
         </logger>
         <operatorschedule id="OperatorSchedule" spec="OperatorSchedule"/>

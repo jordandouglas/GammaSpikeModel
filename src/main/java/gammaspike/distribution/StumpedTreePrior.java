@@ -111,6 +111,13 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 		// This distribution is conditional on the number of extant taxa n, so ensure the number does not change
         nExtantTaxa = -1;
 
+        
+        // Ensure the initial value is between 0 and 1 non-inclusive if it is being estimated
+        if (rhoInput.get().isEstimated() && (rhoInput.get().get() <= 0 || rhoInput.get().get() >= 1)) {
+        	rhoInput.get().set(0.5);
+        }
+        
+        
         // Ensure valid initial state
 //        final int MAX_ATTEMPTS = 1000;
 //		double lambda = this.getLambda();

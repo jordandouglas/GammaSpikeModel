@@ -10,7 +10,6 @@ import java.util.Random;
 
 import beast.base.core.Description;
 import beast.base.core.Input;
-import beast.base.core.Log;
 import beast.base.spec.domain.NonNegativeInt;
 import beast.base.spec.domain.PositiveReal;
 import beast.base.spec.domain.UnitInterval;
@@ -465,6 +464,19 @@ public class BirthDeathStubSimulator extends YuleModel {
         sampledFlag = true;
 
 	}
+	
+	@Override
+    public List<String> getConditions() {
+        List<String> conditions = new ArrayList<>();
+        if (birthDiffRateParameterInput.get() instanceof RealScalarParam) {
+        	RealScalarParam<?> p = (RealScalarParam<?>)birthDiffRateParameterInput.get();
+        	 conditions.add(p.getID());
+        }
+       
+        conditions.add(samplingProportionInput.get().getID());
+        conditions.add(r0Input.get().getID());
+        return conditions;
+    }
 
 
 

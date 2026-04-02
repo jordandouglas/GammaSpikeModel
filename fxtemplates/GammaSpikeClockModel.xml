@@ -1,9 +1,12 @@
 <beast version='2.0'
-       namespace='beast.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.math.distributions:orc.operators:orc.ner'>
+       namespace='beastfx.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.base.util:beast.base.math:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.inference.distribution'>
 
 
     <!-- Clock models -->
     <mergewith point='clockModelTemplates'>
+
+
+
 
           <!-- Gamma spike relaxed clock -->
         <subtemplate id='GammaSpikeRelaxedClock' class='gammaspike.clockmodel.PunctuatedRelaxedClockModel'
@@ -19,67 +22,102 @@
                      gammaspike.clockmodel.PunctuatedRelaxedClockModel.initialSpike,
                      gammaspike.clockmodel.PunctuatedRelaxedClockModel.noSpikeOnDatedTips,
                      gammaspike.clockmodel.PunctuatedRelaxedClockModel.rates,
-                     gammaspike.clockmodel.PunctuatedRelaxedClockModel.flabel,
                      gammaspike.distribution.BranchSpikePrior.tree,
                      gammaspike.distribution.BranchSpikePrior.stubs,
-                     gammaspike.distribution.BranchSpikePrior.nstubs'
+                     gammaspike.distribution.BranchSpikePrior.nstubs,
+                     gammaspike.distribution.BranchSpikePrior.shape,
+                     gammaspike.distribution.BranchSpikePrior.spikes,
+                     gammaspike.distribution.BranchSpikePrior.indicator,
+                     gammaspike.distribution.BranchSpikePrior.mean,
+                     orc.distribution.BranchRatePrior.tree,
+                     orc.distribution.BranchRatePrior.sigma,
+                     orc.distribution.BranchRatePrior.param'
             hmc='GammaSpikeRelaxedClock/clock.rate/=StrictClock/clock.rate,
                  GSMclockRate/index/=Priors/ClockPrior/'>
             <![CDATA[
-            <parameter id="GSMbranchRates.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
-            <parameter id="GSMspikes.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
-            <parameter id="GSMclockSD.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">0.5</parameter>
-            <parameter id="GSMspikeShape.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0.2">2</parameter>
-            <parameter id="GSMspikeMean.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1">0.01</parameter>
 
-            <parameter id="GSMclockRate.c:$(n)" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
+
+            <input id="GammaSpikeRelaxedClock.c:$(n)" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" 
+                  indicator="@GSMuseSpikeModel.c:$(n)" 
+                  clock.rate="@GSMclockRate.c:$(n)" 
+                  tree="@Tree.t:$(n)" 
+                  spikes="@GSMspikes.c:$(n)" 
+                  spikeMean="@GSMspikeMean.c:$(n)"
+                  rates="@GSMbranchRates.c:$(n)" 
+                  parseFromTree="false"
+                  relaxed="true">
+            </input>
+
+
+            <parameter id="GSMclockSD.c:$(n)" name="stateNode" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="PositiveReal">0.5</parameter>
+            <parameter id="GSMspikeShape.c:$(n)" name="stateNode" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="PositiveReal">2.0</parameter>
+            <parameter id="GSMspikeMean.c:$(n)" name="stateNode" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="PositiveReal">0.001</parameter>
+
+            <parameter spec='beast.base.spec.inference.parameter.RealVectorParam' domain="PositiveReal" name='rates' id='GSMbranchRates.c:$(n)' value="1"/> 
+            <parameter spec='beast.base.spec.inference.parameter.RealVectorParam' domain="NonNegativeReal" name='rates' id='GSMspikes.c:$(n)' value="1"/> 
+
+
+            <parameter id="GSMclockRate.c:$(n)" name="stateNode" spec='beast.base.spec.inference.parameter.RealScalarParam' domain="PositiveReal">1.0</parameter>
+
+
            
-            <parameter id="GSMuseSpikeModel.c:$(n)" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+            <parameter id="GSMuseSpikeModel.c:$(n)" spec="beast.base.spec.inference.parameter.BoolScalarParam" name="stateNode">0</parameter>
 
             <log id="GSMweightedSpikes.c:$(n)" spec="gammaspike.clockmodel.SpikeSize" spikes="@GSMspikes.c:$(n)" spikeMean="@GSMspikeMean.c:$(n)" clockModel="@GammaSpikeRelaxedClock.c:$(n)" />
 
-            <branchRateModel id="GammaSpikeRelaxedClock.c:$(n)" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" 
-                	indicator="@GSMuseSpikeModel.c:$(n)" 
-                	clock.rate="@GSMclockRate.c:$(n)" 
-                	tree="@Tree.t:$(n)" 
-                	spikes="@GSMspikes.c:$(n)" 
-                  spikeMean="@GSMspikeMean.c:$(n)"
-                	rates="@GSMbranchRates.c:$(n)" 
-                	parseFromTree="false"
-                	relaxed="true">
-			</branchRateModel>
 
-                 <prior id="GSMclockRatePrior.c:$(n)" name="distribution" x="@GSMclockRate.c:$(n)">
-					    <Gamma alpha="0.1" beta="100.0" name="distr"/>
-                 </prior>
 
-                 <prior id="GSMclockSDPrior.c:$(n)" name="distribution" x="@GSMclockSD.c:$(n)">
-                    <Gamma name="distr" alpha="5" beta="0.05"/>
-                 </prior> 
 
-                 <prior id="GSMbranchRatePrior.c:$(n)" name="distribution" x="@GSMbranchRates.c:$(n)">
-                    <LogNormal meanInRealSpace="true" name="distr" M="1" S="@GSMclockSD.c:$(n)"/>
-                 </prior> 
 
-                <prior id="GSMspikeMeanPrior.c:$(n)" name="distribution" x="@GSMspikeMean.c:$(n)">
-                    <LogNormal  name="distr" meanInRealSpace="true" M="0.01" S="1.2"/>
-                 </prior>
+               <distribution id="GSMclockSDPrior.c:$(n)" spec="beast.base.spec.inference.distribution.Gamma" param="@GSMclockSD.c:$(n)">
+                  <alpha spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="5" estimate='false'/> <!-- shape -->
+                  <theta  spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="0.05" estimate='false'/> <!-- scale -->
+               </distribution>
 
-                 <prior id="GSMspikeShapePrior.c:$(n)" name="distribution" x="@GSMspikeShape.c:$(n)">
-                    <LogNormal  name="distr" meanInRealSpace="true" M="2" S="0.5"/>
-                 </prior>
 
-                <prior id="GSMbranchSpikePrior.c:$(n)" name="distribution" 
-                	spec="gammaspike.distribution.BranchSpikePrior" 
-                	spikes="@GSMspikes.c:$(n)" 
-                	shape="@GSMspikeShape.c:$(n)" 
+                <distribution id="GSMclockRatePrior.c:$(n)" spec="beast.base.spec.inference.distribution.Gamma" param="@GSMclockRate.c:$(n)">
+                  <alpha spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="0.01" estimate='false'/> <!-- shape -->
+                  <theta  spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="100" estimate='false'/> <!-- scale -->
+               </distribution>
+
+
+
+               <distribution id="GSMspikeMeanPrior.c:$(n)" spec="beast.base.spec.inference.distribution.LogNormal" param="@GSMspikeMean.c:$(n)" meanInRealSpace="true">
+                  <M spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="0.01" estimate='false'/> 
+                  <S  spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="1.2" estimate='false'/> 
+               </distribution>
+
+
+               <distribution id="GSMspikeShapePrior.c:$(n)" spec="beast.base.spec.inference.distribution.LogNormal" param="@GSMspikeShape.c:$(n)" meanInRealSpace="true">
+                  <M spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="2" estimate='false'/> 
+                  <S  spec="beast.base.spec.inference.parameter.RealScalarParam" domain="PositiveReal" value="0.5" estimate='false'/> 
+               </distribution>
+
+
+               <distribution id="GSMbranchSpikePrior.c:$(n)" name="distribution" 
+                  spec="gammaspike.distribution.BranchSpikePrior" 
+                  param="@GSMspikes.c:$(n)" 
+                  shape="@GSMspikeShape.c:$(n)" 
                   indicator="@GSMuseSpikeModel.c:$(n)"
-                	tree="@Tree.t:$(n)"/>
+                  tree="@Tree.t:$(n)"/>
+
+
+
+               <distribution id='GSMbranchRatePrior.c:$(n)' spec='orc.distribution.BranchRatePrior' param='@GSMbranchRates.c:$(n)' tree="@Tree.t:$(n)" sigma="@GSMclockSD.c:$(n)" />
+
+
+               <distribution id='GSMuseSpikeModelPrior.c:$(n)' spec='beast.base.spec.inference.distribution.Bernoulli' param='@GSMuseSpikeModel.c:$(n)' p="0.5" />
+               
+ 
+
+
+
+ 
 		
 
       <operator id="GSMSpikeUpRateDown.c:$(n)" spec="gammaspike.operator.SpikeUpRateDown" parameter="@GSMbranchRates.c:$(n)" spikes="@GSMspikes.c:$(n)" scaleFactor="0.1" weight="5.0"/>
-      <operator id="GSMclockRateScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMclockRate.c:$(n)" scaleFactor="0.1" weight="0.5"/>
-      <operator id="GSMBitFlipOperator.c:$(n)" spec="BitFlipOperator" uniform="true" parameter="@GSMuseSpikeModel.c:$(n)" weight="1.0" />
+      <operator id="GSMclockRateScale.c:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMclockRate.c:$(n)" scaleFactor="0.1" weight="0.5"/>
+      <operator id="GSMBitFlipOperator.c:$(n)" spec="beast.base.spec.inference.operator.BitFlipOperator" uniform="true" parameter="@GSMuseSpikeModel.c:$(n)" weight="1.0" />
       
 
 
@@ -89,26 +127,22 @@
          
 
         <!-- Site/clock model operators -->
-        <operator id="GSMclockSDScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMclockSD.c:$(n)" scaleFactor="0.1" weight="5.0"/>
-        <operator id="GSMspikeShapeScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeShape.c:$(n)" scaleFactor="0.1" weight="1.0"/>
-        <operator id="GSMspikeMeanScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikeMean.c:$(n)" scaleFactor="0.1" weight="3.0"/>
-        <operator id="GSMspikesScale.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMspikes.c:$(n)" scaleFactor="0.1" weight="30.0"/>
-        <operator id="GSMUpDownSpikeTree.c:$(n)" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.1" weight="5.0">
-            <tree idref="Tree.t:$(n)" />
+        <operator id="GSMclockSDScale.c:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMclockSD.c:$(n)" scaleFactor="0.1" weight="5.0"/>
+        <operator id="GSMspikeShapeScale.c:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMspikeShape.c:$(n)" scaleFactor="0.1" weight="1.0"/>
+        <operator id="GSMspikeMeanScale.c:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMspikeMean.c:$(n)" scaleFactor="0.1" weight="3.0"/>
+        <operator id="GSMspikesScale.c:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMspikes.c:$(n)" scaleFactor="0.1" weight="30.0"/>
+        <operator id="GSMUpDownSpikeTree.c:$(n)" spec="gammaspike.operator.StumpedTreeScaler" scaleFactor="0.1" weight="10.0">
+            <up idref="Tree.t:$(n)" />
             <down idref="GSMspikeMean.c:$(n)" />
         </operator>
 
 
-        <operator id="GSMAdaptableOperatorSamplerRatesInternal.c:$(n)" spec="AdaptableOperatorSampler" weight="20.0">
+        <operator id="GSMAdaptableOperatorSamplerRatesInternal.c:$(n)" spec="beast.base.spec.evolution.operator.AdaptableOperatorSampler" weight="20.0">
             <parameter idref="GSMbranchRates.c:$(n)"/>
             <tree idref="Tree.t:$(n)"/>
             <operator id="GSMStumpedTreeConstantDistanceOperator.c:$(n)" spec="gammaspike.operator.StumpedTreeConstantDistanceOperator" twindowSize="0.005" tree="@Tree.t:$(n)" rates="@GSMbranchRates.c:$(n)"  weight="10.0"/>
-            <operator id="GSMORCRatesRandomWalk.c:tree.c:$(n)" spec="operator.kernel.BactrianRandomWalkOperator" parameter="@GSMbranchRates.c:$(n)" scaleFactor="0.1" weight="1.0">
-                <kernelDistribution spec="operator.kernel.KernelDistribution$Bactrian"/>
-            </operator>
-            <operator id="GSMORCRatesScale.c:tree.c:$(n)" spec="kernel.BactrianScaleOperator" parameter="@GSMbranchRates.c:$(n)" scaleFactor="0.5" upper="10.0" weight="1.0">
-                <kernelDistribution spec="operator.kernel.KernelDistribution$Bactrian"/>
-            </operator>
+            <operator id="GSMORCRatesRandomWalk.c:tree.c:$(n)" spec="beast.base.spec.inference.operator.RealRandomWalkOperator" parameter="@GSMbranchRates.c:$(n)" scaleFactor="0.1" weight="1.0" />
+            <operator id="GSMORCRatesScale.c:tree.c:$(n)" spec="beast.base.spec.inference.operator.ScaleOperator" parameter="@GSMbranchRates.c:$(n)" scaleFactor="0.5" upper="10.0" weight="1.0" />
         </operator>
 
 		<log id="GSMrateStat.c:$(n)" spec="beast.base.evolution.RateStatistic" tree="@Tree.t:$(n)" branchratemodel="@GammaSpikeRelaxedClock.c:$(n)"/>
@@ -155,6 +189,11 @@
             <connect srcID='GSMbranchSpikePrior.c:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'>Gamma spike relaxed clock branch spike of partition c:$(n)
             </connect>
+            <connect srcID='GSMuseSpikeModelPrior.c:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(GSMuseSpikeModel.c:$(n)) and GSMuseSpikeModel.c:$(n)/estimate=true'>Model indicator for using the gamma spike clock model
+            </connect>
+
+
 
 
             <connect srcID='GSMuseSpikeModel.c:$(n)' targetID='tracelog' inputName='log' if='inlikelihood(GSMuseSpikeModel.c:$(n))'/>
@@ -226,5 +265,7 @@
             <connect srcID='Tree.t:$(n)' targetID='GSMSaltativeProportionLogger.c:$(n)' inputName='tree' if='inlikelihood(GammaSpikeRelaxedClock.c:$(n))'/>
 
         </subtemplate>
+
+
 	</mergewith>
 </beast>

@@ -8,7 +8,6 @@ import java.util.List;
 
 import beast.base.core.BEASTObject;
 import beast.base.core.Description;
-import beast.base.core.Function;
 import beast.base.core.Input;
 import beast.base.core.Loggable;
 import beast.base.core.Input.Validate;
@@ -24,13 +23,14 @@ import beast.base.spec.domain.UnitInterval;
 import beast.base.spec.inference.parameter.IntVectorParam;
 import beast.base.spec.inference.parameter.RealScalarParam;
 import beast.base.spec.inference.parameter.RealVectorParam;
+import beast.base.spec.type.IntVector;
 import beast.base.util.Randomizer;
 import gammaspike.distribution.BranchSpikePrior;
 import gammaspike.distribution.StubExpectation;
 
 
 @Description("A branch with length zero on a tree")
-public class Stubs extends CalculationNode implements Loggable, Function {
+public class Stubs extends CalculationNode implements Loggable, IntVector<NonNegativeInt> {
 
 	
 	
@@ -662,25 +662,6 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	}
 	
 
-	
-	// Function overrides
-	
-	@Override
-	public double getArrayValue(int dim) {
-		if (!estimateStubs()) {
-			return sampleNStubsOnBranch(dim, dim == treeInput.get().getRoot().getNr() ? -1 : 0);
-		} else if (!getReversibleJump()) {
-			return getNStubsOnBranch(dim);
-		}
-		
-		return this.getNStubs();
-	}
-
-
-	@Override
-	public int getDimension() {
-		return treeInput.get().getNodeCount();
-	}
 
 
 	public double getRelativeTimeOfStub(int stubNr) {
@@ -768,6 +749,7 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 	 */
 	public double getLogJacobian(double[] cachedBranchLengths) {
 		
+		
 		if (!this.getReversibleJump()) return 0;
 		if (cachedBranchLengths == null) {
 			throw new IllegalArgumentException("Developer error 111231: please call 'prepareJacobian' before 'getJacobian'");
@@ -799,6 +781,37 @@ public class Stubs extends CalculationNode implements Loggable, Function {
 		if (this.stubExpectation == null) return -1;
 		return this.stubExpectation.getMeanStubNumber(h0, h1);
 	}
+
+
+	@Override
+	public List<Integer> getElements() {
+		List<Integer> vals = new ArrayList<>();
+		for (int i = 0; i < treeInput.get().getNodeCount() ;i ++) {
+			vals.add(this.get(i));
+		}
+		return vals;
+	}
+
+
+	@Override
+	public NonNegativeInt getDomain() {
+		return NonNegativeInt.INSTANCE;
+	}
+
+
+	@Override
+	public int get(int i) {
+		if (!estimateStubs()) {
+			return sampleNStubsOnBranch(i, i == treeInput.get().getRoot().getNr() ? -1 : 0);
+		} else if (!getReversibleJump()) {
+			return getNStubsOnBranch(i);
+		}
+		
+		return this.getNStubs();
+  	}
+
+	
+	
 
 
 }
