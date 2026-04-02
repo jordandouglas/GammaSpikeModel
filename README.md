@@ -21,13 +21,19 @@ Advantages over other clock models:
 
 
 
+
+**Update 3 April 2026:** As of v1.3.0, this repository is only compatible with BEAST 2.8.0 and newer. To run this package on an older version of BEAST 2, please refer to the 2.7 branch of this repository. 
+
 **Update 12 Jan 2026:** As of v1.2.0, the stumped tree prior now supports contemporaneous rho-sampling. Big thank you to Robert Yuan. 
+
+
+
 
 
 ## Installation instructions
 
 
-This package requires BEAST 2.7.7. or newer.
+This package requires BEAST 2.8.0 or newer.
 
 1. Launch BEAUti
 2. Click on `File` -> `Manage Packages`
