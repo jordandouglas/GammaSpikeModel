@@ -113,7 +113,7 @@ public class StumpedTreePrior extends SpeciesTreeDistribution implements StubExp
 
         
         // Ensure the initial value is between 0 and 1 non-inclusive if it is being estimated
-        if (rhoInput.get().isEstimated() && (rhoInput.get().get() <= 0 || rhoInput.get().get() >= 1)) {
+        if (rhoInput.get() != null && rhoInput.get().isEstimated() && (rhoInput.get().get() <= 0 || rhoInput.get().get() >= 1)) {
         	rhoInput.get().set(0.5);
         }
         
