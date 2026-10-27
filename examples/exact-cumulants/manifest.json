@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "files": {
+    "README.md": "8131efaf1369f3ae63eea8bf3537ed433f9d5be997e0416fc0b6f3aeac02c32f",
+    "sources.md": "29e21129d61839f4ec43f15131db6e98594dd93ebb52b1f51186450dffe7d676",
+    "proof.md": "3a42a3253ce0bf1c1e086c760b33b21f6a9195a2555a2967b36859c1c932257d",
+    "status.json": "f85ebe87d470c8eae2b33495248ded961114b701396e30246a0216df8f427e0e",
+    "LICENSE": "cd6013a4b5aa2c5dad20ca34174ff658235a41a6459c7c1db1f140a5cabc9d62",
+    "requirements.txt": "d78165cb12250fa5bb897d2026515b89ddb8d6a88aaa152e5d62ff2e36028d11",
+    "witness.json": "19d930c020f0041153b9415ea93e50b8e5a8bd52b5814f3f99bf49ca437a44ab",
+    "check.py": "4c923819877763c9cf64a18e8d49abe469765e4fa1d30592c5dc5803ab8c4152",
+    "gamma_cumulants.py": "fb6589ccb13eb368fcffb07fcc4613dec3e09515240c599e24f9549c3614420e",
+    "test_gamma_cumulants.py": "4476d06cf9d3173d553ccd73b4515f8ba44b4a2636969a577ad9f359b6e33dd2",
+    "reproduce.py": "5b273ec71a586f0623ccdbe4a1a498f0f050b04b2e578f7eff7abba9e6c3e6a7"
+  }
+}

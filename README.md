@@ -90,6 +90,8 @@ Si ~ Gamma(shape=spikeShape*(ni + 1), scale=spikeMean/spikeShape)
 
 where `ni` is the number of stubs on branch `i`. Longer branches and older branches usually have more stubs. The reported `spike` on each branch is the total sum of all `ni + 1` spikes along that branch.
 
+An optional [exact cumulant diagnostic](examples/exact-cumulants/README.md) enumerates positive parameters for the ordinary-branch Poisson/Gamma burst marginal from three or four exactly specified cumulants. It includes a finite-cumulant identifiability proof and synthetic rational fixtures. This standalone Python example is for exact model diagnostics; heterogeneous branch pooling, sampled-ancestor exceptions, unknown gradual contributions, and noisy moment fitting are outside its scope.
+
 Then `spikeMean` is the average number of changes per site per bifurcation (which may be observed or unobserved). For example an average spike size of 0.01 means that 1% of all sites are expected to change (possibly back into the original state) at each bifurcation - one per internal node and one per stub. We examined 8 empirical datasets with support for punctuated equilibrium, and found that `spikeMean` estimates ranged from 0.001 to 0.07. The default prior for `spikeMean` is centered around this interval. This is an important parameter, and testing for sensitivity is recommended.
 
 BEAST 2 will log the following terms onto the tree:

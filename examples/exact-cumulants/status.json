@@ -1,0 +1,16 @@
+{
+  "model": "B+1gammajumps,positivealpha/theta/beta",
+  "known_result": "full-lawidentifiability",
+  "proposed_contribution": "completeF3positivefibers,sharpconditionalc1/6threshold,minimalglobalorder4",
+  "fresh_math_review": "complete stated-scope analytic reconstruction; no substantive revision",
+  "fresh_source_value_review": "modest useful complete finite-cumulant classification; bounded novelty search, no priority claim",
+  "human_verification": false,
+  "priority": "not certified",
+  "scope_excludes": [
+    "completeBEAST/unknowngradualoffset",
+    "noisyempiricalmomentestimation",
+    "pooledheterogeneousbranches"
+  ],
+  "formal_manuscript_release": "No journal manuscript or PDF prepared; no submission",
+  "helper_review": "independent adversarial audit:166 checks and six implementation tests passed; finite coverage, no theorem certification"
+}
